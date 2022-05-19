@@ -28,11 +28,11 @@ do_not_use_repeaker_hat.txt # will stop ReSpeaker hat drivers from being loaded 
 disable_wifi_power_save.txt # if present, wifi power saving feature will be disabled. This might improve some connections. Handled in /etc/rc.local
 
 # Factory reset related:
-keep_z2m.txt # keep Zigbee2MQTT settings on factorry reset
+keep_z2m.txt # keep Zigbee2MQTT settings on factory reset
 keep_bluetooth.txt # Keep paired bluetooth devices on factory reset
 developer.txt # Enables logging. Will also cause a factory reset to write zeros to empty space, so as to prepare for creating a disk image
 
 # Indicators
-candle_swap_enabled.txt # on lower memory systems (Pi zero) this file indicates that on the first run the swap file was enabled. Normally it's disabled, a>
-candle_first_run_complete.txt # this file appears after the first boot. It indicates that and new SSH keys were generated
+candle_swap_enabled.txt # on lower memory systems (Pi zero) this file indicates that on the first run the swap file was enabled. Normally it's disabled, but on low memory systems candle_first_run.sh will enable it.
+candle_first_run_complete.txt # this file appears after the first even boot of the disk image. It indicates that new SSH keys were generated
 
