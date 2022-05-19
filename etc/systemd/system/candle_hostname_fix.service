@@ -1,0 +1,24 @@
+# Kludge
+
+[Unit]
+Description=Update hostname to load from writable partition
+#After=mountdata.service
+After=home-pi-.webthings.mount
+Before=dhcpcd.service
+Before=avahi-daemon.service
+#Before=systemd-networkd.target
+#Before=dhcpcd.service
+
+ConditionPathExists=/etc/hostname
+#RequiresMountsFor=/usr
+#DefaultDependencies=no
+
+[Service]
+Type=oneshot
+#RemainAfterExit=yes
+#Type=simple
+#ExecStart=/usr/bin/hostname -F /etc/hostname
+ExecStart=/bin/bash /usr/bin/candle_hostname_fix.sh
+
+[Install]
+WantedBy=bluetooth.target
