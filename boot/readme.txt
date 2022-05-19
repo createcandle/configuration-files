@@ -16,16 +16,16 @@ If you would like to have more control over your device, go to the settings page
 
 The existence of these files can also toggle certain things:
 
-disable_uninstall.txt # useful for public exhibitions, disables uninstalling addons in teh Candle app store
+disable_uninstall.txt # useful for public exhibitions, disables uninstalling addons in the Candle app store
 candle_kiosk.txt # the URL inside this file will be shown in the browser. If it's empty the kiosk browser will not load
-keep_browser_session.txt # Don't delete browser sessions on boot
+keep_browser_session.txt # Don't delete browser sessions on boot. This will allow login password to be saved accross reboots.
 cloudless.txt # experimental, to launch the gateway even if there is no network at all
 nohotspot.txt # aborts hotspot launch. Useful if that feature somehow causes trouble.
-hide_mouse_pointer.txt # hides the mouse pointer on the HDMI output
-rotate180.txt # Rotates the display 180 degrees
+hide_mouse_pointer.txt # hides the mouse pointer on the HDMI output. Enabled by default.
+rotate180.txt # Rotates the display 180 degrees. The Display Toggle addon manages the existence of this file.
 exhibit_mode.txt # Disables installing and uninstalling addons.
 do_not_use_repeaker_hat.txt # will stop ReSpeaker hat drivers from being loaded at boot
-disable_wifi_power_save.txt # if present, wifi power saving feature will be disabled. This might improve some connections.
+disable_wifi_power_save.txt # if present, wifi power saving feature will be disabled. This might improve some connections. Handled in /etc/rc.local
 
 # Factory reset related:
 keep_z2m.txt # keep Zigbee2MQTT settings on factorry reset
