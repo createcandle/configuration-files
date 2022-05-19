@@ -1,2 +1,2 @@
 # configuration-scripts
-Various configuration scripts for the Candle controller
+Various configuration scripts and files for the Candle controller
