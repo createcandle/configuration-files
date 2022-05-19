@@ -1,4 +1,4 @@
-# configuration-files
+# Configuration files
 Various configuration files for the Candle controller
 
 https://www.candlesmarthome.com
