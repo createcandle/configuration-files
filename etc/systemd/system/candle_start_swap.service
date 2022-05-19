@@ -1,0 +1,14 @@
+[Unit]
+Description=Candle start swap   
+After=home-pi-.webthings.mount
+ConditionPathExists=/boot/candle_swap_enabled.txt
+#Before=ssh.service webthings-gateway.service
+
+[Service]
+User=root
+ExecStartPre=/usr/sbin/dphys-swapfile setup
+ExecStart=/usr/sbin/dphys-swapfile swapon                     
+Type=simple
+
+[Install]
+WantedBy=multi-user.target
