@@ -1,0 +1,14 @@
+[Unit]
+Description=Splash screen
+DefaultDependencies=no
+After=local-fs.target
+ConditionPathExists=!/boot/rotate180.txt
+ConditionPathExists=/boot/bootup_actions.sh
+
+[Service]
+ExecStart=/usr/bin/fbi -d /dev/fb0 --noverbose -a /boot/splash_updating.png
+StandardInput=tty
+StandardOutput=tty
+
+[Install]
+WantedBy=sysinit.target
