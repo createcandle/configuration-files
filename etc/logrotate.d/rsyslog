@@ -1,0 +1,14 @@
+/var/log//*.log {
+        maxsize 5M
+        rotate 2
+        hourly
+        missingok
+        notifempty
+        compress
+        delaycompress
+        sharedscripts
+        postrotate
+                /usr/lib/rsyslog/rsyslog-rotate
+        endscript
+        
+}
