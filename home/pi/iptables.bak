@@ -1,3 +1,4 @@
+# Restore with: iptables-restore < iptables.bak
 *mangle
 :PREROUTING ACCEPT [0:0]
 :INPUT ACCEPT [0:0]
