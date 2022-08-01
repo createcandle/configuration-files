@@ -7,7 +7,7 @@ Before=avahi-daemon.service
 #Before=systemd-networkd.target
 #Before=dhcpcd.service
 
-ConditionPathExists=/etc/hostname
+ConditionPathExists=home/pi/.webthings/etc/hostname
 #RequiresMountsFor=/usr
 #DefaultDependencies=no
 
@@ -15,8 +15,8 @@ ConditionPathExists=/etc/hostname
 Type=oneshot
 #RemainAfterExit=yes
 #Type=simple
-#ExecStart=/usr/bin/hostname -F /etc/hostname
-ExecStart=/bin/bash /usr/bin/candle_hostname_fix.sh
+ExecStart=/usr/bin/hostname -F /home/pi/.webthings/etc/hostname
+#ExecStart=/bin/bash /usr/bin/candle_hostname_fix.sh
 
 [Install]
 WantedBy=bluetooth.target
