@@ -1,0 +1,20 @@
+[Unit]
+Description=Candle early         
+After=home-pi-.webthings.mount
+#After=network.target
+#PartOf=webthings-gateway.service
+Before=webthings-gateway.service
+ConditionPathExists=/home/pi/candle/early.sh
+
+[Service]
+Type=simple
+User=root
+ExecStartPre=/bin/chmod +x /boot/bootup_actions.sh
+ExecStart=/bin/bash /home/pi/candle/early.sh
+
+#RemainAfterExit=true
+#ExecStop=/home/pi/.webthings/post_factory_reset.sh
+StandardOutput=journal
+
+[Install]
+WantedBy=multi-user.target
