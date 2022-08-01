@@ -9,7 +9,7 @@ ConditionPathExists=/home/pi/candle/early.sh
 [Service]
 Type=simple
 User=root
-ExecStartPre=/bin/chmod +x /boot/bootup_actions.sh
+ExecStartPre=/bin/chmod +x /home/pi/candle/early.sh
 ExecStart=/bin/bash /home/pi/candle/early.sh
 
 #RemainAfterExit=true
