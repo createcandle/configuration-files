@@ -1,0 +1,16 @@
+[Unit]
+Description=BluezALSA proxy
+Requires=bluetooth.service
+After=bluetooth.service
+
+[Service]
+Type=simple
+User=root
+Environment="LD_LIBRARY_PATH=/usr/local/lib"
+Environment="LIBASOUND_THREAD_SAFE=0"
+ExecStart=/usr/bin/bluealsa --multi-client -p a2dp-source -p a2dp-sink --a2dp-volume -p hfp-ag
+#ExecStart=/usr/bin/bluealsa --multi-client -p a2dp-source -p a2dp-sink --a2dp-volume -p hsp-ag
+#ExecStart=/usr/bin/bluealsa --multi-client -p a2dp-source -p a2dp-sink --a2dp-volume
+
+[Install]
+WantedBy=multi-user.target
