@@ -1,4 +1,4 @@
-# save as /home/pi/.asoundrc
+
 defaults.bluealsa.interface "hci0"
 defaults.bluealsa.device "00:00:00:00:00:00"
 defaults.bluealsa.profile "a2dp"
