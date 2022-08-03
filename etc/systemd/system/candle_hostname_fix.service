@@ -7,7 +7,7 @@ Before=avahi-daemon.service
 #Before=systemd-networkd.target
 #Before=dhcpcd.service
 
-ConditionPathExists=home/pi/.webthings/etc/hostname
+ConditionPathExists=/home/pi/.webthings/etc/hostname
 #RequiresMountsFor=/usr
 #DefaultDependencies=no
 
