@@ -89,7 +89,7 @@ fi
 # WebUIDarkMode
 
 #chromium-browser --kiosk $url --load-extension=/home/pi/candle/virtual_keyboard &
-chromium --kiosk /home/pi/candle/start.html --load-extension=/home/pi/candle/virtual_keyboard --disable-infobars --noerrdialogs --disable-file-system \
+chromium-browser --kiosk /home/pi/candle/start.html --load-extension=/home/pi/candle/virtual_keyboard --disable-infobars --noerrdialogs --disable-file-system \
  --block-new-web-contents --disable-remote-fonts --disable-speech-api --no-crash-upload --force-tablet-mode --enable-touchview \
  --disable-translate --enable-top-drag-gesture --pull-to-refresh=2 --progress-bar-animation --no-first-run --deny-permission-prompts \
  --disable-breakpad --enable-auto-reload --unsafely-treat-insecure-origin-as-secure=$url --disable-seccomp-filter-sandbox \
@@ -102,3 +102,4 @@ chromium --kiosk /home/pi/candle/start.html --load-extension=/home/pi/candle/vir
 sleep 15
 pkill omxplayer
 pkill cvlc
+pkill vlc
