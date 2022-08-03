@@ -29,8 +29,8 @@
 <applications>
 
   <application class="Chromium*">
-    <desktop>2</desktop>
-    <focus>no</focus>
+    <desktop>1</desktop>
+    <focus>yes</focus>
     <fullscreen>yes</fullscreen>
     <layer>below</layer>
   </application>
