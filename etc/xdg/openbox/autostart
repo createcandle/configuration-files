@@ -1,4 +1,5 @@
 #!/bin/bash
+
 export DISPLAY=:0
 
 xset -display :0 s off
@@ -59,9 +60,11 @@ if [ -f /boot/splash.mp4 ]
 then
   if [ -f /boot/rotate180.txt ]
   then
-    omxplayer -b --aspect-mode fill --orientation 180 --loop /boot/splash.mp4 &
+    #omxplayer -b --aspect-mode fill --orientation 180 --loop /boot/splash.mp4 &
+    cvlc -L -f --no-osd --no-audio --video-on-top /boot/splash.mp4 &
   else
-    omxplayer -b --aspect-mode fill --loop /boot/splash.mp4 &
+    #omxplayer -b --aspect-mode fill --loop /boot/splash.mp4 &
+    cvlc -L -f --no-osd --no-audio --video-on-top /boot/splash.mp4 &
   fi
   #omxplayer -b --win "0 0 $resolution" --loop /boot/splash.mp4 &
 fi
@@ -86,13 +89,16 @@ fi
 # WebUIDarkMode
 
 #chromium-browser --kiosk $url --load-extension=/home/pi/candle/virtual_keyboard &
-chromium-browser --kiosk /home/pi/candle/start.html --load-extension=/home/pi/candle/virtual_keyboard --disable-infobars --noerrdialogs --disable-file-system \
+chromium --kiosk /home/pi/candle/start.html --load-extension=/home/pi/candle/virtual_keyboard --disable-infobars --noerrdialogs --disable-file-system \
  --block-new-web-contents --disable-remote-fonts --disable-speech-api --no-crash-upload --force-tablet-mode --enable-touchview \
  --disable-translate --enable-top-drag-gesture --pull-to-refresh=2 --progress-bar-animation --no-first-run --deny-permission-prompts \
  --disable-breakpad --enable-auto-reload --unsafely-treat-insecure-origin-as-secure=$url --disable-seccomp-filter-sandbox \
  --disable-fullscreen-tab-detaching --disable-hang-monitor --disable-pinch --overscroll-history-navigation=0 --disk-cache-size=1 \
  --dns-prefetch-disable --enable-profiling=0 --user-data-dir=/home/pi/.webthings/chromium/ --disable-features=Translate,TranslateUI \
- --disable-translate-new-ux --disable-suggestions-ui --disable-sync --enable-features=WebUIDarkMode --force-dark-mode --homepage=$url &
+ --disable-translate-new-ux --disable-suggestions-ui --disable-sync --enable-features=WebUIDarkMode --force-dark-mode --homepage=$url \
+--disable-session-crashed-bubble &
+# --disable-gpu --disable-software-rasterizer &
 
 sleep 15
 pkill omxplayer
+pkill cvlc
