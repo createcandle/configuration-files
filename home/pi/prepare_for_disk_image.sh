@@ -13,6 +13,7 @@ rm /boot/keep_bluetooth.txt
 rm /boot/candle_first_run_complete.txt
 rm /boot/tunnel.txt
 rm /etc/asound.conf
+rm /var/log/*
 cp /home/pi/candle_first_run.sh /boot/candle_first_run.sh
 
 
