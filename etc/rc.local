@@ -49,6 +49,10 @@ then
   touch /boot/candle_swap_enabled.txt
   /usr/sbin/dphys-swapfile setup
   /usr/sbin/dphys-swapfile swapon
+else
+  rm /boot/candle_swap_enabled.txt
+  /usr/sbin/dphys-swapfile swapoff
+  rm /home/pi/.webthings/swap
 fi
 
 exit 0
