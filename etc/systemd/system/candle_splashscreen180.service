@@ -1,5 +1,5 @@
 [Unit]
-Description=Splash screen
+Description=Splash screen rotated 180 degrees
 DefaultDependencies=no
 After=local-fs.target
 ConditionPathExists=/boot/rotate180.txt
