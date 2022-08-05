@@ -11,7 +11,7 @@ ConditionVirtualization=!container
 Type=oneshot
 RemainAfterExit=yes
 ExecStartPre=/usr/bin/sleep 1
-ExecStart=/usr/bin/ply-image /boot/splash.png
+ExecStart=/usr/bin/ply-image /boot/splashalt.png
 
 [Install]
 WantedBy=reboot.target
