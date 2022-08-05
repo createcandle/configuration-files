@@ -5,7 +5,6 @@ After=local-fs.target
 ConditionPathExists=!/boot/rotate180.txt
 ConditionPathExists=!/boot/bootup_actions.sh
 ConditionKernelCommandLine=splash
-ConditionVirtualization=!container
 
 [Service]
 ExecStart=/usr/bin/ply-image /boot/splash.png
