@@ -1,12 +1,12 @@
 [Unit]
-Description=Splash screen
+Description=Splash screen updating 180
 DefaultDependencies=no
 After=local-fs.target
 ConditionPathExists=/boot/rotate180.txt
 ConditionPathExists=/boot/bootup_actions.sh
 
 [Service]
-ExecStart=/usr/bin/fbi -d /dev/fb0 --noverbose -a /boot/splash_updating180.png
+ExecStart=/usr/bin/ply-image /boot/splash_updating180.png
 StandardInput=tty
 StandardOutput=tty
 
