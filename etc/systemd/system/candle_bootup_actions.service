@@ -7,16 +7,14 @@ Before=webthings-gateway.service
 ConditionPathExists=/boot/bootup_actions.sh
 
 [Service]
-Type=simple
+Type=oneshot
 User=root
 ExecStartPre=/bin/chmod +x /boot/bootup_actions.sh
 ExecStart=/bin/bash /boot/bootup_actions.sh
-ExecStartPost=/bin/sleep 30
-ExecStartPost=/bin/rm /boot/bootup_actions.sh
+#ExecStartPost=/bin/sleep 30
+#ExecStartPost=/bin/rm /boot/bootup_actions.sh
 ExecStop=/bin/rm /boot/bootup_actions.sh
 
-#RemainAfterExit=true
-#ExecStop=/home/pi/.webthings/post_factory_reset.sh
 StandardOutput=journal
 
 [Install]
