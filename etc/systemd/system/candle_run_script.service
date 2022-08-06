@@ -1,0 +1,17 @@
+[Unit]
+Description=Candle bootup actions
+After=home-pi-.webthings.mount
+#Before=webthings-gateway.service
+ConditionPathExists=/home/pi/.webthings/run_once.sh
+
+[Service]
+Type=oneshot
+User=pi
+ExecStartPre=/bin/chmod +x /home/pi/.webthings/run_once.sh
+ExecStart=/bin/bash /home/pi/.webthings/run_once.sh
+ExecStop=/bin/rm /home/pi/.webthings/run_once.sh
+
+StandardOutput=journal
+
+[Install]
+WantedBy=multi-user.target
