@@ -1,7 +1,6 @@
 [Unit]
 Description=Candle bootup actions
-After=home-pi-.webthings.mount
-#After=network.target
+After=network.target
 #PartOf=webthings-gateway.service
 Before=webthings-gateway.service
 ConditionPathExists=/boot/bootup_actions.sh
