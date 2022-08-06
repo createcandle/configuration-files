@@ -10,7 +10,7 @@ Type=oneshot
 User=root
 ExecStartPre=/bin/chmod +x /boot/bootup_actions.sh
 ExecStart=/bin/bash /boot/bootup_actions.sh
-#ExecStartPost=/bin/sleep 30
+ExecStartPost=/bin/sleep 5
 #ExecStartPost=/bin/rm /boot/bootup_actions.sh
 ExecStop=/bin/rm /boot/bootup_actions.sh
 
