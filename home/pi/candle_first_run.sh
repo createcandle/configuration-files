@@ -1,4 +1,16 @@
-#! /bin/bash
+#!/bin/bash
+
+if [ -s /ro/etc/machine-id ]
+then
+  mount -o remount,rw /ro
+  systemd-machine-id-setup --commit
+  cp /etc/machine-id /ro/etc/machine-id
+#  systemd-machine-id-setup --commit --root=/ro
+  touch /boot/machineid_generated.txt
+  mount -o remount,ro /ro
+else
+  touch /boot/no_machine_id_generated.txt
+fi
 
 # Generate new SSH keys to improve security
 /bin/dd if=/dev/hwrng of=/dev/urandom count=1 bs=4096
