@@ -1,6 +1,6 @@
 /var/log//*.log {
         maxsize 5M
-        rotate 2
+        rotate 1
         hourly
         missingok
         notifempty
