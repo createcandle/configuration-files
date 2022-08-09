@@ -98,6 +98,6 @@ chromium-browser --kiosk /home/pi/candle/start.html --load-extension=/home/pi/ca
 # --disable-gpu --disable-software-rasterizer &
 
 sleep 15
-pkill omxplayer
+#pkill omxplayer
 pkill cvlc
 pkill vlc
