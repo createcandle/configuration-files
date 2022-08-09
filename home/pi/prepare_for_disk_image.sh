@@ -11,6 +11,8 @@ rm /home/pi/.webthings/candle.log
 rm /boot/keep_z2m.txt
 rm /boot/keep_bluetooth.txt
 rm /boot/candle_first_run_complete.txt
+rm /boot/candle_rw_keep.txt
+rm /boot/candle_rw_once.txt
 rm /boot/tunnel.txt
 rm /etc/asound.conf
 rm /var/log/*
