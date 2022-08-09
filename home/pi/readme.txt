@@ -1,7 +1,7 @@
 
 The Candle 2.0 disk image has three partitions. 
 - The first is /boot
-- The second has the main OS and the Webthings Gateway.
+- The second has the main OS and the Candle Controller.
 - The third partition has user data, as well as some settings.
 
 The second partition is set to read-only through an overlay + ramdisk. To make this partition writeable, type `rw`. Type `ro` to set it back to read-only mode.
