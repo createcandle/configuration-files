@@ -5,8 +5,8 @@ then
   mount -o remount,rw /ro
   systemd-machine-id-setup --commit
   cp /etc/machine-id /ro/etc/machine-id
-#  systemd-machine-id-setup --commit --root=/ro
-  touch /boot/machineid_generated.txt
+  #systemd-machine-id-setup --commit --root=/ro
+  #touch /boot/machineid_generated.txt
   mount -o remount,ro /ro
 else
   touch /boot/no_machine_id_generated.txt
