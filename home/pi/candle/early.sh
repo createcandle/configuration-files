@@ -6,7 +6,7 @@ echo "in Candle early" >> /dev/kmsg
 /usr/bin/hostname -F /home/pi/.webthings/etc/hostname
 systemctl restart avahi-daemon.service
 
-rm /boot/candle_rw_once.txt
+#rm /boot/candle_rw_once.txt
 
 if iptables --list | grep 4443; then
     echo "IPTABLES ALREADY ADDED"
