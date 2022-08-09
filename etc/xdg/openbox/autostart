@@ -60,18 +60,9 @@ if [ -f /boot/splash.mp4 ]
 then
   if [ -f /boot/rotate180.txt ]
   then
-  
-    if [ -f /boot/splash180.mp4 ]
-    then
-      #omxplayer -b --aspect-mode fill --orientation 180 --loop /boot/splash.mp4 &
-      cvlc -L -f --no-osd --no-audio --video-on-top /boot/splash180.mp4 &
-    else
-      cvlc -L -f --no-osd --no-audio --video-on-top /boot/splash.mp4 &
-    fi
-    
+    cvlc -L -f --no-osd --no-audio --fullscreen --video-on-top /boot/splash180.mp4 &    
   else
-    #omxplayer -b --aspect-mode fill --loop /boot/splash.mp4 &
-    cvlc -L -f --no-osd --no-audio --video-on-top /boot/splash.mp4 &
+    cvlc -L -f --no-osd --no-audio --fullscreen --video-on-top /boot/splash.mp4 &
   fi
   #omxplayer -b --win "0 0 $resolution" --loop /boot/splash.mp4 &
 fi
