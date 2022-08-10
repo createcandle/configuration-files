@@ -62,7 +62,10 @@ then
     sudo systemctl start systemd-timesyncd
   fi
 
-  systemctl start ssh.service
+  if [ -f /boot/developer.txt ]
+  then
+    systemctl start ssh.service
+  fi
   echo "Candle: rc.local doing bootup_actions: STARTING" >> /dev/kmsg
   chmod +x /boot/bootup_actions_failed.sh
   /bin/bash /boot/bootup_actions_failed.sh
@@ -73,6 +76,51 @@ then
   reboot now
   sleep 5
   exit 0
+fi
+
+# Fix missing gateway, just in case something went totally wrong.
+if [ ! -f /home/pi/webthings/gateway/build/app.js]
+then
+  echo "Candle: ERROR! /home/pi/webthings/gateway/build/app.js file was missing. Attempting repair." >> /dev/kmsg
+  touch /boot/candle_ERROR_broken_gateway_detected
+
+  if [ -f /boot/rotate180.txt ]
+  then
+    /bin/ply-image /boot/splash_updating180.png
+  else
+    /bin/ply-image /boot/splash_updating.png
+  fi
+
+  if [ -d /ro ]
+  then
+      # This shouldn't even be possible really 
+      mount -o remount,rw /ro
+      cd /ro/home/pi
+  else
+      cd /home/pi
+  fi
+
+  # If an old version is detected, try switching to that
+  if [ -f ./webthings-old/gateway/build/app.js]
+  then
+      mv ./webthings-old ./webthings
+  else
+      wget https://raw.githubusercontent.com/createcandle/install-scripts/main/install_candle_controller.sh
+      chmod +x ./install_candle_controller.sh
+      sudo -u pi ./install_candle_controller.sh
+      rm install_candle_controller.sh
+  fi
+
+  sleep 5
+  reboot now
+  sleep 5
+  exit 0
+    
+else
+  if [ -f /boot/candle_ERROR_broken_gateway ]
+  then
+    rm /boot/candle_ERROR_broken_gateway_detected
+  fi
 fi
 
 
