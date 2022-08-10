@@ -3,6 +3,7 @@ Description=WebThings Gateway Client
 After=network.target
 After=candle_bootup_actions.service
 OnFailure=webthings-gateway.update-rollback.service
+#ConditionPathExists=!/boot/bootup_actions.sh
 
 [Service]
 Type=simple
