@@ -11,6 +11,7 @@ systemctl restart avahi-daemon.service
 if iptables --list | grep 4443; then
     echo "IPTABLES ALREADY ADDED"
 else
+    echo "Candle early: adding iptable rules" >> /dev/kmsg
     iptables -t mangle -A PREROUTING -p tcp --dport 80 -j MARK --set-mark 1
     iptables -t mangle -A PREROUTING -p tcp --dport 443 -j MARK --set-mark 1
     iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-port 8080
