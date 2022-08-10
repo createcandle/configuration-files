@@ -76,6 +76,10 @@ then
   echo " " >> /dev/kmsg
   # rm /boot/bootup_actions_failed.sh
   sleep 5
+  if [ -f /boot/developer.txt ]
+  then
+    sleep 60
+  fi
   reboot now
   sleep 5
   exit 0
@@ -85,6 +89,11 @@ fi
 
 if [ ! -f /home/pi/webthings/gateway/build/app.js ] || [ -f /boot/candle_force_gateway_rebuild.txt ]; 
 then
+
+  if [ -f /boot/developer.txt ]
+  then
+    systemctl start ssh.service
+  fi
 
   if [ -f /boot/candle_force_gateway_rebuild.txt]
   then
@@ -148,6 +157,10 @@ END
     fi
   fi
 
+  if [ -f /boot/developer.txt ]
+  then
+    sleep 60
+  fi
   sleep 5
   reboot now
   sleep 5
