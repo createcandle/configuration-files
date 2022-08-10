@@ -1,5 +1,30 @@
 #!/bin/bash
 
+#logger In rc.local
+
+totalk=$(awk '/^MemTotal:/{print $2}' /proc/meminfo)
+#logger total memory: $totalk
+
+if [ $totalk -lt 600000 ]
+then
+  echo "Candle: low memory, so enabling swap: $totalk" >> /dev/kmsg
+  touch /boot/candle_swap_enabled.txt
+  /usr/sbin/dphys-swapfile setup
+  /usr/sbin/dphys-swapfile swapon
+else
+  echo "Candle: enough memory, no need to enable swap: $totalk" >> /dev/kmsg
+  rm /boot/candle_swap_enabled.txt
+  /usr/sbin/dphys-swapfile swapoff
+  rm /home/pi/.webthings/swap
+fi
+
+
+if [ -f /boot/bootup_actions.sh ]
+then
+  echo "Candle: rc.local: error, detected bootup_actions.sh file. Aborting X server launch" >> /dev/kmsg
+  exit 0
+fi
+
 # for bluetooth keyboard?
 modprobe hidp
 
@@ -9,16 +34,14 @@ then
   /sbin/iw dev wlan0 set power_save off
 fi
 
-#logger In rc.local
 
-totalk=$(awk '/^MemTotal:/{print $2}' /proc/meminfo)
-#logger total memory: $totalk
 
 
 if [ -f /boot/candle_kiosk.txt ]
 then
   if [ $totalk -gt 1500000 ]
   then
+    echo "Candle: Enough memory to start X server" >> /dev/kmsg
     logger Starting X
     if [ -n "$(ls /dev/input/by-id/usb-ILITEK_ILITEK-TP-mouse 2>/dev/null)" ]
     then
@@ -44,15 +67,6 @@ then
 fi
 
 
-if [ $totalk -lt 600000 ]
-then
-  touch /boot/candle_swap_enabled.txt
-  /usr/sbin/dphys-swapfile setup
-  /usr/sbin/dphys-swapfile swapon
-else
-  rm /boot/candle_swap_enabled.txt
-  /usr/sbin/dphys-swapfile swapoff
-  rm /home/pi/.webthings/swap
-fi
+
 
 exit 0
