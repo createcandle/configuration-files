@@ -159,7 +159,7 @@ END
     mount -o remount,ro /ro
       
   else
-    cd /home/pi
+    cd /home/pi || exit
     # If an old version is detected, try switching to that
     if [ -f /home/pi/controller_backup.tar ] && [ ! -f /boot/candle_force_gateway_rebuild.txt ];
     then
