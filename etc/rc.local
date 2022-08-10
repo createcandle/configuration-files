@@ -12,7 +12,7 @@ fi
 totalk=$(awk '/^MemTotal:/{print $2}' /proc/meminfo)
 #logger total memory: $totalk
 
-if [ $totalk -lt 600000 ]
+if [ "$totalk" -lt 600000 ]
 then
   echo "Candle: low memory, so enabling swap: $totalk" >> /dev/kmsg
   touch /boot/candle_swap_enabled.txt
@@ -96,12 +96,12 @@ fi
 if [ ! -f /home/pi/webthings/gateway/build/app.js ] || [ -f /boot/candle_force_gateway_rebuild.txt ]; 
 then
 
-  if [ -f /boot/developer.txt ]
+  if [ -f /boot/developer.txt ];
   then
     systemctl start ssh.service
   fi
 
-  if [ -f /boot/candle_force_gateway_rebuild.txt]
+  if [ -f /boot/candle_force_gateway_rebuild.txt ];
   then
     echo "$(date) - forced gateway rebuild" >> /boot/candle.log
   else
@@ -111,7 +111,7 @@ then
   fi
   
 
-  if [ -f /boot/rotate180.txt ]
+  if [ -f /boot/rotate180.txt ];
   then
     /bin/ply-image /boot/splash_updating180.png
   else
@@ -151,7 +151,7 @@ END
   else
     cd /home/pi
     # If an old version is detected, try switching to that
-    if [ -f /home/pi/webthings-old/gateway/build/app.js] && [ ! -f /boot/candle_force_gateway_rebuild.txt]; 
+    if [ -f /home/pi/webthings-old/gateway/build/app.js ] && [ ! -f /boot/candle_force_gateway_rebuild.txt ]; 
     then
         mv ./webthings-old ./webthings
         echo "$(date) - restored gateway backup" >> /boot/candle.log
@@ -169,7 +169,7 @@ END
     sleep 60
   fi
   sleep 5
-  if [ -f /home/pi/webthings-old/gateway/build/app.js]
+  if [ -f /home/pi/webthings-old/gateway/build/app.js ];
   then
     echo "$(date) - gateway regeneration complete" >> /boot/candle.log
     reboot now
@@ -198,7 +198,7 @@ fi
 
 if [ -f /boot/candle_kiosk.txt ]
 then
-  if [ $totalk -gt 1500000 ]
+  if [ "$totalk" -gt 1500000 ]
   then
     echo "Candle: Enough memory to start X server" >> /dev/kmsg
     logger Starting X
