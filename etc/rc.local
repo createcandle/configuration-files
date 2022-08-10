@@ -1,6 +1,7 @@
 #!/bin/bash
 
 #logger In rc.local
+echo "Candle: in rc.local" >> /dev/kmsg
 
 totalk=$(awk '/^MemTotal:/{print $2}' /proc/meminfo)
 #logger total memory: $totalk
