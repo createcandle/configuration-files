@@ -105,34 +105,31 @@ then
 
   if [ -d /ro ]
   then
-      # This shouldn't even be possible really 
-      echo "setting to RW"
-      mount -o remount,rw /ro
+    # This shouldn't even be possible really 
+    echo "setting to RW"
+    mount -o remount,rw /ro
       
-      chroot /ro sh -c "$(cat <<END
-      
-      cd /home/pi
-      # If an old version is detected, try switching to that
-      if [ -f /home/pi/webthings-old/gateway/build/app.js] && [ ! -f /boot/candle_force_gateway_rebuild.txt]; 
-      then
-          mv ./webthings-old ./webthings
-          echo "$(date) - restored gateway backup" >> /boot/candle.log
-      else
-          echo "$(date) - starting gateway regeneration..." >> /boot/candle.log
-          wget https://raw.githubusercontent.com/createcandle/install-scripts/main/install_candle_controller.sh
-          chmod +x ./install_candle_controller.sh
-          sudo -u pi ./install_candle_controller.sh
-          rm install_candle_controller.sh
-          echo "$(date) - gateway regeneration complete" >> /boot/candle.log
-      fi
-      
-      # re-enable read-only mode
-      echo "setting back to RO"
-      mount -o remount,ro /ro
-      
-      END
-      )"
+chroot /ro sh -c "$(cat <<END
+cd /home/pi
+# If an old version is detected, try switching to that
+if [ -f /home/pi/webthings-old/gateway/build/app.js] && [ ! -f /boot/candle_force_gateway_rebuild.txt];
+then
+mv ./webthings-old ./webthings
+echo "restored gateway backup" >> /boot/candle.log
+else
+echo "starting gateway regeneration..." >> /boot/candle.log
+wget https://raw.githubusercontent.com/createcandle/install-scripts/main/install_candle_controller.sh
+chmod +x ./install_candle_controller.sh
+sudo -u pi ./install_candle_controller.sh
+rm install_candle_controller.sh
+echo "gateway regeneration complete" >> /boot/candle.log
+fi
+END
+)"
 
+    # re-enable read-only mode
+    echo "setting back to RO"
+    mount -o remount,ro /ro
       
   else
     cd /home/pi
