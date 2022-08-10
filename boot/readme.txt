@@ -17,6 +17,8 @@ Candle has two big partitions, a read-only one for the system, and a writeable o
 # DEBUGGING
 If you would like to see information about the boot process on an attached display, you can replace the "cmdline.txt" file with the debug version of that file. Rename the current "cmdline.txt" file to something else first (e.g. "cmdline-original"), so you can restore it later.
 
+Alternatively, you can connect a monitor and keyboard. Then pressing CTRl-ALT-F3 should reveal the shell.
+
 
 # RECOVERY
 If you are having a lot of trouble, you can try using the recovery version of cmdline.txt. It will boot the system into a bash shell. Note that the filesystem will be in read-only mode, but you can remount it if you need to make changes:
