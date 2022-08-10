@@ -32,6 +32,7 @@ then
   systemctl start ssh.service
   chmod +x /boot/bootup_actions_failed.sh
   /bin/bash /boot/bootup_actions_failed.sh
+  wait
   echo "Candle: bootup_actions.sh file complete" >> /dev/kmsg
   echo " "
   rm /boot/bootup_actions_failed.sh
