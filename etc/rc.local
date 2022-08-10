@@ -146,7 +146,7 @@ then
         wget https://raw.githubusercontent.com/createcandle/install-scripts/main/install_candle_controller.sh
         chmod +x ./install_candle_controller.sh
         sudo -u pi ./install_candle_controller.sh
-        rm install_candle_controller.sh
+        rm ./install_candle_controller.sh
         echo "$(date) - gateway regeneration complete" >> /boot/candle.log
     fi
   fi
@@ -158,6 +158,7 @@ then
 fi
 
 
+echo "Candle: rc.local: normal run" >> /dev/kmsg
 
 
 # for bluetooth keyboard?
