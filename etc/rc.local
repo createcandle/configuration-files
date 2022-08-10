@@ -195,6 +195,7 @@ END
   else
     echo "$(date) - gateway regeneration seems to have failed" >> /boot/candle.log
     echo "$(date) - gateway regeneration seems to have failed" >> /dev/kmsg
+    /bin/ply-image /boot/error.png
     sleep 60
   fi
   exit 0
