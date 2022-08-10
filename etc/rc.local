@@ -13,11 +13,13 @@ then
   /usr/sbin/dphys-swapfile swapon
 else
   echo "Candle: enough memory, no need to enable swap: $totalk" >> /dev/kmsg
-  if [ -e /boot/candle_swap_enabled.txt ] then
+  if [ -e /boot/candle_swap_enabled.txt ] 
+  then
     rm /boot/candle_swap_enabled.txt
   fi
   /usr/sbin/dphys-swapfile swapoff
-  if [ -e /home/pi/.webthings/swap ] then
+  if [ -e /home/pi/.webthings/swap ] 
+  then
     rm /home/pi/.webthings/swap
   fi
 fi
@@ -79,13 +81,15 @@ then
 fi
 
 # Fix missing gateway, just in case something went totally wrong.
-if [ ! -f /home/pi/webthings/gateway/build/app.js] || [ -f /boot/candle_force_gateway_rebuild.txt]
+
+if [ ! -f /home/pi/webthings/gateway/build/app.js ] || [ -f /boot/candle_force_gateway_rebuild.txt ]; 
 then
 
   if [ -f /boot/candle_force_gateway_rebuild.txt]
   then
     echo "$(date) - forced gateway rebuild" >> /boot/candle.log
   else
+    echo "missing build/app.js - attempting repair of gateway"
     echo "Candle: ERROR! /home/pi/webthings/gateway/build/app.js file was missing. Attempting repair." >> /dev/kmsg
     echo "$(date) - broken gateway detected" >> /boot/candle.log
   fi
@@ -108,7 +112,7 @@ then
   fi
 
   # If an old version is detected, try switching to that
-  if [ -f ./webthings-old/gateway/build/app.js] && [ ! -f /boot/candle_force_gateway_rebuild.txt]
+  if [ -f ./webthings-old/gateway/build/app.js] && [ ! -f /boot/candle_force_gateway_rebuild.txt]; 
   then
       mv ./webthings-old ./webthings
       echo "$(date) - restored gateway backup" >> /boot/candle.log
@@ -126,6 +130,7 @@ then
   sleep 5
   exit 0
 fi
+
 
 
 
