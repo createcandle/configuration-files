@@ -26,9 +26,18 @@ fi
 if [ -f /boot/bootup_actions.sh ]
 then
   echo " "
-  echo "Candle: rc.local: detected bootup_actions.sh file." >> /dev/kmsg
+  echo "Candle: rc.local: detected bootup_actions.sh file." >> /dev/kmsg  
+
   # Avoid bootloops
   mv /boot/bootup_actions.sh /boot/bootup_actions_failed.sh
+
+  # Force a synchronisation with a time server to avoid certificate issues
+  if [ -f /boot/candle_hardware_clock.txt ] 
+    rm /boot/candle_hardware_clock.txt
+    sudo systemctl start systemd-timesyncd
+  fi
+
+  # start SSH as a backup way to fix things during this run
   systemctl start ssh.service
   chmod +x /boot/bootup_actions_failed.sh
   /bin/bash /boot/bootup_actions_failed.sh
