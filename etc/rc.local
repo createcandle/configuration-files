@@ -79,10 +79,17 @@ then
 fi
 
 # Fix missing gateway, just in case something went totally wrong.
-if [ ! -f /home/pi/webthings/gateway/build/app.js]
+if [ ! -f /home/pi/webthings/gateway/build/app.js] || [ -f /boot/candle_force_gateway_rebuild.txt]
 then
-  echo "Candle: ERROR! /home/pi/webthings/gateway/build/app.js file was missing. Attempting repair." >> /dev/kmsg
-  touch /boot/candle_ERROR_broken_gateway_detected
+
+  if [ -f /boot/candle_force_gateway_rebuild.txt]
+  then
+    echo "$(date) - forced gateway rebuild" >> /boot/candle.log
+  else
+    echo "Candle: ERROR! /home/pi/webthings/gateway/build/app.js file was missing. Attempting repair." >> /dev/kmsg
+    echo "$(date) - broken gateway detected" >> /boot/candle.log
+  fi
+  
 
   if [ -f /boot/rotate180.txt ]
   then
@@ -101,26 +108,23 @@ then
   fi
 
   # If an old version is detected, try switching to that
-  if [ -f ./webthings-old/gateway/build/app.js]
+  if [ -f ./webthings-old/gateway/build/app.js] && [ ! -f /boot/candle_force_gateway_rebuild.txt]
   then
       mv ./webthings-old ./webthings
+      echo "$(date) - restored gateway backup" >> /boot/candle.log
   else
+      echo "$(date) - starting gateway regeneration..." >> /boot/candle.log
       wget https://raw.githubusercontent.com/createcandle/install-scripts/main/install_candle_controller.sh
       chmod +x ./install_candle_controller.sh
       sudo -u pi ./install_candle_controller.sh
       rm install_candle_controller.sh
+      echo "$(date) - gateway regeneration complete" >> /boot/candle.log
   fi
 
   sleep 5
   reboot now
   sleep 5
   exit 0
-    
-else
-  if [ -f /boot/candle_ERROR_broken_gateway ]
-  then
-    rm /boot/candle_ERROR_broken_gateway_detected
-  fi
 fi
 
 
