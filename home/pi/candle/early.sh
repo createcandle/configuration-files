@@ -1,6 +1,6 @@
 #!/bin/bash
 echo "in Candle early"
-echo "in Candle early" >> /dev/kmsg
+echo "in Candle early. Fixing hostname." >> /dev/kmsg
 
 # fix hostname
 /usr/bin/hostname -F /home/pi/.webthings/etc/hostname
