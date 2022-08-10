@@ -3,6 +3,12 @@
 #logger In rc.local
 echo "Candle: in rc.local" >> /dev/kmsg
 
+if [ -e /boot/emergency.txt ] 
+then
+  systemctl start ssh.service
+  exit 0
+fi
+
 totalk=$(awk '/^MemTotal:/{print $2}' /proc/meminfo)
 #logger total memory: $totalk
 
@@ -114,9 +120,11 @@ then
 
   if [ -d /ro ]
   then
+    echo "starting gateway regeneration in /ro..." >> /boot/candle.log
     # This shouldn't even be possible really 
     echo "setting to RW"
     mount -o remount,rw /ro
+      
       
 chroot /ro sh -c "$(cat <<END
 cd /home/pi
@@ -126,12 +134,12 @@ then
 mv ./webthings-old ./webthings
 echo "restored gateway backup" >> /boot/candle.log
 else
-echo "starting gateway regeneration..." >> /boot/candle.log
+
 wget https://raw.githubusercontent.com/createcandle/install-scripts/main/install_candle_controller.sh
 chmod +x ./install_candle_controller.sh
 sudo -u pi ./install_candle_controller.sh
 rm install_candle_controller.sh
-echo "gateway regeneration complete" >> /boot/candle.log
+
 fi
 END
 )"
@@ -153,7 +161,6 @@ END
         chmod +x ./install_candle_controller.sh
         sudo -u pi ./install_candle_controller.sh
         rm ./install_candle_controller.sh
-        echo "$(date) - gateway regeneration complete" >> /boot/candle.log
     fi
   fi
 
@@ -162,8 +169,14 @@ END
     sleep 60
   fi
   sleep 5
-  reboot now
-  sleep 5
+  if [ -f /home/pi/webthings-old/gateway/build/app.js]
+  then
+    echo "$(date) - gateway regeneration complete" >> /boot/candle.log
+    reboot now
+    sleep 5
+  else
+    echo "$(date) - gateway regeneration seems to have failed" >> /boot/candle.log
+  fi
   exit 0
 fi
 
