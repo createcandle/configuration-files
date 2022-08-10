@@ -13,9 +13,13 @@ then
   /usr/sbin/dphys-swapfile swapon
 else
   echo "Candle: enough memory, no need to enable swap: $totalk" >> /dev/kmsg
-  rm /boot/candle_swap_enabled.txt
+  if [ -e /boot/candle_swap_enabled.txt ] then
+    rm /boot/candle_swap_enabled.txt
+  fi
   /usr/sbin/dphys-swapfile swapoff
-  rm /home/pi/.webthings/swap
+  if [ -e /home/pi/.webthings/swap ] then
+    rm /home/pi/.webthings/swap
+  fi
 fi
 
 
