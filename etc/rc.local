@@ -134,13 +134,17 @@ then
       
 chroot /ro sh -c "$(cat <<END
 cd /home/pi
-# If an old version is detected, try switching to that
-if [ -f /home/pi/webthings-old/gateway/build/app.js ] && [ ! -f /boot/candle_force_gateway_rebuild.txt ];
+
+if [ -f /home/pi/controller_backup.tar ] && [ ! -f /boot/candle_force_gateway_rebuild.txt ];
+then
+tar -xvf controller_backup.tar
+
+elif [ -f /home/pi/webthings-old/gateway/build/app.js ] && [ ! -f /boot/candle_force_gateway_rebuild.txt ];
 then
 mv ./webthings-old ./webthings
 echo "restored gateway backup" >> /boot/candle.log
-else
 
+else
 wget https://raw.githubusercontent.com/createcandle/install-scripts/main/install_candle_controller.sh
 chmod +x ./install_candle_controller.sh
 sudo -u pi ./install_candle_controller.sh
@@ -157,11 +161,16 @@ END
   else
     cd /home/pi
     # If an old version is detected, try switching to that
-    if [ -f /home/pi/webthings-old/gateway/build/app.js ] && [ ! -f /boot/candle_force_gateway_rebuild.txt ]; 
+    if [ -f /home/pi/controller_backup.tar ] && [ ! -f /boot/candle_force_gateway_rebuild.txt ];
+    then
+      tar -xvf controller_backup.tar
+      
+    elif [ -f /home/pi/webthings-old/gateway/build/app.js ] && [ ! -f /boot/candle_force_gateway_rebuild.txt ]; 
     then
         mv ./webthings-old ./webthings
         echo "$(date) - restored gateway backup" >> /boot/candle.log
         echo "$(date) - restored gateway backup" >> /dev/kmsg
+        
     else
         echo "$(date) - starting gateway regeneration..." >> /boot/candle.log
         echo "$(date) - starting gateway regeneration..." >> /dev/kmsg
