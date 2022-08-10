@@ -22,7 +22,6 @@ RestrictNamespaces=uts ipc pid user cgroup net
 ProtectKernelTunables=yes
 ProtectKernelModules=yes
 ProtectControlGroups=yes
-PrivateDevices=yes
 RestrictSUIDSGID=true
 
 [Install]
