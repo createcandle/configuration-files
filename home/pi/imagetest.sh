@@ -18,6 +18,10 @@ fi
 if [ ! -L /home/pi/.asoundrc ]; then
   echo "/home/pi/.asoundrc is not a link"
 fi
+if [ ! -f /home/pi/.webthings/floorplan.svg ]; then
+  echo "/home/pi/.webthings/floorplan.svg is missing"
+fi
+
 
 echo
 echo "---------------------------------------------"
