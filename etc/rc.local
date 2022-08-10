@@ -26,30 +26,55 @@ fi
 if [ -f /boot/bootup_actions.sh ]
 then
   echo " "
-  echo "Candle: rc.local: detected bootup_actions.sh file." >> /dev/kmsg  
+  echo "Candle: rc.local: detected bootup_actions.sh file." >> /dev/kmsg
 
   # Avoid bootloops
   mv /boot/bootup_actions.sh /boot/bootup_actions_failed.sh
 
+  if [ -f /boot/rotate180.txt ]
+  then
+    /bin/ply-image /boot/splash_updating180.png
+  else
+    /bin/ply-image /boot/splash_updating.png
+  fi
+
+  # Wait for IP address for at most 30 seconds
+  echo "checking for IP address in for loop"
+  for i in {1..30}
+  do
+    echo "current hostname: $(hostname -I)"
+    if [ "$(hostname -I)" = "" ]
+    then
+      echo "Candle: rc.local doing bootup_actions: no network yet $i" >> /dev/kmsg
+      echo "no network yet $i"
+      sleep 1    
+    else
+      echo "Candle: rc.local doing bootup_actions: IP address detected" >> /dev/kmsg
+      break
+    fi
+  done
+
   # Force a synchronisation with a time server to avoid certificate issues
-  if [ -f /boot/candle_hardware_clock.txt ] 
+  if [ -f /boot/candle_hardware_clock.txt ]
+  then
+    echo "Candle: rc.local doing bootup_actions: hardware clock detected, forcing sync with NTP server" >> /dev/kmsg
     rm /boot/candle_hardware_clock.txt
     sudo systemctl start systemd-timesyncd
   fi
 
-  # start SSH as a backup way to fix things during this run
   systemctl start ssh.service
+  echo "Candle: rc.local doing bootup_actions: STARTING" >> /dev/kmsg
   chmod +x /boot/bootup_actions_failed.sh
   /bin/bash /boot/bootup_actions_failed.sh
-  wait
   echo "Candle: bootup_actions.sh file complete" >> /dev/kmsg
-  echo " "
-  rm /boot/bootup_actions_failed.sh
+  echo " " >> /dev/kmsg
+  # rm /boot/bootup_actions_failed.sh
   sleep 5
   reboot now
   sleep 5
   exit 0
 fi
+
 
 
 # for bluetooth keyboard?
