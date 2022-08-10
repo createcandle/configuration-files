@@ -2,7 +2,6 @@
 Description=Raspberry Pi bluetooth helper
 Requires=hciuart.service bluetooth.service
 After=hciuart.service
-Before=bluetooth.service
 
 [Service]
 Type=oneshot
