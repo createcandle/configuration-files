@@ -13,5 +13,20 @@ RemainAfterExit=yes
 ExecStartPre=/usr/bin/sleep 1
 ExecStart=/usr/bin/ply-image /boot/splash180alt.png
 
+# Security
+PrivateNetwork=yes
+PrivateTmp=yes
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+ProtectHostname=true
+CapabilityBoundingSet=CAP_NET_BIND_SERVICE CAP_DAC_READ_SEARCH
+RestrictNamespaces=uts ipc pid user cgroup net
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+PrivateDevices=yes
+RestrictSUIDSGID=true
+
 [Install]
 WantedBy=reboot.target
