@@ -22,12 +22,25 @@ else
   fi
 fi
 
-
+# RUN BOOTUP SCRIPT IF IT EXISTS
 if [ -f /boot/bootup_actions.sh ]
 then
-  echo "Candle: rc.local: error, detected bootup_actions.sh file. Aborting X server launch" >> /dev/kmsg
+  echo " "
+  echo "Candle: rc.local: detected bootup_actions.sh file." >> /dev/kmsg
+  # Avoid bootloops
+  mv /boot/bootup_actions.sh /boot/bootup_actions_failed.sh
+  systemctl start ssh.service
+  chmod +x /boot/bootup_actions_failed.sh
+  /bin/bash /boot/bootup_actions_failed.sh
+  echo "Candle: bootup_actions.sh file complete" >> /dev/kmsg
+  echo " "
+  rm /boot/bootup_actions_failed.sh
+  sleep 5
+  reboot now
+  sleep 5
   exit 0
 fi
+
 
 # for bluetooth keyboard?
 modprobe hidp
