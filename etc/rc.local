@@ -91,6 +91,11 @@ then
   exit 0
 fi
 
+
+
+
+# SELF-REPAIR
+
 # Fix missing gateway, just in case something went totally wrong.
 
 if [ ! -f /home/pi/webthings/gateway/build/app.js ] || [ -f /boot/candle_force_gateway_rebuild.txt ]; 
@@ -121,6 +126,7 @@ then
   if [ -d /ro ]
   then
     echo "starting gateway regeneration in /ro..." >> /boot/candle.log
+    echo "starting gateway regeneration in /ro..." >> /dev/kmsg
     # This shouldn't even be possible really 
     echo "setting to RW"
     mount -o remount,rw /ro
@@ -129,7 +135,7 @@ then
 chroot /ro sh -c "$(cat <<END
 cd /home/pi
 # If an old version is detected, try switching to that
-if [ -f /home/pi/webthings-old/gateway/build/app.js] && [ ! -f /boot/candle_force_gateway_rebuild.txt];
+if [ -f /home/pi/webthings-old/gateway/build/app.js ] && [ ! -f /boot/candle_force_gateway_rebuild.txt ];
 then
 mv ./webthings-old ./webthings
 echo "restored gateway backup" >> /boot/candle.log
@@ -155,8 +161,10 @@ END
     then
         mv ./webthings-old ./webthings
         echo "$(date) - restored gateway backup" >> /boot/candle.log
+        echo "$(date) - restored gateway backup" >> /dev/kmsg
     else
         echo "$(date) - starting gateway regeneration..." >> /boot/candle.log
+        echo "$(date) - starting gateway regeneration..." >> /dev/kmsg
         wget https://raw.githubusercontent.com/createcandle/install-scripts/main/install_candle_controller.sh
         chmod +x ./install_candle_controller.sh
         sudo -u pi ./install_candle_controller.sh
@@ -172,10 +180,13 @@ END
   if [ -f /home/pi/webthings-old/gateway/build/app.js ];
   then
     echo "$(date) - gateway regeneration complete" >> /boot/candle.log
+    echo "$(date) - gateway regeneration complete" >> /dev/kmsg
     reboot now
     sleep 5
   else
     echo "$(date) - gateway regeneration seems to have failed" >> /boot/candle.log
+    echo "$(date) - gateway regeneration seems to have failed" >> /dev/kmsg
+    sleep 60
   fi
   exit 0
 fi
