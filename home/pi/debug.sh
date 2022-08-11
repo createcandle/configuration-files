@@ -7,9 +7,9 @@ if [ "$EUID" -ne 0 ]
   then echo "Please run as root (use sudo)"
   exit
 fi
-
-echo "Hostname  : $(cat /etc/hostname)"
-echo "Machine ID: $(cat /etc/machine-id)"
+echo "Candle version : $(cat /boot/candle_version.txt)"
+echo "Hostname       : $(cat /etc/hostname)"
+echo "Machine ID     : $(cat /etc/machine-id)"
 
 
 echo
