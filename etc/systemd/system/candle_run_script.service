@@ -9,6 +9,7 @@ Type=oneshot
 User=pi
 ExecStartPre=/bin/chmod +x /home/pi/.webthings/run_once.sh
 ExecStart=/bin/bash /home/pi/.webthings/run_once.sh
+ExecStop=/bin/sleep 5
 ExecStop=/bin/rm /home/pi/.webthings/run_once.sh
 
 StandardOutput=journal
