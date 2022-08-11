@@ -1,10 +1,38 @@
 #!/bin/bash
+
+# This runs even before rc.local
+
 echo "in Candle early"
 echo "in Candle early. Fixing hostname." >> /dev/kmsg
 
 # fix hostname
 /usr/bin/hostname -F /home/pi/.webthings/etc/hostname
 systemctl restart avahi-daemon.service
+
+if [ -f /boot/restore_boot_backup.txt ];
+then
+  rm /boot/restore_boot_backup.txt
+  
+  if [ -f /etc/rc.local.bak ];
+  then
+    cp /etc/rc.local.bak /etc/rc.local
+  else
+    touch /boot/restore_boot_backup_failed.txt
+  fi
+
+fi
+
+if [ -f /boot/restore_controller_backup.txt ];
+then
+  rm /boot/restore_controller_backup.txt
+  
+  if [ -f /etc/rc.local.bak ];
+  then
+    cp /etc/rc.local.bak /etc/rc.local
+  else
+    touch /boot/restore_controller_backup_failed.txt
+  fi
+fi
 
 #rm /boot/candle_rw_once.txt
 
