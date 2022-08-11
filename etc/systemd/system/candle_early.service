@@ -13,6 +13,7 @@ ExecStartPre=/bin/chmod +x /home/pi/candle/early.sh
 ExecStart=/bin/bash /home/pi/candle/early.sh
 
 #RemainAfterExit=true
+RemainAfterExit=yes
 #ExecStop=/home/pi/.webthings/post_factory_reset.sh
 StandardOutput=journal
 
