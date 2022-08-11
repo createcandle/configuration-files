@@ -195,18 +195,27 @@ END
     sleep 60
   fi
   sleep 5
+  
   if [ -f /home/pi/webthings/gateway/build/app.js ] && [ -f /home/pi/webthings/gateway/build/static/index.html ];
   then
     echo "$(date) - controller regeneration complete" >> /boot/candle.log
     echo "$(date) - controller regeneration complete" >> /dev/kmsg
     reboot now
     sleep 5
+    
   else
-    echo "$(date) - controller regeneration seems to have failed" >> /boot/candle.log
-    echo "$(date) - controller regeneration seems to have failed" >> /dev/kmsg
-    /bin/ply-image /boot/error.png
+    echo "$(date) - controller regeneration failed" >> /boot/candle.log
+    echo "$(date) - controller regeneration failed" >> /dev/kmsg
+    
+    # Show error image
+    pkill xinit
+    sleep 1
+    if [ -e "/bin/ply-image" ]; then
+      /bin/ply-image /boot/error.png
+    fi
     sleep 60
   fi
+  
   exit 0
 fi
 
@@ -256,6 +265,7 @@ then
 fi
 
 
-
-
+echo "Candle: end of rc.local" >> /dev/kmsg
 exit 0
+
+
