@@ -265,6 +265,14 @@ then
 fi
 
 
+
+if [ -f /boot/generate_debug.txt ]; then
+  rm /boot/generate_debug.txt
+  sleep 5
+  echo "Candle: generating debug file" >> /dev/kmsg
+  /home/pi/debug.sh > /boot/debug.txt
+fi
+
 echo "Candle: end of rc.local" >> /dev/kmsg
 exit 0
 
