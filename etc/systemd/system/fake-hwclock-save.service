@@ -1,0 +1,8 @@
+[Unit]
+Description=Save fake hardware clock data every half hour
+
+[Service]
+User=root
+Restart=always
+RestartSec=1800s
+ExecStart=/usr/sbin/fake-hwclock save
