@@ -49,6 +49,7 @@ disable_wifi_power_save.txt 	# If present, wifi power saving feature will be dis
 
 # TOOLS
 restore_boot_backup.txt     # Will try to restore some fundamental files to older backed-up versions (if the backups exist)
+restore_controller_backup.txt     # Will try to restore the Candle Controller software (if the backups exist)
 
 # Factory reset related:
 keep_z2m.txt 			# Keep Zigbee2MQTT settings on factory reset.
