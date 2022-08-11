@@ -21,6 +21,10 @@ fi
 if [ ! -L /home/pi/.asoundrc ]; then
   echo "/home/pi/.asoundrc is not a link"
 fi
+if [ ! -L /etc/fake-hwclock.data ]; then
+  echo "/etc/fake-hwclock.data is not a link"
+fi
+
 
 if [ ! -d /etc/hostapd ]; then
   echo "/etc/hostapd is missing"
