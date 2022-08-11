@@ -30,7 +30,11 @@ fi
 if [ -f /boot/restore_boot_backup.txt ];
 then
   rm /boot/restore_boot_backup.txt
-  systemctl start ssh.service
+  
+  if [ -f /boot/developer.txt ];
+    systemctl start ssh.service
+  fi
+  
   if [ -f /etc/rc.local.bak ];
   then
     cp /etc/rc.local.bak /etc/rc.local
@@ -48,7 +52,11 @@ fi
 if [ -f /boot/restore_controller_backup.txt ];
 then
   rm /boot/restore_controller_backup.txt
-  systemctl start ssh.service
+  
+  if [ -f /boot/developer.txt ];
+    systemctl start ssh.service
+  fi
+  
   if [ -f /home/pi/controller_backup.tar ];
   then
   
@@ -110,7 +118,10 @@ then
 elif [ -f /boot/force_controller_rebuild.txt ];
 then
   rm /boot/force_controller_rebuild.txt
-  systemctl start ssh.service
+  
+  if [ -f /boot/developer.txt ];
+    systemctl start ssh.service
+  fi
   
   if [ -e "/bin/ply-image" ]; then
     if [ -e "/boot/rotate180.txt" ]; then
