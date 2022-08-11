@@ -41,15 +41,15 @@ candle_kiosk.txt 		# The URL inside this file will be shown in the browser. If i
 keep_browser_session.txt 	# Don't delete browser sessions on boot.
 cloudless.txt 			# Experimental, to launch the controller even if there is no network at all.
 nohotspot.txt 			# Aborts hotspot launch. Useful if that feature somehow causes trouble.
-hide_mouse_pointer.txt 		# Hides the mouse pointer on the HDMI output.
+hide_mouse_pointer.txt 		# Hides the mouse pointer on the HDMI output. Enabled by default.
 rotate180.txt 			# Rotates the display 180 degrees.
 exhibit_mode.txt		# Disables installing and uninstalling addons.
 do_not_use_repeaker_hat.txt 	# Will stop ReSpeaker hat drivers from being loaded at boot.
 disable_wifi_power_save.txt 	# If present, wifi power saving feature will be disabled. This might improve some connections.
 
 # TOOLS
-restore_boot_backup.txt       # Will try to restore some fundamental files to older backed-up versions (if the backups exist)
-restore_controller_backup.txt     # Will try to restore the Candle Controller software (if the backups exist)
+restore_boot_backup.txt 		# Will try to restore some fundamental files to older backed-up versions (if the backups exist)
+restore_controller_backup.txt 		# Will try to restore the Candle Controller software (if the backups exist)
 
 # Factory reset related:
 keep_z2m.txt 			# Keep Zigbee2MQTT settings on factory reset.
@@ -64,5 +64,5 @@ candle_hardware_clock.txt 	# This file is present if the hardware clock module i
 # FAILURE INDICATORS
 candle.log 			# Upgrade processes may output status and errors into this file.
 bootup_actions_failed.txt 	# If this file exists, it indicates that an upgrade process did not complete because it failed or was interupted.
-restore_boot_backup_failed.txt # If this file exists, it likely indicates that there was no backup to restore.
+restore_boot_backup_failed.txt  # If this file exists, it likely indicates that there was no backup to restore.
 restore_controller_backup_failed.txt # If this file exists, it likely indicates that there was no backup to restore.
