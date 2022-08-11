@@ -57,8 +57,12 @@ keep_bluetooth.txt 		# Keep paired bluetooth devices on factory reset.
 developer.txt 			# Enables logging. Will also cause a factory reset to write zeros to empty space, so as to prepare for creating a disk image.
 
 # INDICATORS 
-candle.log 			# Upgrade processes may output status and errors into this file.
 candle_swap_enabled.txt 	# On lower memory systems (Pi Zero 2) this file indicates that on the first run the swap file was enabled. Normally swap is disabled.
 candle_first_run_complete.txt 	# This file appears after the first boot. It indicates that a new machine ID and new SSH keys were generated.
 candle_hardware_clock.txt 	# This file is present if the hardware clock module is detected and enabled. Getting time from the internet will not work while this file exists.
+
+# FAILURE INDICATORS
+candle.log 			# Upgrade processes may output status and errors into this file.
 bootup_actions_failed.txt   # If this file exists, it indicates that an upgrade process did not complete because it failed or was interupted.
+restore_boot_backup_failed.txt # If this file exists, it likely indicates that there was no backup to restore.
+restore_controller_backup_failed.txt # If this file exists, it likely indicates that there was no backup to restore.
