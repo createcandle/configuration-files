@@ -52,7 +52,7 @@ keep_z2m.txt 			# Keep Zigbee2MQTT settings on factory reset.
 keep_bluetooth.txt 		# Keep paired bluetooth devices on factory reset.
 developer.txt 			# Enables logging. Will also cause a factory reset to write zeros to empty space, so as to prepare for creating a disk image.
 
-# INDICATORS
+# INDICATORS 
 candle.log   # Upgrade processes may output status and errors into this file.
 candle_swap_enabled.txt 	# On lower memory systems (Pi Zero 2) this file indicates that on the first run the swap file was enabled. Normally swap is disabled.
 candle_first_run_complete.txt 	# This file appears after the first boot. It indicates that a new machine ID and new SSH keys were generated.
