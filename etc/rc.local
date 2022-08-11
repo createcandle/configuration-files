@@ -143,7 +143,7 @@ tar -xvf controller_backup.tar
 elif [ -f /home/pi/webthings-old/gateway/build/app.js ];
 then
 mv ./webthings-old ./webthings
-echo "restored controller backup (rc)" >> /boot/candle.log
+echo "restored controller backup in /ro (rc)" >> /boot/candle.log
 
 else
 wget https://raw.githubusercontent.com/createcandle/install-scripts/main/install_candle_controller.sh
