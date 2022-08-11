@@ -98,7 +98,7 @@ fi
 
 # Fix missing gateway, just in case something went totally wrong.
 
-if [ ! -f /home/pi/webthings/gateway/build/app.js ] || [ ! -f /home/pi/webthings/gateway/build/static/index.html ] || [ -f /boot/force_controller_rebuild.txt ] || [ -f /boot/restore_controller_backup.txt ]; 
+if [ ! -f /home/pi/webthings/gateway/build/app.js ] || [ ! -f /home/pi/webthings/gateway/build/static/index.html ]; 
 then
 
   if [ -f /boot/developer.txt ];
@@ -106,17 +106,9 @@ then
     systemctl start ssh.service
   fi
 
-  # TODO: this should not be in repair?
-  if [ -f /boot/force_controller_rebuild.txt ];
-  then
-    echo "Candle: forced controller rebuild (rc)" >> /dev/kmsg
-    echo "$(date) - forced controller rebuild (rc)" >> /boot/candle.log
-  else
-    echo "missing build/app.js - attempting repair"
-    echo "Candle: ERROR! /home/pi/webthings/gateway/build/app.js file was missing. Attempting repair. (rc)" >> /dev/kmsg
-    echo "$(date) - broken controller detected (rc)" >> /boot/candle.log
-  fi
-  
+  echo "missing build/app.js - attempting repair"
+  echo "Candle: ERROR! /home/pi/webthings/gateway/build/app.js file was missing. Attempting repair. (rc)" >> /dev/kmsg
+  echo "$(date) - broken controller detected (rc)" >> /boot/candle.log
 
   if [ -f /boot/rotate180.txt ];
   then
