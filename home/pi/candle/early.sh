@@ -30,6 +30,7 @@ fi
 if [ -f /boot/restore_boot_backup.txt ];
 then
   rm /boot/restore_boot_backup.txt
+  echo "Detected /boot/restore_boot_backup.txt"
   
   if [ -f /boot/developer.txt ]; then
     systemctl start ssh.service
@@ -52,6 +53,7 @@ fi
 if [ -f /boot/restore_controller_backup.txt ];
 then
   rm /boot/restore_controller_backup.txt
+  echo "Detected /boot/restore_controller_backup.txt"
   
   if [ -f /boot/developer.txt ]; then
     systemctl start ssh.service
@@ -118,6 +120,7 @@ then
 elif [ -f /boot/force_controller_rebuild.txt ];
 then
   rm /boot/force_controller_rebuild.txt
+  echo "Detected /boot/force_controller_rebuild.txt"
   
   if [ -f /boot/developer.txt ]; then
     systemctl start ssh.service
