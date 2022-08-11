@@ -101,7 +101,7 @@ then
       /bin/ply-image /boot/error.png
     fi
     
-    sleep 5
+    sleep 60
     exit 1
   fi
 
