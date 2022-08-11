@@ -15,8 +15,8 @@ echo "Machine ID: $(cat /etc/machine-id)"
 echo
 echo "--------------------------------------------- ERRORS"
 
-if [ ! -L /dev/hosts ]; then
-  echo "/dev/hosts is not a link"
+if [ ! -L /etc/hosts ]; then
+  echo "/etc/hosts is not a link"
 fi
 if [ ! -L /home/pi/.asoundrc ]; then
   echo "/home/pi/.asoundrc is not a link"
