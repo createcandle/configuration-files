@@ -68,6 +68,8 @@ then
   cd /home/pi || exit
   echo "$(date) - starting forced controller regeneration..." >> /boot/candle.log
   echo "$(date) - starting forced controller regeneration..." >> /dev/kmsg
+  # Wait for network
+  sleep 15
   wget https://raw.githubusercontent.com/createcandle/install-scripts/main/install_candle_controller.sh
   chmod +x ./install_candle_controller.sh
   sudo -u pi ./install_candle_controller.sh
