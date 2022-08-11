@@ -9,26 +9,25 @@ echo "in Candle early. Fixing hostname." >> /dev/kmsg
 /usr/bin/hostname -F /home/pi/.webthings/etc/hostname
 systemctl restart avahi-daemon.service
 
+# Handled forced restore of rc.local
 if [ -f /boot/restore_boot_backup.txt ];
 then
   rm /boot/restore_boot_backup.txt
-  
   if [ -f /etc/rc.local.bak ];
   then
     cp /etc/rc.local.bak /etc/rc.local
   else
     touch /boot/restore_boot_backup_failed.txt
   fi
-
 fi
 
+# Handled forced untar of Candle Controller
 if [ -f /boot/restore_controller_backup.txt ];
 then
   rm /boot/restore_controller_backup.txt
-  
-  if [ -f /etc/rc.local.bak ];
+  if [ -f /home/pi/controller_backup.tar ];
   then
-    cp /etc/rc.local.bak /etc/rc.local
+    rm -rf /home/pi/webthings
   else
     touch /boot/restore_controller_backup_failed.txt
   fi
