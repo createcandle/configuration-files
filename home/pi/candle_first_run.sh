@@ -37,7 +37,7 @@ rm -rf /boot/'System Volume Information'
 
 # Mark first run as complete and reboot
 if [ ! -f /boot/candle_first_run_complete.txt ]; then
-  echo "$(date) - Firstrun complete" >> /boot/candle.log
+  echo "$(date) - New security keys generated." >> /boot/candle.log
   touch /boot/candle_first_run_complete.txt
   reboot
 fi
