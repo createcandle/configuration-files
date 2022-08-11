@@ -3,7 +3,7 @@ Description=Candle early
 After=home-pi-.webthings.mount
 #After=network.target
 #PartOf=webthings-gateway.service
-Before=webthings-gateway.service
+Before=webthings-gateway.service rc-local.service
 ConditionPathExists=/home/pi/candle/early.sh
 
 [Service]
@@ -12,9 +12,7 @@ User=root
 ExecStartPre=/bin/chmod +x /home/pi/candle/early.sh
 ExecStart=/bin/bash /home/pi/candle/early.sh
 
-#RemainAfterExit=true
 RemainAfterExit=yes
-#ExecStop=/home/pi/.webthings/post_factory_reset.sh
 StandardOutput=journal
 
 [Install]
