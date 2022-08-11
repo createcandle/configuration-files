@@ -36,7 +36,7 @@ sudo mount -o remount,rw /dev/mmcblk0p2 /
 # TOGGLES
 The existence of these files can also toggle certain things:
 
-emergency.txt       # Booting is mostly halted, and the SSH shell is activated.
+emergency.txt           # Booting is mostly halted, and the SSH shell is activated.
 candle_kiosk.txt 		# The URL inside this file will be shown in the browser. If it's empty the kiosk browser will not load.
 keep_browser_session.txt 	# Don't delete browser sessions on boot.
 cloudless.txt 			# Experimental, to launch the controller even if there is no network at all.
@@ -53,7 +53,7 @@ keep_bluetooth.txt 		# Keep paired bluetooth devices on factory reset.
 developer.txt 			# Enables logging. Will also cause a factory reset to write zeros to empty space, so as to prepare for creating a disk image.
 
 # INDICATORS 
-candle.log   # Upgrade processes may output status and errors into this file.
+candle.log              # Upgrade processes may output status and errors into this file.
 candle_swap_enabled.txt 	# On lower memory systems (Pi Zero 2) this file indicates that on the first run the swap file was enabled. Normally swap is disabled.
 candle_first_run_complete.txt 	# This file appears after the first boot. It indicates that a new machine ID and new SSH keys were generated.
 candle_hardware_clock.txt 	# This file is present if the hardware clock module is detected and enabled. Getting time from the internet will not work while this file exists.
