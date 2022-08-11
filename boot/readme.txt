@@ -48,7 +48,7 @@ do_not_use_repeaker_hat.txt 	# Will stop ReSpeaker hat drivers from being loaded
 disable_wifi_power_save.txt 	# If present, wifi power saving feature will be disabled. This might improve some connections.
 
 # TOOLS
-restore_boot_backup.txt     # Will try to restore some fundamental files to older backed-up versions (if the backups exist)
+restore_boot_backup.txt       # Will try to restore some fundamental files to older backed-up versions (if the backups exist)
 restore_controller_backup.txt     # Will try to restore the Candle Controller software (if the backups exist)
 
 # Factory reset related:
@@ -63,6 +63,6 @@ candle_hardware_clock.txt 	# This file is present if the hardware clock module i
 
 # FAILURE INDICATORS
 candle.log 			# Upgrade processes may output status and errors into this file.
-bootup_actions_failed.txt 			# If this file exists, it indicates that an upgrade process did not complete because it failed or was interupted.
-restore_boot_backup_failed.txt 			# If this file exists, it likely indicates that there was no backup to restore.
-restore_controller_backup_failed.txt 			# If this file exists, it likely indicates that there was no backup to restore.
+bootup_actions_failed.txt 	# If this file exists, it indicates that an upgrade process did not complete because it failed or was interupted.
+restore_boot_backup_failed.txt # If this file exists, it likely indicates that there was no backup to restore.
+restore_controller_backup_failed.txt # If this file exists, it likely indicates that there was no backup to restore.
