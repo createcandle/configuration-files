@@ -30,6 +30,7 @@ fi
 if [ -f /boot/restore_boot_backup.txt ];
 then
   rm /boot/restore_boot_backup.txt
+  systemctl start ssh.service
   if [ -f /etc/rc.local.bak ];
   then
     cp /etc/rc.local.bak /etc/rc.local
@@ -47,6 +48,7 @@ fi
 if [ -f /boot/restore_controller_backup.txt ];
 then
   rm /boot/restore_controller_backup.txt
+  systemctl start ssh.service
   if [ -f /home/pi/controller_backup.tar ];
   then
   
@@ -90,7 +92,6 @@ then
     fi
   
   else
- 
     # Record that no backup was found
     echo "$(date) - forced restoring controller backup: no backup found" >> /boot/candle.log
     echo "$(date) - forced restoring controller backup: no backup found" >> /dev/kmsg
@@ -104,9 +105,13 @@ then
     exit 1
   fi
 
+
 # If the user wants a forced rebuild, do that.
 elif [ -f /boot/force_controller_rebuild.txt ];
 then
+  rm /boot/force_controller_rebuild.txt
+  systemctl start ssh.service
+  
   if [ -e "/bin/ply-image" ]; then
     if [ -e "/boot/rotate180.txt" ]; then
       /bin/ply-image /boot/splash_updating180.png
@@ -114,7 +119,7 @@ then
       /bin/ply-image /boot/splash_updating.png
     fi
   fi
-  rm /boot/force_controller_rebuild.txt
+
   cd /home/pi || exit
   echo "$(date) - starting forced controller regeneration..." >> /boot/candle.log
   echo "$(date) - starting forced controller regeneration..." >> /dev/kmsg
@@ -146,6 +151,7 @@ then
   fi
 
 fi
+
 
 echo "Normal end of Candle early." >> /dev/kmsg
 exit 0
