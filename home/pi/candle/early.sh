@@ -135,7 +135,7 @@ then
   else
     echo "$(date) - forced controller regeneration failed" >> /boot/candle.log
     echo "$(date) - forced controller regeneration failed" >> /dev/kmsg
-      
+    
     # Show error image
     if [ -e "/bin/ply-image" ]; then
       /bin/ply-image /boot/error.png
