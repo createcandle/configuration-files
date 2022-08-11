@@ -49,6 +49,17 @@ then
   rm /boot/restore_controller_backup.txt
   if [ -f /home/pi/controller_backup.tar ];
   then
+  
+    # Show updating image
+    if [ -e "/bin/ply-image" ]; then
+      if [ -e "/boot/rotate180.txt" ]; then
+        /bin/ply-image /boot/splash_updating180.png
+      else
+        /bin/ply-image /boot/splash_updating.png
+      fi
+    fi
+    
+    # Restore backup
     cd /home/pi || exit
     echo "$(date) - forced restoring controller backup..." >> /boot/candle.log
     echo "$(date) - forced restoring controller backup..." >> /dev/kmsg
@@ -56,14 +67,53 @@ then
     tar -xvf controller_backup.tar
     echo "$(date) - forced restoring controller backup done" >> /boot/candle.log
     echo "$(date) - forced restoring controller backup done" >> /dev/kmsg
+  
+  
+    if [ -f /home/pi/webthings/gateway/build/app.js ] && [ -f /home/pi/webthings/gateway/build/static/index.html ];
+    then
+      echo "$(date) - forced restoring controller backup done" >> /boot/candle.log
+      echo "$(date) - forced restoring controller backup done" >> /dev/kmsg
+      reboot now
+      sleep 5
+      
+    else
+      echo "$(date) - forced restoring controller backup failed" >> /boot/candle.log
+      echo "$(date) - forced restoring controller backup failed" >> /dev/kmsg
+      
+      # Show error image
+      if [ -e "/bin/ply-image" ]; then
+        /bin/ply-image /boot/error.png
+      fi
+      
+      sleep 60
+      exit 1
+    fi
+  
   else
+ 
+    # Record that no backup was found
     echo "$(date) - forced restoring controller backup: no backup found" >> /boot/candle.log
     echo "$(date) - forced restoring controller backup: no backup found" >> /dev/kmsg
+    
+    # Show error image
+    if [ -e "/bin/ply-image" ]; then
+      /bin/ply-image /boot/error.png
+    fi
+    
+    sleep 5
+    exit 1
   fi
 
 # If the user wants a forced rebuild, do that.
 elif [ -f /boot/force_controller_rebuild.txt ];
 then
+  if [ -e "/bin/ply-image" ]; then
+    if [ -e "/boot/rotate180.txt" ]; then
+      /bin/ply-image /boot/splash_updating180.png
+    else
+      /bin/ply-image /boot/splash_updating.png
+    fi
+  fi
   rm /boot/force_controller_rebuild.txt
   cd /home/pi || exit
   echo "$(date) - starting forced controller regeneration..." >> /boot/candle.log
@@ -74,12 +124,27 @@ then
   chmod +x ./install_candle_controller.sh
   sudo -u pi ./install_candle_controller.sh
   rm ./install_candle_controller.sh
-  echo "$(date) - forced controller regeneration done" >> /boot/candle.log
-  echo "$(date) - forced controller regeneration done" >> /dev/kmsg
+  
+  if [ -f /home/pi/webthings/gateway/build/app.js ] && [ -f /home/pi/webthings/gateway/build/static/index.html ];
+  then
+    echo "$(date) - forced controller regeneration done" >> /boot/candle.log
+    echo "$(date) - forced controller regeneration done" >> /dev/kmsg
+    reboot now
+    sleep 5
+      
+  else
+    echo "$(date) - forced controller regeneration failed" >> /boot/candle.log
+    echo "$(date) - forced controller regeneration failed" >> /dev/kmsg
+      
+    # Show error image
+    if [ -e "/bin/ply-image" ]; then
+      /bin/ply-image /boot/error.png
+    fi
+
+    sleep 60
+    exit 1
+  fi
+
 fi
-
-
-
-
 
 
