@@ -8,11 +8,12 @@ if [ "$EUID" -ne 0 ]
   exit
 fi
 
-echo "Hostname:"
-cat /etc/hostname
+echo "Hostname  : $(cat /etc/hostname)"
+echo "Machine ID: $(cat /etc/machine-id)"
+
 
 echo
-echo "ERRORS:"
+echo "--------------------------------------------- ERRORS"
 
 if [ ! -L /dev/hosts ]; then
   echo "/dev/hosts is not a link"
@@ -26,6 +27,12 @@ if [ ! -d /etc/hostapd ]; then
 fi
 if [ ! -d /etc/hostapd ]; then
   echo "/etc/hostapd is missing"
+fi
+if [ ! -d /etc/voicecard ]; then
+  echo "/etc/voicecard is missing"
+fi
+if [ ! -d /etc/chromium ]; then
+  echo "/etc/chromium is missing"
 fi
 
 if [ ! -f /home/pi/.webthings/floorplan.svg ]; then
@@ -41,11 +48,10 @@ if [ ! -f /home/pi/webthings/gateway/build/static/css/candle.css ]; then
   echo "/home/pi/webthings/gateway/build/static/css/candle.css is missing"
 fi
 
-echo "Machine ID:"
-cat /etc/machine-id
+
 
 echo
-echo "---------------------------------------------"
+echo "--------------------------------------------- systemctl"
 echo 
 systemctl list-units --failed
 
@@ -53,7 +59,7 @@ echo
 journalctl --boot=0 --priority=0..3
 
 echo
-echo "---------------------------------------------"
+echo "--------------------------------------------- config.txt"
 echo
 
 echo "/boot/config.txt:"
@@ -61,7 +67,7 @@ cat /boot/config.txt | grep -v "#" | grep .
 
 
 echo
-echo "---------------------------------------------"
+echo "--------------------------------------------- disk"
 echo
 journalctl --disk-usage
 
@@ -73,3 +79,12 @@ findmnt -t ext4
 
 echo
 df
+
+echo
+echo "--------------------------------------------- memory"
+echo
+free -h
+echo "Allocated GPU memory: $(vcgencmd get_mem gpu)"
+
+
+
