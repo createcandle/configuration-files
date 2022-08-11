@@ -60,8 +60,6 @@ then
     echo "$(date) - forced restoring controller backup: no backup found" >> /boot/candle.log
     echo "$(date) - forced restoring controller backup: no backup found" >> /dev/kmsg
   fi
-fi
-
 
 # If the user wants a forced rebuild, do that.
 elif [ -f /boot/force_controller_rebuild.txt ];
