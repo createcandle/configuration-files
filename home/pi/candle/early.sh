@@ -147,4 +147,5 @@ then
 
 fi
 
-
+echo "Normal end of Candle early." >> /dev/kmsg
+exit 0
