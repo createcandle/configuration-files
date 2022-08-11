@@ -1,4 +1,8 @@
 #!/bin/bash
+set +e
+
+# This file gets copied to /boot when factory reset is requested.
+# /boot/candle_first_run.sh will only actually be run by a service if /boot/candle_first_run_complete does not exist.
 
 if [ -s /ro/etc/machine-id ]
 then
@@ -27,9 +31,13 @@ else
   cp /home/pi/.webthings/etc/webthings_settings_backup.js /home/pi/.webthings/etc/webthings_settings.js
 fi
 
+# Because the disk image is created on Windows, it leaves behind a directory...
+rm -rf /boot/'System Volume Information'
 
-# mark first run as complete and reboot
+
+# Mark first run as complete and reboot
 if [ ! -f /boot/candle_first_run_complete.txt ]; then
+  echo "$(date) - Firstrun complete" >> /boot/candle.log
   touch /boot/candle_first_run_complete.txt
   reboot
 fi
