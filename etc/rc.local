@@ -98,7 +98,7 @@ fi
 
 # Fix missing gateway, just in case something went totally wrong.
 
-if [ ! -f /home/pi/webthings/gateway/build/app.js ] || [ -f /boot/candle_force_gateway_rebuild.txt ]; 
+if [ ! -f /home/pi/webthings/gateway/build/app.js ] || [ ! -f /home/pi/webthings/gateway/build/static/index.html ] || [ -f /boot/force_controller_rebuild.txt ] || [ -f /boot/restore_controller_backup.txt ]; 
 then
 
   if [ -f /boot/developer.txt ];
@@ -106,13 +106,14 @@ then
     systemctl start ssh.service
   fi
 
-  if [ -f /boot/candle_force_gateway_rebuild.txt ];
+  if [ -f /boot/force_controller_rebuild.txt ];
   then
-    echo "$(date) - forced gateway rebuild" >> /boot/candle.log
+    echo "Candle: forced controller rebuild" >> /dev/kmsg
+    echo "$(date) - forced controller rebuild" >> /boot/candle.log
   else
-    echo "missing build/app.js - attempting repair of gateway"
+    echo "missing build/app.js - attempting repair"
     echo "Candle: ERROR! /home/pi/webthings/gateway/build/app.js file was missing. Attempting repair." >> /dev/kmsg
-    echo "$(date) - broken gateway detected" >> /boot/candle.log
+    echo "$(date) - broken controller detected" >> /boot/candle.log
   fi
   
 
@@ -125,8 +126,8 @@ then
 
   if [ -d /ro ]
   then
-    echo "starting gateway regeneration in /ro..." >> /boot/candle.log
-    echo "starting gateway regeneration in /ro..." >> /dev/kmsg
+    echo "starting controller repair in /ro..." >> /boot/candle.log
+    echo "starting controller repair in /ro..." >> /dev/kmsg
     # This shouldn't even be possible really 
     echo "setting to RW"
     mount -o remount,rw /ro
@@ -135,14 +136,14 @@ then
 chroot /ro sh -c "$(cat <<END
 cd /home/pi
 
-if [ -f /home/pi/controller_backup.tar ] && [ ! -f /boot/candle_force_gateway_rebuild.txt ];
+if [ -f /home/pi/controller_backup.tar ];
 then
 tar -xvf controller_backup.tar
 
-elif [ -f /home/pi/webthings-old/gateway/build/app.js ] && [ ! -f /boot/candle_force_gateway_rebuild.txt ];
+elif [ -f /home/pi/webthings-old/gateway/build/app.js ];
 then
 mv ./webthings-old ./webthings
-echo "restored gateway backup" >> /boot/candle.log
+echo "restored controller backup" >> /boot/candle.log
 
 else
 wget https://raw.githubusercontent.com/createcandle/install-scripts/main/install_candle_controller.sh
@@ -160,20 +161,28 @@ END
       
   else
     cd /home/pi || exit
-    # If an old version is detected, try switching to that
-    if [ -f /home/pi/controller_backup.tar ] && [ ! -f /boot/candle_force_gateway_rebuild.txt ];
+    
+    # If a backup file exists, restore that
+    if [ -f /home/pi/controller_backup.tar ];
     then
       tar -xvf controller_backup.tar
+      echo "$(date) - restored controller backup" >> /boot/candle.log
+      echo "$(date) - restored controller backup" >> /dev/kmsg
       
-    elif [ -f /home/pi/webthings-old/gateway/build/app.js ] && [ ! -f /boot/candle_force_gateway_rebuild.txt ]; 
+    
+    # If an old version is detected, try switching to that
+    elif [ -f /home/pi/webthings-old/gateway/build/app.js ] && [ -f /home/pi/webthings-old/gateway/build/static/index.html ]; 
     then
-        mv ./webthings-old ./webthings
-        echo "$(date) - restored gateway backup" >> /boot/candle.log
-        echo "$(date) - restored gateway backup" >> /dev/kmsg
         
+        mv ./webthings-old ./webthings
+        echo "$(date) - restored old controller directory" >> /boot/candle.log
+        echo "$(date) - restored old controller directory" >> /dev/kmsg
+    
+    
+    # If all else fails, try a complete rebuild
     else
-        echo "$(date) - starting gateway regeneration..." >> /boot/candle.log
-        echo "$(date) - starting gateway regeneration..." >> /dev/kmsg
+        echo "$(date) - starting controller regeneration..." >> /boot/candle.log
+        echo "$(date) - starting controller regeneration..." >> /dev/kmsg
         wget https://raw.githubusercontent.com/createcandle/install-scripts/main/install_candle_controller.sh
         chmod +x ./install_candle_controller.sh
         sudo -u pi ./install_candle_controller.sh
@@ -186,15 +195,15 @@ END
     sleep 60
   fi
   sleep 5
-  if [ -f /home/pi/webthings-old/gateway/build/app.js ];
+  if [ -f /home/pi/webthings/gateway/build/app.js ] && [ -f /home/pi/webthings/gateway/build/static/index.html ];
   then
-    echo "$(date) - gateway regeneration complete" >> /boot/candle.log
-    echo "$(date) - gateway regeneration complete" >> /dev/kmsg
+    echo "$(date) - controller regeneration complete" >> /boot/candle.log
+    echo "$(date) - controller regeneration complete" >> /dev/kmsg
     reboot now
     sleep 5
   else
-    echo "$(date) - gateway regeneration seems to have failed" >> /boot/candle.log
-    echo "$(date) - gateway regeneration seems to have failed" >> /dev/kmsg
+    echo "$(date) - controller regeneration seems to have failed" >> /boot/candle.log
+    echo "$(date) - controller regeneration seems to have failed" >> /dev/kmsg
     /bin/ply-image /boot/error.png
     sleep 60
   fi
