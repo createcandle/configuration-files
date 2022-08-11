@@ -47,6 +47,9 @@ exhibit_mode.txt		# Disables installing and uninstalling addons.
 do_not_use_repeaker_hat.txt 	# Will stop ReSpeaker hat drivers from being loaded at boot.
 disable_wifi_power_save.txt 	# If present, wifi power saving feature will be disabled. This might improve some connections.
 
+# TOOLS
+restore_boot_backup.txt     # Will try to restore some fundamental files to older backed-up versions (if the backups exist)
+
 # Factory reset related:
 keep_z2m.txt 			# Keep Zigbee2MQTT settings on factory reset.
 keep_bluetooth.txt 		# Keep paired bluetooth devices on factory reset.
