@@ -253,7 +253,7 @@ then
 fi
 
 
-# Generate debug file if rquested
+# Generate debug file if requested
 if [ -f /boot/generate_debug.txt ]; then
   rm /boot/generate_debug.txt
   sleep 5
