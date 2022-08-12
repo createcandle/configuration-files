@@ -70,15 +70,21 @@ echo
 echo "--------------------------------------------- systemctl"
 echo 
 systemctl list-units --failed
-
 echo
 journalctl --boot=0 --priority=0..3
+echo "(syslog.socket failing is expected, as Candle will only log to syslog if developer.txt is present")
+
 
 echo
 echo "--------------------------------------------- dmesg"
 echo 
 
-dmesg --level=emerg,alert,crit,err,warn
+echo "dmesg errors:"
+dmesg --level=emerg,alert,crit,err
+
+echo
+echo "dmesg warnings:"
+dmesg --level=warn
 
 echo
 echo "--------------------------------------------- config.txt"
