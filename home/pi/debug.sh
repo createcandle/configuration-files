@@ -108,6 +108,7 @@ echo
 
 if [ -d /ro ]; then
   echo "overlay spotted"
+  du /rw/upper --max-depth=1
 else
   echo "no overlay spotted"
 fi
@@ -127,6 +128,10 @@ echo "- /dev/mmcblk0p1 is the boot partition, which is what you see when you plu
 echo "- /dev/mmcblk0p2 is the system partition. It this is (almost) full, that means an upgrade went very wrong."
 echo "- /dev/mmcblk0p3 is the user partition, where your actual personal data is stored. If it's (almost) full, delete some logs or photos?"
 echo
+echo "Details:"
+du /home/pi --max-depth=1 -h
+
+echo
 echo "--------------------------------------------- memory"
 echo
 free -h
@@ -134,7 +139,7 @@ echo "Allocated GPU memory: $(vcgencmd get_mem gpu)"
 
 echo "NOTE:"
 echo "- What matters is the memory under 'available'. It it's lower than 100, try uninstalling some addons."
-echo
+echo "- Candle only enables swap memory on the Raspberry Pi Zero"
 echo
 echo "--------------------------------------------- startup"
 echo
