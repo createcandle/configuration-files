@@ -8,8 +8,10 @@ if [ "$EUID" -ne 0 ]
   then echo "Please run as root (use sudo)"
   exit
 fi
-echo "Candle version : $(cat /boot/candle_version.txt)"
 echo "Hostname       : $(cat /etc/hostname)"
+echo "Candle version : $(cat /boot/candle_version.txt)"
+echo "Python version : $(python3 -V)"
+echo "NPM version    : $(sudo -u pi npm -v)"
 #echo "Machine ID     : $(cat /etc/machine-id)"
 
 echo
@@ -36,9 +38,11 @@ fi
 
 
 # Directories
-
 if [ ! -d /etc/hostapd ]; then
   echo "/etc/hostapd dir is missing"
+fi
+if [ ! -d /home/pi/.npm ]; then
+  echo "/home/pi/.npm dir is missing"
 fi
 if [ ! -d /etc/chromium ]; then
   echo "/etc/chromium dir is missing"
@@ -91,6 +95,16 @@ fi
 if [ ! -f /etc/X11/xinit/xinitrc ]; then
   echo "/etc/X11/xinit/xinitrc is missing"
 fi
+if [ ! -f /home/pi/candle_requirements.txt ]; then
+  echo "/home/pi/candle_requirements.txt is missing"
+fi
+if [ ! -f /home/pi/candle_requirements.txt ]; then
+  echo "/home/pi/candle_requirements.txt is missing"
+fi
+if [ ! -f /home/pi/candle_packages.txt ]; then
+  echo "/home/pi/candle_packages.txt is missing"
+fi
+
 
 # Backups
 if [ ! -f /home/pi/candle/early.sh.bak ]; then
@@ -155,13 +169,23 @@ cat /home/pi/.webthings/.node_version
 
 
 echo
+echo "--------------------------------------------- audio"
+echo
+
+aplay -l && arecord -l
+
+echo
 echo "--------------------------------------------- other hardware"
 echo
 
 echo "Attached HMDI devices:"
 cat /sys/class/drm/card0/*HDMI*/status
+
 echo
-echo 
+echo "Libcamera installed?"
+which libcamera-still
+
+echo
 
 
 echo
