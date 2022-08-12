@@ -93,7 +93,7 @@ fi
 
 # Fix missing gateway, just in case something went totally wrong.
 
-if [ ! -f /home/pi/webthings/gateway/build/app.js ] || [ ! -f /home/pi/webthings/gateway/build/static/index.html ]; 
+if [ ! -f /home/pi/webthings/gateway/build/app.js ] || [ ! -f /home/pi/webthings/gateway/build/static/index.html ] || [ ! -d /home/pi/webthings/gateway/build/static/bundle ]; 
 then
 
   if [ -f /boot/developer.txt ];
@@ -128,7 +128,7 @@ if [ -f /home/pi/controller_backup.tar ];
 then
 tar -xvf controller_backup.tar
 
-elif [ -f /home/pi/webthings-old/gateway/build/app.js ] && [ -f /home/pi/webthings-old/gateway/build/static/index.html ];
+elif [ -f /home/pi/webthings-old/gateway/build/app.js ] && [ -f /home/pi/webthings-old/gateway/build/static/index.html ] && [ -d /home/pi/webthings-old/gateway/build/static/bundle ];
 then
 mv ./webthings-old ./webthings
 echo "restored controller backup in /ro (rc)" >> /dev/kmsg
@@ -160,9 +160,8 @@ END
       
     
     # If an old version is detected, try switching to that
-    elif [ -f /home/pi/webthings-old/gateway/build/app.js ] && [ -f /home/pi/webthings-old/gateway/build/static/index.html ]; 
+    elif [ -f /home/pi/webthings-old/gateway/build/app.js ] && [ -f /home/pi/webthings-old/gateway/build/static/index.html ] && [ -d /home/pi/webthings-old/gateway/build/static/bundle ]; 
     then
-        
         mv ./webthings-old ./webthings
         echo "$(date) - restored old controller directory (rc)" >> /boot/candle.log
         echo "$(date) - restored old controller directory (rc)" >> /dev/kmsg
@@ -185,7 +184,7 @@ END
   fi
   sleep 5
   
-  if [ -f /home/pi/webthings/gateway/build/app.js ] && [ -f /home/pi/webthings/gateway/build/static/index.html ];
+  if [ -f /home/pi/webthings/gateway/build/app.js ] && [ -f /home/pi/webthings/gateway/build/static/index.html ] && [ -d /home/pi/webthings-old/gateway/build/static/bundle ];
   then
     echo "$(date) - controller regeneration complete (rc)" >> /boot/candle.log
     echo "$(date) - controller regeneration complete (rc)" >> /dev/kmsg
@@ -259,6 +258,7 @@ if [ -f /boot/generate_debug.txt ]; then
   rm /boot/generate_debug.txt
   sleep 5
   echo "Candle: generating debug file" >> /dev/kmsg
+  rm /boot/debug.txt
   /home/pi/debug.sh > /boot/debug.txt
 fi
 
