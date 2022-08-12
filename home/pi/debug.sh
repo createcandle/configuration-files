@@ -18,6 +18,13 @@ echo "--------------------------------------------- ERRORS"
 if [ ! -L /etc/hosts ]; then
   echo "/etc/hosts is not a link"
 fi
+if [ ! -L /etc/timezone ]; then
+  echo "/etc/timezone is not a link"
+fi
+if [ ! -L /etc/fake-hwclock.data ]; then
+  echo "/etc/fake-hwclock.data is not a link"
+fi
+
 if [ ! -L /home/pi/.asoundrc ]; then
   echo "/home/pi/.asoundrc is not a link"
 fi
@@ -29,8 +36,8 @@ fi
 if [ ! -d /etc/hostapd ]; then
   echo "/etc/hostapd is missing"
 fi
-if [ ! -d /etc/hostapd ]; then
-  echo "/etc/hostapd is missing"
+if [ ! -d /etc/mosquitto ]; then
+  echo "/etc/mosquitto is missing"
 fi
 if [ ! -d /etc/voicecard ]; then
   echo "/etc/voicecard is missing"
