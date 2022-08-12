@@ -53,9 +53,6 @@ fi
 if [ ! -d /etc/voicecard ]; then
   echo "/etc/voicecard dir is missing"
 fi
-if [ ! -d /usr/bin/bluealsa ]; then
-  echo "/usr/bin/bluealsa dir is missing"
-fi
 if [ ! -d /etc/chromium/policies/managed/ ]; then
   echo "/etc/chromium/policies/managed/ dir is missing"
 fi
@@ -104,9 +101,6 @@ fi
 if [ ! -f /home/pi/candle_packages.txt ]; then
   echo "/home/pi/candle_packages.txt is missing"
 fi
-if [ ! -f /home/pi/.Xauthority ]; then
-  echo "/home/pi/.Xauthority is missing"
-fi
 if [ ! -f /etc/avahi/services/candlemqtt.service ]; then
   echo "/etc/avahi/services/candlemqtt.service is missing"
 fi
@@ -128,7 +122,9 @@ fi
 if [ ! -f /etc/systemd/system/bluetooth.service.d/candle.conf ]; then
   echo "/etc/systemd/system/bluetooth.service.d/candle.conf is missing"
 fi
-
+if [ ! -f /usr/bin/bluealsa ]; then
+  echo "/usr/bin/bluealsa is missing"
+fi
 
 # Backups
 if [ ! -f /home/pi/candle/early.sh.bak ]; then
