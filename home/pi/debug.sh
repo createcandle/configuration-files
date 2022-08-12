@@ -8,10 +8,15 @@ if [ "$EUID" -ne 0 ]
   then echo "Please run as root (use sudo)"
   exit
 fi
+
+echo "Candle Controller debug information"
+echo
+echo "Date:          : $(Date)"
 echo "Hostname       : $(cat /etc/hostname)"
 echo "Candle version : $(cat /boot/candle_version.txt)"
-echo "Python version : $(python3 -V)"
-echo "NPM version    : $(npm -v)"
+echo "Python version : $(python3 --version)"
+echo "Node version   : $(node --version)"
+echo "NPM version    : $(npm --version)"
 #echo "Machine ID     : $(cat /etc/machine-id)"
 
 echo
