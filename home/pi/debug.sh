@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # A quick way to find errors with a new Candle controller build
+# None of these should be privacy infringing (no unique ID's)
 
 # Check if script is being run as root
 if [ "$EUID" -ne 0 ]
@@ -79,6 +80,11 @@ if [ ! -f /etc/X11/xinit/xinitrc ]; then
   echo "/etc/X11/xinit/xinitrc is missing"
 fi
 
+if [ -f /var/swap ]; then
+  echo "/var/swap detected"
+fi
+
+
 
 
 echo
@@ -122,6 +128,21 @@ cat /home/pi/.webthings/.node_version
 
 
 echo
+echo "--------------------------------------------- memory"
+echo
+
+free -h
+
+echo
+echo "Allocated GPU memory: $(vcgencmd get_mem gpu)"
+
+if [ -f /home/pi/.webthings/swap ]; then
+  echo
+  echo "/home/pi/.webthings/swap detected"
+  ls -l /home/pi/.webthings/swap
+fi
+
+echo
 echo "--------------------------------------------- disk"
 echo
 
@@ -150,15 +171,15 @@ echo
 echo "Details:"
 du /home/pi --max-depth=1 -h
 
-echo
-echo "--------------------------------------------- memory"
-echo
-free -h
-echo "Allocated GPU memory: $(vcgencmd get_mem gpu)"
-
 echo "NOTE:"
 echo "- What matters is the memory under 'available'. It it's lower than 100, try uninstalling some addons."
 echo "- Candle only enables swap memory on the Raspberry Pi Zero"
+
+echo
+echo "--------------------------------------------- /boot files"
+echo
+ls /boot -a -l -h
+
 echo
 echo "--------------------------------------------- startup"
 echo
