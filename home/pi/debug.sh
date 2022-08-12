@@ -155,6 +155,16 @@ cat /home/pi/.webthings/.node_version
 
 
 echo
+echo "--------------------------------------------- other hardware"
+echo
+
+echo "Attached HMDI devices:"
+cat /sys/class/drm/card0/*HDMI*/status
+echo
+echo 
+
+
+echo
 echo "--------------------------------------------- memory"
 echo
 
@@ -222,5 +232,17 @@ echo
 echo "--------------------------------------------- iptables (firewall)"
 echo
 iptables -t nat --list
+
+echo
+echo "--------------------------------------------- services"
+echo
+
+systemctl status candle_early.service 
+echo
+systemctl status rc-local.service 
+echo
+systemctl status webthings-gateway.service 
+echo
+systemctl status bluealsa.service 
 
 
