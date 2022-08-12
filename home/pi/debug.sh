@@ -180,7 +180,7 @@ echo
 systemctl list-units --failed
 
 echo
-journalctl --boot=0 --priority=0..3
+timeout 2s journalctl --boot=0 --priority=0..3 --no-pager
 
 echo
 echo "NOTE:"
