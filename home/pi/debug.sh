@@ -113,6 +113,21 @@ fi
 if [ ! -f /etc/avahi/services/candle.service ]; then
   echo "/etc/avahi/services/candle.service is missing"
 fi
+if [ ! -f /etc/rc.local ]; then
+  echo "/etc/rc.local is missing"
+fi
+if [ ! -f /home/pi/candle/early.sh ]; then
+  echo "/home/pi/candle/early.sh is missing"
+fi
+if [ ! -f /etc/systemd/system/webthings-gateway.service ]; then
+  echo "/etc/systemd/system/webthings-gateway.service is missing"
+fi
+if [ ! -f /etc/systemd/system/fake-hwclock-save.service ]; then
+  echo "/etc/systemd/system/fake-hwclock-save.service is missing"
+fi
+if [ ! -f /etc/systemd/system/bluetooth.service.d/candle.conf ]; then
+  echo "/etc/systemd/system/bluetooth.service.d/candle.conf is missing"
+fi
 
 
 # Backups
