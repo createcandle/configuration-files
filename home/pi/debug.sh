@@ -143,6 +143,7 @@ fi
 
 
 
+
 # Backups
 if [ ! -f /home/pi/candle/early.sh.bak ]; then
   echo "/home/pi/candle/early.sh.bak backup is missing"
@@ -158,7 +159,14 @@ fi
 if [ -f /var/swap ]; then
   echo "/var/swap file still exists"
 fi
-
+if [ ! -f /zero.fill ]; then
+  echo "/zero.fill file still exists"
+  rm /zero.fill
+fi
+if [ ! -f /home/pi/.webthings/zero.fill ]; then
+  echo "/home/pi/.webthings/zero.fill file still exists"
+  rm /home/pi/.webthings/zero.fill
+fi
 
 
 
