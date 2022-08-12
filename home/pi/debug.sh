@@ -142,8 +142,9 @@ fi
 if [ ! -f /etc/alsa/conf.d/20-bluealsa.conf ]; then
   echo "/etc/alsa/conf.d/20-bluealsa.conf is missing"
 fi
-
-
+if [ ! -f /usr/bin/pip3 ]; then
+  echo "/usr/bin/pip3 is missing"
+fi
 
 
 
