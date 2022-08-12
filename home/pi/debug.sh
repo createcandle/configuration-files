@@ -86,12 +86,17 @@ echo
 echo "dmesg warnings:"
 dmesg --level=warn
 
+
+
 echo
-echo "--------------------------------------------- config.txt"
+echo "--------------------------------------------- config"
 echo
 
 echo "/boot/config.txt:"
 cat /boot/config.txt | grep -v "#" | grep .
+
+echo "/boot/cmdline.txt:"
+cat /boot/cmdline.txt
 
 
 echo
