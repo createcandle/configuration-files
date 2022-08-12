@@ -267,6 +267,10 @@ if [ -f /home/pi/.webthings/swap ]; then
 fi
 
 echo
+echo "NOTE:"
+echo "- What matters is the memory under 'available'. It it's lower than 100, try uninstalling some addons."
+echo "- Candle only enables swap memory on the Raspberry Pi Zero"
+echo
 echo
 echo "--------------------------------------------- disk"
 echo
@@ -296,10 +300,6 @@ echo
 echo "Details:"
 du /home/pi --max-depth=1 -h
 
-echo
-echo "NOTE:"
-echo "- What matters is the memory under 'available'. It it's lower than 100, try uninstalling some addons."
-echo "- Candle only enables swap memory on the Raspberry Pi Zero"
 
 echo
 echo
