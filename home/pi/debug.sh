@@ -220,6 +220,9 @@ echo
 echo "Libcamera installed?"
 which libcamera-still
 
+echo
+echo "Plugged in USB devices:"
+lsusb
 
 echo
 echo "--------------------------------------------- memory"
