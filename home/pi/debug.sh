@@ -218,6 +218,15 @@ cat /home/pi/.webthings/.node_version
 
 
 echo
+echo
+echo "--------------------------------------------- time"
+echo
+
+timedatectl 
+
+
+echo
+echo
 echo "--------------------------------------------- audio"
 echo
 
@@ -225,6 +234,7 @@ aplay -l
 echo
 arecord -l
 
+echo
 echo
 echo "--------------------------------------------- other hardware"
 echo
@@ -241,6 +251,7 @@ echo "Plugged in USB devices:"
 lsusb
 
 echo
+echo
 echo "--------------------------------------------- memory"
 echo
 
@@ -255,6 +266,7 @@ if [ -f /home/pi/.webthings/swap ]; then
   ls -l /home/pi/.webthings/swap
 fi
 
+echo
 echo
 echo "--------------------------------------------- disk"
 echo
@@ -290,11 +302,13 @@ echo "- What matters is the memory under 'available'. It it's lower than 100, tr
 echo "- Candle only enables swap memory on the Raspberry Pi Zero"
 
 echo
+echo
 echo "--------------------------------------------- /boot files"
 echo
 
 ls /boot -a -l -h
 
+echo
 echo
 echo "--------------------------------------------- startup"
 echo
@@ -305,6 +319,7 @@ echo "NOTE:"
 echo "- This shows how long it took the start the controller, and which parts of the process took a long time and/or kept other parts waiting"
 
 echo
+echo
 echo "--------------------------------------------- iptables (firewall)"
 echo
 
@@ -312,12 +327,14 @@ iptables -t nat --list
 
 
 echo
+echo
 echo "--------------------------------------------- network"
 echo
 
 ifconfig
 
 
+echo
 echo
 echo "--------------------------------------------- services"
 echo
