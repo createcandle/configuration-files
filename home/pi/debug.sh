@@ -133,6 +133,11 @@ fi
 if [ ! -f /usr/bin/bluealsa ]; then
   echo "/usr/bin/bluealsa is missing"
 fi
+if [ ! -f /opt/vc/lib/plugins/plugins/reader_metadata_id3.so ]; then
+  echo "/opt/vc/lib/plugins/plugins/reader_metadata_id3.so is missing"
+fi
+
+
 
 # Backups
 if [ ! -f /home/pi/candle/early.sh.bak ]; then
