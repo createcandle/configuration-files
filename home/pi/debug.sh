@@ -286,7 +286,7 @@ ls /boot -a -l -h
 echo
 echo "--------------------------------------------- startup"
 echo
-systemd-analyze critical-chain -h
+systemd-analyze critical-chain
 
 echo
 echo "NOTE:"
