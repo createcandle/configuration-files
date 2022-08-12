@@ -11,7 +11,6 @@ echo "Candle version : $(cat /boot/candle_version.txt)"
 echo "Hostname       : $(cat /etc/hostname)"
 #echo "Machine ID     : $(cat /etc/machine-id)"
 
-
 echo
 echo "--------------------------------------------- ERRORS"
 
@@ -102,10 +101,16 @@ cat /boot/cmdline.txt
 echo
 echo "--------------------------------------------- disk"
 echo
+
+if [ -d /ro ]; then
+  echo "overlay spotted"
+else
+  echo "no overlay spotted"
+fi
+echo
+
 journalctl --disk-usage
 
-echo
-systemd-analyze critical-chain
 
 echo
 findmnt -t ext4
@@ -118,6 +123,12 @@ echo "--------------------------------------------- memory"
 echo
 free -h
 echo "Allocated GPU memory: $(vcgencmd get_mem gpu)"
+
+
+echo
+echo "--------------------------------------------- startup"
+echo
+systemd-analyze critical-chain
 
 
 
