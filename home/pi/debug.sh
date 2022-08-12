@@ -11,7 +11,7 @@ fi
 
 echo "Candle Controller debug information"
 echo
-echo "Date:          : $(Date)"
+echo "Date:          : $(date)"
 echo "Hostname       : $(cat /etc/hostname)"
 echo "Candle version : $(cat /boot/candle_version.txt)"
 echo "Python version : $(python3 --version)"
