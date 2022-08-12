@@ -71,8 +71,8 @@ echo
 systemctl list-units --failed
 echo
 journalctl --boot=0 --priority=0..3
-echo "(syslog.socket failing is expected, as Candle will only log to syslog if developer.txt is present")
-
+echo "(NOTE: syslog.socket failing is expected, as Candle will only log to syslog if developer.txt is present")
+echo "(NOTE: This error is also not a problem: Failed to make bind mount source '/home/pi/.webthings/etc/hostname': File exists)"
 
 echo
 echo "--------------------------------------------- dmesg"
