@@ -136,6 +136,10 @@ fi
 if [ ! -f /opt/vc/lib/plugins/plugins/reader_metadata_id3.so ]; then
   echo "/opt/vc/lib/plugins/plugins/reader_metadata_id3.so is missing"
 fi
+if [ ! -f /etc/alsa/conf.d/20-bluealsa.conf ]; then
+  echo "/etc/alsa/conf.d/20-bluealsa.conf is missing"
+fi
+
 
 
 
