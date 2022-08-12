@@ -121,7 +121,7 @@ echo
 findmnt -t ext4
 
 echo
-df
+df -h
 
 echo "NOTE:"
 echo "- /dev/mmcblk0p1 is the boot partition, which is what you see when you plug the SD card into your computer. Candle.log and debug.txt are safe to delete from it."
