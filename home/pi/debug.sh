@@ -253,7 +253,6 @@ echo
 
 journalctl --disk-usage
 
-
 echo
 findmnt -t ext4
 
@@ -277,6 +276,7 @@ echo "- Candle only enables swap memory on the Raspberry Pi Zero"
 echo
 echo "--------------------------------------------- /boot files"
 echo
+
 ls /boot -a -l -h
 
 echo
@@ -291,7 +291,16 @@ echo "- This shows how long it took the start the controller, and which parts of
 echo
 echo "--------------------------------------------- iptables (firewall)"
 echo
+
 iptables -t nat --list
+
+
+echo
+echo "--------------------------------------------- network"
+echo
+
+ifconfig
+
 
 echo
 echo "--------------------------------------------- services"
