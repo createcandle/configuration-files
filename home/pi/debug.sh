@@ -36,8 +36,12 @@ fi
 
 
 # Directories
+
 if [ ! -d /etc/hostapd ]; then
   echo "/etc/hostapd dir is missing"
+fi
+if [ ! -d /etc/chromium ]; then
+  echo "/etc/chromium dir is missing"
 fi
 if [ ! -d /etc/mosquitto ]; then
   echo "/etc/mosquitto dir is missing"
@@ -45,22 +49,28 @@ fi
 if [ ! -d /etc/voicecard ]; then
   echo "/etc/voicecard dir is missing"
 fi
-if [ ! -d /etc/chromium ]; then
-  echo "/etc/chromium dir is missing"
-fi
 if [ ! -d /usr/bin/bluealsa ]; then
   echo "/usr/bin/bluealsa dir is missing"
+fi
+if [ ! -d /etc/chromium/policies/managed/ ]; then
+  echo "/etc/chromium/policies/managed/ dir is missing"
 fi
 if [ ! -d /home/pi/.webthings/var/lib/bluetooth ]; then
   echo "/home/pi/.webthings/var/lib/bluetooth dir is missing"
 fi
-if [ ! -d /etc/chromium/policies/managed/ ]; then
-  echo "/etc/chromium/policies/managed/ dir is missing"
+if [ ! -d /home/pi/.webthings/addons/candleappstore ]; then
+  echo "/home/pi/.webthings/addons/candleappstore dir is missing"
 fi
 
 
 
 # Files
+
+
+
+if [ ! -f /home/pi/.webthings/config/db.sqlite3 ]; then
+  echo "/home/pi/.webthings/config/db.sqlite3 is missing"
+fi
 if [ ! -f /home/pi/.webthings/floorplan.svg ]; then
   echo "/home/pi/.webthings/floorplan.svg is missing"
 fi
