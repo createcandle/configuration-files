@@ -26,6 +26,16 @@ else
 fi
 
 
+# If the emergency file is detected, stop here.
+if [ -e /boot/emergency.txt ] 
+then
+  systemctl start ssh.service
+  echo "Emergency file detected. Stopping (120 minutes sleep)" >> /dev/kmsg
+  sleep 7200
+  exit 0
+fi
+
+
 # Handle forced restore of rc.local
 if [ -f /boot/restore_boot_backup.txt ];
 then
