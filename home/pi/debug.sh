@@ -9,7 +9,7 @@ if [ "$EUID" -ne 0 ]
 fi
 echo "Candle version : $(cat /boot/candle_version.txt)"
 echo "Hostname       : $(cat /etc/hostname)"
-echo "Machine ID     : $(cat /etc/machine-id)"
+#echo "Machine ID     : $(cat /etc/machine-id)"
 
 
 echo
