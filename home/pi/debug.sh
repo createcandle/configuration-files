@@ -107,7 +107,12 @@ fi
 if [ ! -f /home/pi/.Xauthority ]; then
   echo "/home/pi/.Xauthority is missing"
 fi
-
+if [ ! -f /etc/avahi/services/candlemqtt.service ]; then
+  echo "/etc/avahi/services/candlemqtt.service is missing"
+fi
+if [ ! -f /etc/avahi/services/candle.service ]; then
+  echo "/etc/avahi/services/candle.service is missing"
+fi
 
 
 # Backups
@@ -176,7 +181,9 @@ echo
 echo "--------------------------------------------- audio"
 echo
 
-aplay -l && arecord -l
+aplay -l
+echo
+arecord -l
 
 echo
 echo "--------------------------------------------- other hardware"
@@ -188,8 +195,6 @@ cat /sys/class/drm/card0/*HDMI*/status
 echo
 echo "Libcamera installed?"
 which libcamera-still
-
-echo
 
 
 echo
