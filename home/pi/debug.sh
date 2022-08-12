@@ -11,7 +11,7 @@ fi
 echo "Hostname       : $(cat /etc/hostname)"
 echo "Candle version : $(cat /boot/candle_version.txt)"
 echo "Python version : $(python3 -V)"
-echo "NPM version    : $(sudo -u pi npm -v)"
+echo "NPM version    : $(npm -v)"
 #echo "Machine ID     : $(cat /etc/machine-id)"
 
 echo
