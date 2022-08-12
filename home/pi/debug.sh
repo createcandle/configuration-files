@@ -77,6 +77,9 @@ fi
 if [ ! -f /home/pi/webthings/gateway/build/app.js ]; then
   echo "/home/pi/webthings/gateway/build/app.js is missing"
 fi
+if [ ! -f /home/pi/webthings/gateway/static/images/floorplan.svg ]; then
+  echo "/home/pi/webthings/gateway/static/images/floorplan.svg is missing"
+fi
 if [ ! -f /home/pi/webthings/gateway/.post_upgrade_complete ]; then
   echo "/home/pi/webthings/gateway/.post_upgrade_complete is missing"
 fi
