@@ -115,8 +115,10 @@ echo
 echo "--------------------------------------------- systemctl"
 echo 
 systemctl list-units --failed
+
 echo
 journalctl --boot=0 --priority=0..3
+
 echo
 echo "NOTE:"
 echo "- syslog.socket failing is expected, as Candle will only log to syslog if developer.txt is present"
@@ -133,6 +135,7 @@ echo
 echo "dmesg warnings:"
 dmesg --level=warn
 
+echo
 echo "NOTE:"
 echo "- Some warnings are to be expected, and they are not really indicative of a real problem"
 echo "- Not all of these are even warnings, as Candle's processes also report when they start and stop".
@@ -187,6 +190,7 @@ findmnt -t ext4
 echo
 df -h
 
+echo
 echo "NOTE:"
 echo "- /dev/mmcblk0p1 is the boot partition, which is what you see when you plug the SD card into your computer. Candle.log and debug.txt are safe to delete from it."
 echo "- /dev/mmcblk0p2 is the system partition. It this is (almost) full, that means an upgrade went very wrong."
@@ -195,6 +199,7 @@ echo
 echo "Details:"
 du /home/pi --max-depth=1 -h
 
+echo
 echo "NOTE:"
 echo "- What matters is the memory under 'available'. It it's lower than 100, try uninstalling some addons."
 echo "- Candle only enables swap memory on the Raspberry Pi Zero"
@@ -208,6 +213,8 @@ echo
 echo "--------------------------------------------- startup"
 echo
 systemd-analyze critical-chain -h
+
+echo
 echo "NOTE:"
 echo "- This shows how long it took the start the controller, and which parts of the process took a long time and/or kept other parts waiting"
 
