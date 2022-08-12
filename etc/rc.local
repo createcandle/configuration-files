@@ -3,11 +3,6 @@
 #logger In rc.local
 echo "Candle: in rc.local" >> /dev/kmsg
 
-if [ -e /boot/emergency.txt ] 
-then
-  systemctl start ssh.service
-  exit 0
-fi
 
 totalk=$(awk '/^MemTotal:/{print $2}' /proc/meminfo)
 #logger total memory: $totalk
