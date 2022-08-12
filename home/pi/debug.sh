@@ -286,6 +286,10 @@ echo
 journalctl --disk-usage
 
 echo
+echo "Bytes written to system partition: $(cat /sys/fs/ext4/mmcblk0p2/lifetime_write_kbytes)"
+
+
+echo
 findmnt -t ext4
 
 echo
