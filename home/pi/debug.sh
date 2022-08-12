@@ -34,17 +34,22 @@ fi
 
 
 if [ ! -d /etc/hostapd ]; then
-  echo "/etc/hostapd is missing"
+  echo "/etc/hostapd dir is missing"
 fi
 if [ ! -d /etc/mosquitto ]; then
-  echo "/etc/mosquitto is missing"
+  echo "/etc/mosquitto dir is missing"
 fi
 if [ ! -d /etc/voicecard ]; then
-  echo "/etc/voicecard is missing"
+  echo "/etc/voicecard dir is missing"
 fi
 if [ ! -d /etc/chromium ]; then
-  echo "/etc/chromium is missing"
+  echo "/etc/chromium dir is missing"
 fi
+if [ ! -d /usr/bin/bluealsa ]; then
+  echo "/usr/bin/bluealsa dir is missing"
+fi
+
+
 
 if [ ! -f /home/pi/.webthings/floorplan.svg ]; then
   echo "/home/pi/.webthings/floorplan.svg is missing"
