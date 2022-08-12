@@ -15,6 +15,8 @@ echo "Hostname       : $(cat /etc/hostname)"
 echo
 echo "--------------------------------------------- ERRORS"
 echo
+
+# Links
 if [ ! -L /etc/hosts ]; then
   echo "/etc/hosts is not a link"
 fi
@@ -33,6 +35,7 @@ if [ ! -L /etc/fake-hwclock.data ]; then
 fi
 
 
+# Directories
 if [ ! -d /etc/hostapd ]; then
   echo "/etc/hostapd dir is missing"
 fi
@@ -57,7 +60,7 @@ fi
 
 
 
-
+# Files
 if [ ! -f /home/pi/.webthings/floorplan.svg ]; then
   echo "/home/pi/.webthings/floorplan.svg is missing"
 fi
@@ -80,8 +83,20 @@ if [ ! -f /etc/X11/xinit/xinitrc ]; then
   echo "/etc/X11/xinit/xinitrc is missing"
 fi
 
+# Backups
+if [ ! -f /home/pi/candle/early.sh.bak ]; then
+  echo "/home/pi/candle/early.sh.bak backup is missing"
+fi
+if [ ! -f /etc/rc.local.bak ]; then
+  echo "/etc/rc.local.bak backup is missing"
+fi
+if [ ! -f /home/pi/controller_backup.tar ]; then
+  echo "/home/pi/controller_backup.tar backup is missing"
+fi
+
+# Swap
 if [ -f /var/swap ]; then
-  echo "/var/swap detected"
+  echo "/var/swap file still exists"
 fi
 
 
