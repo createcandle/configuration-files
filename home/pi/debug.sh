@@ -261,7 +261,7 @@ echo
 
 if [ -d /ro ]; then
   echo "overlay spotted"
-  du /rw/upper --max-depth=1
+  du /rw/upper --max-depth=1 -h
 else
   echo "no overlay spotted"
 fi
