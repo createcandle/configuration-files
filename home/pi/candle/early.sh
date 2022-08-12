@@ -176,6 +176,27 @@ then
 
 fi
 
+# Generate debug file if requested
+if [ -f /boot/generate_debug.txt ]; then
+  rm /boot/generate_debug.txt
+  rm /boot/debug.txt
+  sleep 15
+  echo "Candle: generating debug file" >> /dev/kmsg
+  /home/pi/debug.sh > /boot/debug.txt
+fi
 
-echo "Normal end of Candle early." >> /dev/kmsg
+# Generate debug file if requested
+if [ -f /boot/generate_raspinfo.txt ]; then
+  rm /boot/generate_raspinfo.txt
+  rm /boot/raspinfo.txt
+  sleep 15
+  echo "Candle: generating raspinfo file" >> /dev/kmsg
+  raspinfo > /boot/raspinfo.txt
+fi
+
+
+
+echo "End of Candle early." >> /dev/kmsg
+
 exit 0
+
