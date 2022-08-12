@@ -91,7 +91,7 @@ then
     echo "$(date) - forced restoring controller backup done" >> /dev/kmsg
   
   
-    if [ -f /home/pi/webthings/gateway/build/app.js ] && [ -f /home/pi/webthings/gateway/build/static/index.html ];
+    if [ -f /home/pi/webthings/gateway/build/app.js ] && [ -f /home/pi/webthings/gateway/build/static/index.html ] && [ -d /home/pi/webthings/gateway/node_modules ] && [ -d /home/pi/webthings/gateway/build/static/bundle ];
     then
       echo "$(date) - forced restoring controller backup done" >> /boot/candle.log
       echo "$(date) - forced restoring controller backup done" >> /dev/kmsg
@@ -107,7 +107,7 @@ then
         /bin/ply-image /boot/error.png
       fi
       
-      sleep 60
+      sleep 7200
       exit 1
     fi
   
@@ -121,7 +121,7 @@ then
       /bin/ply-image /boot/error.png
     fi
     
-    sleep 60
+    sleep 7200
     exit 1
   fi
 
@@ -154,7 +154,7 @@ then
   sudo -u pi ./install_candle_controller.sh
   rm ./install_candle_controller.sh
   
-  if [ -f /home/pi/webthings/gateway/build/app.js ] && [ -f /home/pi/webthings/gateway/build/static/index.html ];
+  if [ -f /home/pi/webthings/gateway/build/app.js ] && [ -f /home/pi/webthings/gateway/build/static/index.html ] && [ -d /home/pi/webthings/gateway/node_modules ] && [ -d /home/pi/webthings/gateway/build/static/bundle ];
   then
     echo "$(date) - forced controller regeneration done" >> /boot/candle.log
     echo "$(date) - forced controller regeneration done" >> /dev/kmsg
@@ -170,7 +170,7 @@ then
       /bin/ply-image /boot/error.png
     fi
 
-    sleep 60
+    sleep 7200
     exit 1
   fi
 
