@@ -75,6 +75,12 @@ echo
 journalctl --boot=0 --priority=0..3
 
 echo
+echo "--------------------------------------------- dmesg"
+echo 
+
+dmesg --level=emerg,alert,crit,err,warn
+
+echo
 echo "--------------------------------------------- config.txt"
 echo
 
