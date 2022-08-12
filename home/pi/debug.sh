@@ -65,9 +65,6 @@ fi
 
 
 # Files
-
-
-
 if [ ! -f /home/pi/.webthings/config/db.sqlite3 ]; then
   echo "/home/pi/.webthings/config/db.sqlite3 is missing"
 fi
