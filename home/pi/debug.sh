@@ -47,6 +47,13 @@ fi
 if [ ! -d /usr/bin/bluealsa ]; then
   echo "/usr/bin/bluealsa dir is missing"
 fi
+if [ ! -d /home/pi/.webthings/var/lib/bluetooth ]; then
+  echo "/home/pi/.webthings/var/lib/bluetooth dir is missing"
+fi
+if [ ! -d /etc/chromium/policies/managed/ ]; then
+  echo "/etc/chromium/policies/managed/ dir is missing"
+fi
+
 
 
 
@@ -61,6 +68,15 @@ if [ ! -f /home/pi/webthings/gateway/.post_upgrade_complete ]; then
 fi
 if [ ! -f /home/pi/webthings/gateway/build/static/css/candle.css ]; then
   echo "/home/pi/webthings/gateway/build/static/css/candle.css is missing"
+fi
+if [ ! -f /home/pi/.webthings/etc/webthings_settings.js ]; then
+  echo "/home/pi/.webthings/etc/webthings_settings.js is missing"
+fi
+if [ ! -f /boot/error.png ]; then
+  echo "/boot/error.png is missing"
+fi
+if [ ! -f /etc/X11/xinit/xinitrc ]; then
+  echo "/etc/X11/xinit/xinitrc is missing"
 fi
 
 
@@ -100,6 +116,9 @@ cat /boot/config.txt | grep -v "#" | grep .
 
 echo "/boot/cmdline.txt:"
 cat /boot/cmdline.txt
+
+echo "/home/pi/.webthings/.node_version:"
+cat /home/pi/.webthings/.node_version
 
 
 echo
@@ -143,7 +162,13 @@ echo "- Candle only enables swap memory on the Raspberry Pi Zero"
 echo
 echo "--------------------------------------------- startup"
 echo
-systemd-analyze critical-chain
+systemd-analyze critical-chain -h
+echo "NOTE:"
+echo "- This shows how long it took the start the controller, and which parts of the process took a long time and/or kept other parts waiting"
 
+echo
+echo "--------------------------------------------- iptables (firewall)"
+echo
+iptables -t nat --list
 
 
