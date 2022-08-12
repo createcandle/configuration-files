@@ -104,6 +104,10 @@ fi
 if [ ! -f /home/pi/candle_packages.txt ]; then
   echo "/home/pi/candle_packages.txt is missing"
 fi
+if [ ! -f /home/pi/.Xauthority ]; then
+  echo "/home/pi/.Xauthority is missing"
+fi
+
 
 
 # Backups
