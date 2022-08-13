@@ -64,6 +64,9 @@ fi
 if [ ! -d /home/pi/.webthings/var/lib/bluetooth ]; then
   echo "/home/pi/.webthings/var/lib/bluetooth dir is missing"
 fi
+if [ ! -d /home/pi/.webthings/var/lib/bluetooth ]; then
+  echo "/home/pi/.webthings/var/lib/bluetooth dir is missing"
+fi
 if [ ! -d /home/pi/.webthings/addons/candleappstore ]; then
   echo "/home/pi/.webthings/addons/candleappstore dir is missing"
 fi
@@ -73,6 +76,7 @@ fi
 if [ ! -d /usr/local/lib/python3.9/dist-packages/gateway_addon ]; then
   echo "/usr/local/lib/python3.9/dist-packages/gateway_addon dir is missing"
 fi
+
 
 
 # Files
