@@ -255,9 +255,11 @@ echo
 echo "/boot/config.txt:"
 cat /boot/config.txt | grep -v "#" | grep .
 
+echo
 echo "/boot/cmdline.txt:"
 cat /boot/cmdline.txt
 
+echo
 echo "/home/pi/.webthings/.node_version:"
 cat /home/pi/.webthings/.node_version
 
