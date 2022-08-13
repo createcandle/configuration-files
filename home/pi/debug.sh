@@ -119,10 +119,12 @@ if [ ! -f /home/pi/candle/early.sh ]; then
 fi
 
 
+
 #/boot files
 if [ ! -f /boot/error.png ]; then
   echo "/boot/error.png is missing"
 fi
+
 
 
 #/etc files
@@ -188,7 +190,9 @@ if [ -f /home/pi/.webthings/zero.fill ]; then
   echo "/home/pi/.webthings/zero.fill file exists"
   rm /home/pi/.webthings/zero.fill
 fi
-
+if [ ! -f /boot/bootup_actions_failed.sh ]; then
+  echo "/boot/bootup_actions_failed.sh file exists"
+fi
 
 echo
 echo "--------------------------------------------- warnings"
