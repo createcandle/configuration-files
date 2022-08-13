@@ -193,6 +193,13 @@ fi
 if [ ! -f /boot/bootup_actions_failed.sh ]; then
   echo "/boot/bootup_actions_failed.sh file exists"
 fi
+if [ ! -f /boot/._cmdline.txt ]; then
+  echo "/boot/._cmdline.txt file exists"
+fi
+
+rm -rf /boot/.Spotlight*
+rm /boot/._cmdline.txt
+
 
 echo
 echo "--------------------------------------------- warnings"
