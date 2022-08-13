@@ -2,6 +2,7 @@
 set +e
 
 # This file gets copied to /boot when factory reset is requested.
+# It is also called by the script that creates the Candle disk image
 # /boot/candle_first_run.sh will only actually be run by a service if /boot/candle_first_run_complete does not exist.
 
 
