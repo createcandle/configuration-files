@@ -43,6 +43,10 @@ fi
 # Because the disk image is created on Windows, it leaves behind a directory...
 rm -rf /boot/'System Volume Information'
 
+if [ ! -f /boot/candle_original_version.txt ] && [ - f /boot/candle_version.txt ]; then
+  cp /boot/candle_version.txt /boot/candle_original_version.txt
+fi
+
 
 # Mark first run as complete and reboot
 if [ ! -f /boot/candle_first_run_complete.txt ]; then
