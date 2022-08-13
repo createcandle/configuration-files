@@ -143,12 +143,27 @@ then
       /bin/ply-image /boot/splash_updating.png
     fi
   fi
-
+  
+  # Wait for IP address for at most 30 seconds
+  echo "Waiting for IP address..."
+  for i in {1..30}
+  do
+    #echo "current IP: $(hostname -I)"
+    if [ "$(hostname -I)" = "" ]
+    then
+      echo "Candle: early.sh: no network yet $i" >> /dev/kmsg
+      echo "no network yet $i"
+      sleep 1    
+    else
+      echo "Candle: early.sh: IP address detected: $(hostname -I)" >> /dev/kmsg
+      break
+    fi
+  done
+  
   cd /home/pi || exit
   echo "$(date) - starting forced controller regeneration..." >> /boot/candle.log
   echo "$(date) - starting forced controller regeneration..." >> /dev/kmsg
-  # Wait for network
-  sleep 15
+
   wget https://raw.githubusercontent.com/createcandle/install-scripts/main/install_candle_controller.sh
   chmod +x ./install_candle_controller.sh
   sudo -u pi ./install_candle_controller.sh
@@ -169,7 +184,6 @@ then
     if [ -e "/bin/ply-image" ]; then
       /bin/ply-image /boot/error.png
     fi
-
     sleep 7200
     exit 1
   fi
