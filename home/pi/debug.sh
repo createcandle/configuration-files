@@ -4,8 +4,8 @@
 # None of these should be privacy infringing (no unique ID's)
 
 # Check if script is being run as root
-if [ "$EUID" -ne 0 ]
-  then echo "Please run as root (use sudo)"
+if [ "$EUID" -ne 0 ]; then
+  echo "Please run as root (use sudo)"
   exit
 fi
 
@@ -191,16 +191,12 @@ if [ -f /home/pi/.webthings/zero.fill ]; then
   echo "/home/pi/.webthings/zero.fill file exists"
   rm /home/pi/.webthings/zero.fill
 fi
-if [ ! -f /boot/bootup_actions_failed.sh ]; then
+if [ -f /boot/bootup_actions_failed.sh ]; then
   echo "/boot/bootup_actions_failed.sh file exists"
 fi
-if [ ! -f /boot/._cmdline.txt ]; then
+if [ -f /boot/._cmdline.txt ]; then
   echo "/boot/._cmdline.txt file exists"
 fi
-
-rm -rf /boot/.Spotlight*
-rm /boot/._cmdline.txt
-
 
 echo
 echo "--------------------------------------------- warnings"
