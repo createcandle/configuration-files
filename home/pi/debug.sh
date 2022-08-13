@@ -17,8 +17,8 @@ echo "IP address     : $(hostname -I)"
 echo "Candle version : $(cat /boot/candle_version.txt)"
 echo "Python version : $(python3 --version)"
 echo "SQLite version : $(sqlite3 --version | cut -d' ' -f1)"
-echo "Node version   : $(node --version)"
-echo "NPM version    : $(npm --version)"
+echo "Node version   : $(sudo -i -u pi node --version)"
+echo "NPM version    : $(sudo -i -u pi npm --version)"
 #echo "Machine ID     : $(cat /etc/machine-id)"
 
 echo
