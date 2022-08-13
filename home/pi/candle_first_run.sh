@@ -6,6 +6,17 @@ set +e
 # /boot/candle_first_run.sh will only actually be run by a service if /boot/candle_first_run_complete does not exist.
 
 
+# Check if script is being run as root
+if [ "$EUID" -ne 0 ]
+  then echo "Please run as root (use sudo)"
+  exit
+fi
+
+
+echo "in candle_first_run.sh"
+echo "Candle: in candle_first_run.sh" >> /dev/kmsg
+
+
 # Set machine ID
 if [ -s /etc/machine-id ];
 then
@@ -18,6 +29,7 @@ then
     mount -o remount,ro /ro
   fi
   echo "$(date) - Machine ID generated" >> /boot/candle.log
+  echo "Candle: generated machine ID" >> /dev/kmsg
 fi
 
 
@@ -43,7 +55,7 @@ fi
 # Because the disk image is created on Windows, it leaves behind a directory...
 rm -rf /boot/'System Volume Information'
 
-if [ ! -f /boot/candle_original_version.txt ] && [ - f /boot/candle_version.txt ]; then
+if [ ! -f /boot/candle_original_version.txt ] && [ -f /boot/candle_version.txt ]; then
   cp /boot/candle_version.txt /boot/candle_original_version.txt
 fi
 
