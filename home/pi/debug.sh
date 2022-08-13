@@ -124,6 +124,7 @@ if [ ! -f /boot/error.png ]; then
   echo "/boot/error.png is missing"
 fi
 
+
 #/etc files
 if [ ! -f /etc/rc.local ]; then
   echo "/etc/rc.local is missing"
@@ -151,7 +152,7 @@ if [ ! -f /etc/systemd/system/bluetooth.service.d/candle.conf ]; then
 fi
 
 
-# other files
+# Other files
 if [ ! -f /usr/bin/pip3 ]; then
   echo "/usr/bin/pip3 is missing"
 fi
@@ -177,17 +178,37 @@ fi
 
 # Files that should not exist
 if [ -f /var/swap ]; then
-  echo "/var/swap file still exists"
+  echo "/var/swap file exists"
 fi
 if [ -f /zero.fill ]; then
-  echo "/zero.fill file still exists"
+  echo "/zero.fill file exists"
   rm /zero.fill
 fi
 if [ -f /home/pi/.webthings/zero.fill ]; then
-  echo "/home/pi/.webthings/zero.fill file still exists"
+  echo "/home/pi/.webthings/zero.fill file exists"
   rm /home/pi/.webthings/zero.fill
 fi
 
+
+echo
+echo "--------------------------------------------- warnings"
+echo 
+
+if [ -f /boot/bootup_actions.sh ]; then
+  echo "/boot/bootup_actions.sh file exists"
+fi
+if [ -f /boot/debug.txt ]; then
+  echo "/boot/debug.txt file exists"
+fi
+if [ -f /boot/candle_rw_keep.txt ]; then
+  echo "boot/candle_rw_keep.txt file exists"
+fi
+if [ -f /boot/developer.txt ]; then
+  echo "boot/developer.txt file exists"
+fi
+if [ -f /boot/emergency.txt ]; then
+  echo "boot/emergency.txt file exists"
+fi
 
 
 echo
