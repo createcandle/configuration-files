@@ -13,6 +13,7 @@ echo "Candle Controller debug information"
 echo
 echo "Date:          : $(date)"
 echo "Hostname       : $(cat /etc/hostname)"
+echo "IP address     : $(hostname -I)"
 echo "Candle version : $(cat /boot/candle_version.txt)"
 echo "Python version : $(python3 --version)"
 echo "SQLite version : $(sqlite3 --version | cut -d' ' -f1)"
