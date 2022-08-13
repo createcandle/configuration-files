@@ -52,8 +52,13 @@ else
 fi
 
 
-# Because the disk image is created on Windows, it leaves behind a directory...
+# If the disk image was created on Windows or Mac, it may leaves behind cruft...
 rm -rf /boot/'System Volume Information'
+rm -rf /boot/.Spotlight*
+if [ -f /boot/._cmdline.txt ]; then
+    rm /boot/._cmdline.txt
+fi
+
 
 if [ ! -f /boot/candle_original_version.txt ] && [ -f /boot/candle_version.txt ]; then
   cp /boot/candle_version.txt /boot/candle_original_version.txt
