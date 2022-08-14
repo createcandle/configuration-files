@@ -270,7 +270,7 @@ echo
 echo "--------------------------------------------- time"
 echo
 
-timedatectl 
+timedatectl --no-pager
 
 
 echo
@@ -331,7 +331,7 @@ else
 fi
 echo
 
-journalctl --disk-usage
+journalctl --disk-usage --no-pager
 
 echo
 echo "Bytes written to system partition: $(cat /sys/fs/ext4/mmcblk0p2/lifetime_write_kbytes)"
