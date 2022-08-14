@@ -91,7 +91,7 @@ then
     echo "$(date) - forced restoring controller backup done" >> /dev/kmsg
   
   
-    if [ -f /home/pi/webthings/gateway/build/app.js ] && [ -f /home/pi/webthings/gateway/build/static/index.html ] && [ -d /home/pi/webthings/gateway/node_modules ] && [ -d /home/pi/webthings/gateway/build/static/bundle ];
+    if [ -f /home/pi/webthings/gateway/build/app.js ] && [ -f /home/pi/webthings/gateway/.post_upgrade_complete ] && [ -f /home/pi/webthings/gateway/build/static/index.html ] && [ -d /home/pi/webthings/gateway/node_modules ] && [ -d /home/pi/webthings/gateway/build/static/bundle ];
     then
       echo "$(date) - forced restoring controller backup done" >> /boot/candle.log
       echo "$(date) - forced restoring controller backup done" >> /dev/kmsg
@@ -169,7 +169,7 @@ then
   sudo -u pi ./install_candle_controller.sh
   rm ./install_candle_controller.sh
   
-  if [ -f /home/pi/webthings/gateway/build/app.js ] && [ -f /home/pi/webthings/gateway/build/static/index.html ] && [ -d /home/pi/webthings/gateway/node_modules ] && [ -d /home/pi/webthings/gateway/build/static/bundle ];
+  if [ -f /home/pi/webthings/gateway/build/app.js ] && [ -f /home/pi/webthings/gateway/.post_upgrade_complete ] && [ -f /home/pi/webthings/gateway/build/static/index.html ] && [ -d /home/pi/webthings/gateway/node_modules ] && [ -d /home/pi/webthings/gateway/build/static/bundle ];
   then
     echo "$(date) - forced controller regeneration done" >> /boot/candle.log
     echo "$(date) - forced controller regeneration done" >> /dev/kmsg
