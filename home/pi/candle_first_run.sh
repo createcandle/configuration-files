@@ -59,7 +59,7 @@ if [ -f /boot/._cmdline.txt ]; then
     rm /boot/._cmdline.txt
 fi
 
-
+# Remember which version of Candle this SD card originally came with
 if [ ! -f /boot/candle_original_version.txt ] && [ -f /boot/candle_version.txt ]; then
   cp /boot/candle_version.txt /boot/candle_original_version.txt
 fi
