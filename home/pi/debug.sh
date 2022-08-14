@@ -341,7 +341,8 @@ echo "Bytes written to system partition: $(cat /sys/fs/ext4/mmcblk0p2/lifetime_w
 
 
 echo
-#findmnt -t ext4
+findmnt -t ext4
+echo
 findmnt
 
 echo
