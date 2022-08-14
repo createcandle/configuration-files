@@ -167,6 +167,10 @@ if [ ! -f /opt/vc/lib/plugins/plugins/reader_metadata_id3.so ]; then
   echo "/opt/vc/lib/plugins/plugins/reader_metadata_id3.so is missing"
 fi
 
+if [ ! -d /var/run/mosquitto ]; then
+  echo "/var/run/mosquitto dir is missing"
+fi
+
 
 # Backups
 if [ ! -f /home/pi/controller_backup.tar ]; then
