@@ -200,6 +200,7 @@ if [ -f /boot/._cmdline.txt ]; then
 fi
 
 echo
+echo
 echo "--------------------------------------------- warnings"
 echo 
 
@@ -219,7 +220,7 @@ if [ -f /boot/emergency.txt ]; then
   echo "boot/emergency.txt file exists"
 fi
 
-
+echo
 echo
 echo "--------------------------------------------- systemctl"
 echo 
@@ -233,6 +234,7 @@ echo "NOTE:"
 echo "- syslog.socket failing is expected, as Candle will only log to syslog if developer.txt is present"
 echo "- This error is also not a problem: Failed to make bind mount source '/home/pi/.webthings/etc/hostname': File exists"
 
+echo
 echo
 echo "--------------------------------------------- dmesg"
 echo 
@@ -249,6 +251,7 @@ echo "NOTE:"
 echo "- Some warnings are to be expected, and they are not really indicative of a real problem"
 echo "- Not all of these are even warnings, as Candle's processes also report when they start and stop".
 
+echo
 echo
 echo "--------------------------------------------- config"
 echo
