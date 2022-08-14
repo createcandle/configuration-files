@@ -223,7 +223,7 @@ fi
 echo
 echo "--------------------------------------------- systemctl"
 echo 
-systemctl list-units --failed
+systemctl list-units --failed --no-pager
 
 echo
 timeout 2s journalctl --boot=0 --priority=0..3 --no-pager
@@ -391,12 +391,12 @@ echo
 echo "--------------------------------------------- services"
 echo
 
-systemctl status candle_early.service 
+systemctl --no-pager status candle_early.service 
 echo
-systemctl status rc-local.service 
+systemctl --no-pager status rc-local.service 
 echo
-systemctl status webthings-gateway.service 
+systemctl --no-pager status webthings-gateway.service 
 echo
-systemctl status bluealsa.service 
+systemctl --no-pager status bluealsa.service 
 
 
