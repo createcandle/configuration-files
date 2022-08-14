@@ -204,6 +204,11 @@ echo
 echo "--------------------------------------------- warnings"
 echo 
 
+if ! lsblk | grep -q 'mmcblk0p4'; 
+then
+  echo "NO FOURTH PARTITION. This must be an older Candle controller."
+fi
+
 if [ -f /boot/bootup_actions.sh ]; then
   echo "/boot/bootup_actions.sh file exists"
 fi
