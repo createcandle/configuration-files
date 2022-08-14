@@ -159,8 +159,9 @@ END
       echo "$(date) - restored controller backup (rc)" >> /dev/kmsg
       
     
+    
     # If an old version is detected, try switching to that
-    elif [ -f /home/pi/webthings-old/gateway/build/app.js ] && [ -f /home/pi/webthings-old/gateway/build/static/index.html ]  && [ -d /home/pi/webthings-old/gateway/node_modules ] && [ -d /home/pi/webthings-old/gateway/build/static/bundle ]; 
+    elif [ -f /home/pi/webthings-old/gateway/build/app.js ] && [ -f /home/pi/webthings/gateway/.post_upgrade_complete ] && [ -f /home/pi/webthings-old/gateway/build/static/index.html ]  && [ -d /home/pi/webthings-old/gateway/node_modules ] && [ -d /home/pi/webthings-old/gateway/build/static/bundle ]; 
     then
         mv ./webthings-old ./webthings
         echo "$(date) - restored old controller directory (rc)" >> /boot/candle.log
@@ -184,7 +185,7 @@ END
   fi
   sleep 5
   
-  if [ -f /home/pi/webthings/gateway/build/app.js ] && [ -f /home/pi/webthings/gateway/build/static/index.html ]  && [ -d /home/pi/webthings/gateway/node_modules ] && [ -d /home/pi/webthings/gateway/build/static/bundle ];
+  if [ -f /home/pi/webthings/gateway/build/app.js ] && [ -f /home/pi/webthings/gateway/.post_upgrade_complete ] && [ -f /home/pi/webthings/gateway/build/static/index.html ]  && [ -d /home/pi/webthings/gateway/node_modules ] && [ -d /home/pi/webthings/gateway/build/static/bundle ];
   then
     echo "$(date) - controller regeneration complete (rc)" >> /boot/candle.log
     echo "$(date) - controller regeneration complete (rc)" >> /dev/kmsg
