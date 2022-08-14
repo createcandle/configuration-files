@@ -1,7 +1,7 @@
 proc            /proc           proc    defaults          0       0
 /dev/mmcblk0p1  /boot           vfat    defaults          0       2
 /dev/mmcblk0p2  /               ext4    defaults,noatime  0       1
-/dev/mmcblk0p3  /home/pi/.webthings  ext4    defaults,rw  1       2
+/dev/mmcblk0p4  /home/pi/.webthings  ext4    defaults,rw  1       2
 
 /home/pi/.webthings/etc/wpa_supplicant  /etc/wpa_supplicant  none defaults,bind
 /home/pi/.webthings/var/lib/bluetooth   /var/lib/bluetooth   none defaults,bind
