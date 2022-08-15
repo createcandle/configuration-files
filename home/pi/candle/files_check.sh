@@ -107,6 +107,10 @@ fi
 if [ ! -f /bin/ply-image ]; then
   echo "/bin/ply-image is missing"
 fi
+if [ ! -f /bin/sqlite3 ]; then
+  echo "/bin/sqlite3 is missing"
+fi
+
 
 
 #/boot files
