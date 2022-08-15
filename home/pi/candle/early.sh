@@ -36,6 +36,19 @@ then
 fi
 
 
+if [ -f /boot/controller_backup.tar ]; then
+  if [ -d /ro ]; then
+    sudo mount -o remount,rw /ro
+    rm /ro/home/pi/boot/controller_backup.tar
+    mv /boot/controller_backup.tar /ro/home/pi/controller_backup.tar
+    sudo mount -o remount,ro /ro
+  else
+    rm /home/pi/boot/controller_backup.tar
+    mv /boot/controller_backup.tar /home/pi/controller_backup.tar
+  fi
+fi
+
+
 # Handle forced restore of rc.local
 if [ -f /boot/restore_boot_backup.txt ];
 then
@@ -264,7 +277,9 @@ if [ -f /boot/generate_raspinfo.txt ]; then
   raspinfo > /boot/raspinfo.txt
 fi
 
-
+if [ -f /home/pi/candle/files_check.sh ]; then
+  /home/pi/candle/files_check.sh > /boot/candle_issues.txt
+fi
 
 echo "End of Candle early." >> /dev/kmsg
 
