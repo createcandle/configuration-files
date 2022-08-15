@@ -2,6 +2,7 @@
 Description=Show Candle logo on boot rotated 180 degrees
 DefaultDependencies=no
 After=local-fs.target
+ConditionPathExists=/dev/fb0
 ConditionPathExists=/boot/rotate180.txt
 ConditionPathExists=!/boot/bootup_actions.sh
 ConditionKernelCommandLine=splash
