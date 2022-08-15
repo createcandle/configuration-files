@@ -73,7 +73,7 @@ then
   then
   
     # Show updating image
-    if [ -e "/bin/ply-image" ]; then
+    if [ -e "/bin/ply-image" ] && [ -e /dev/fb0 ] && [ -f "/boot/splash_updating.png" ] && [ -f "/boot/splash_updating180.png" ]; then
       if [ -e "/boot/rotate180.txt" ]; then
         /bin/ply-image /boot/splash_updating180.png
       else
@@ -107,7 +107,7 @@ then
       echo "$(date) - forced restoring controller backup failed" >> /dev/kmsg
       
       # Show error image
-      if [ -e "/bin/ply-image" ]; then
+     if [ -e "/bin/ply-image" ] && [ -e /dev/fb0 ] && [ -f "/boot/error.png" ]; then
         /bin/ply-image /boot/error.png
       fi
       
@@ -121,7 +121,7 @@ then
     echo "$(date) - forced restoring controller backup: no backup found" >> /dev/kmsg
     
     # Show error image
-    if [ -e "/bin/ply-image" ]; then
+    if [ -e "/bin/ply-image" ] && [ -e /dev/fb0 ] && [ -f "/boot/error.png" ]; then
       /bin/ply-image /boot/error.png
     fi
     
@@ -140,7 +140,7 @@ then
     systemctl start ssh.service
   fi
   
-  if [ -e "/bin/ply-image" ]; then
+  if [ -e "/bin/ply-image" ] && [ -e /dev/fb0 ] && [ -f "/boot/splash_updating.png" ] && [ -f "/boot/splash_updating180.png" ]; then
     if [ -e "/boot/rotate180.txt" ]; then
       /bin/ply-image /boot/splash_updating180.png
     else
@@ -168,10 +168,58 @@ then
   echo "$(date) - starting forced controller regeneration..." >> /boot/candle_log.txt
   echo "$(date) - starting forced controller regeneration..." >> /dev/kmsg
 
-  wget https://raw.githubusercontent.com/createcandle/install-scripts/main/install_candle_controller.sh
-  chmod +x ./install_candle_controller.sh
-  sudo -u pi ./install_candle_controller.sh
-  rm ./install_candle_controller.sh
+
+
+    if [ -f /boot/developer.txt ]; then
+        wget https://raw.githubusercontent.com/createcandle/install-scripts/main/install_candle_controller.sh -O ./install_candle_controller.sh
+    else
+        curl -s https://api.github.com/repos/createcandle/install-scripts/releases/latest \
+        | grep "tarball_url" \
+        | cut -d : -f 2,3 \
+        | tr -d \" \
+        | sed 's/,*$//' \
+        | wget -qi - -O install-scripts.tar
+
+        tar -xf install-scripts.tar
+        rm install-scripts.tar
+
+        for directory in createcandle-install-scripts*; do
+          [[ -d $directory ]] || continue
+          echo "Directory: $directory"
+          mv -- "$directory" ./install-scripts
+        done
+
+        mv ./install-scripts/install_candle_controller.sh ./install_candle_controller.sh
+        rm -rf ./install-scripts
+        #echo
+        #echo "result:"
+        #ls install_candle_controller.sh
+    fi
+
+
+    # Check if the install_candle_controller.sh file now exists
+    if [ ! -f install_candle_controller.sh ]; then
+        echo
+        echo "ERROR, missing install_candle_controller.sh file"
+        echo "$(date) - Failed to download install_candle_controller script" >> /boot/candle_log.txt
+        echo
+
+        # Show error image
+        if [ -e "/bin/ply-image" ] && [ -e /dev/fb0 ] && [ -f /boot/error.png ]; then
+            /bin/ply-image /boot/error.png
+            sleep 7200
+        fi
+
+        exit 1
+    fi
+
+    chmod +x ./install_candle_controller.sh
+    sudo -u pi ./install_candle_controller.sh
+    wait
+    rm ./install_candle_controller.sh
+
+
+
   
   if [ -f /home/pi/webthings/gateway/build/app.js ] \
   && [ -f /home/pi/webthings/gateway/.post_upgrade_complete ] \
@@ -189,7 +237,7 @@ then
     echo "$(date) - forced controller regeneration failed" >> /dev/kmsg
     
     # Show error image
-    if [ -e "/bin/ply-image" ]; then
+    if [ -e "/bin/ply-image" ] && [ -e /dev/fb0 ] && [ -f "/boot/error.png" ]; then
       /bin/ply-image /boot/error.png
     fi
     sleep 7200
