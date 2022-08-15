@@ -252,7 +252,7 @@ if [ -f /boot/generate_debug.txt ]; then
   rm /boot/debug.txt
   sleep 15
   echo "Candle: generating debug file" >> /dev/kmsg
-  /home/pi/debug.sh > /boot/debug.txt
+  /home/pi/candle/debug.sh > /boot/debug.txt
 fi
 
 # Generate debug file if requested
