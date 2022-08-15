@@ -49,11 +49,11 @@ then
   if [ -f /etc/rc.local.bak ];
   then
     cp /etc/rc.local.bak /etc/rc.local
-    echo "$(date) - forced restored boot backup" >> /boot/candle.log
+    echo "$(date) - forced restored boot backup" >> /boot/candle_log.txt
     echo "$(date) - forced restored boot backup" >> /dev/kmsg
 
   else
-    echo "$(date) - forced restoring boot backup: no backup found" >> /boot/candle.log
+    echo "$(date) - forced restoring boot backup: no backup found" >> /boot/candle_log.txt
     echo "$(date) - forced restoring boot backup: no backup found" >> /dev/kmsg
   fi
 fi
@@ -83,11 +83,11 @@ then
     
     # Restore backup
     cd /home/pi || exit
-    echo "$(date) - forced restoring controller backup..." >> /boot/candle.log
+    echo "$(date) - forced restoring controller backup..." >> /boot/candle_log.txt
     echo "$(date) - forced restoring controller backup..." >> /dev/kmsg
     rm -rf /home/pi/webthings
     tar -xvf controller_backup.tar
-    echo "$(date) - forced restoring controller backup done" >> /boot/candle.log
+    echo "$(date) - forced restoring controller backup done" >> /boot/candle_log.txt
     echo "$(date) - forced restoring controller backup done" >> /dev/kmsg
   
   
@@ -97,13 +97,13 @@ then
     && [ -d /home/pi/webthings/gateway/node_modules ] \
     && [ -d /home/pi/webthings/gateway/build/static/bundle ];
     then
-      echo "$(date) - forced restoring controller backup done" >> /boot/candle.log
+      echo "$(date) - forced restoring controller backup done" >> /boot/candle_log.txt
       echo "$(date) - forced restoring controller backup done" >> /dev/kmsg
       reboot now
       sleep 5
       
     else
-      echo "$(date) - forced restoring controller backup failed" >> /boot/candle.log
+      echo "$(date) - forced restoring controller backup failed" >> /boot/candle_log.txt
       echo "$(date) - forced restoring controller backup failed" >> /dev/kmsg
       
       # Show error image
@@ -117,7 +117,7 @@ then
   
   else
     # Record that no backup was found
-    echo "$(date) - forced restoring controller backup: no backup found" >> /boot/candle.log
+    echo "$(date) - forced restoring controller backup: no backup found" >> /boot/candle_log.txt
     echo "$(date) - forced restoring controller backup: no backup found" >> /dev/kmsg
     
     # Show error image
@@ -165,7 +165,7 @@ then
   done
   
   cd /home/pi || exit
-  echo "$(date) - starting forced controller regeneration..." >> /boot/candle.log
+  echo "$(date) - starting forced controller regeneration..." >> /boot/candle_log.txt
   echo "$(date) - starting forced controller regeneration..." >> /dev/kmsg
 
   wget https://raw.githubusercontent.com/createcandle/install-scripts/main/install_candle_controller.sh
@@ -179,13 +179,13 @@ then
   && [ -d /home/pi/webthings/gateway/node_modules ] \
   && [ -d /home/pi/webthings/gateway/build/static/bundle ];
   then
-    echo "$(date) - forced controller regeneration done" >> /boot/candle.log
+    echo "$(date) - forced controller regeneration done" >> /boot/candle_log.txt
     echo "$(date) - forced controller regeneration done" >> /dev/kmsg
     reboot now
     sleep 5
       
   else
-    echo "$(date) - forced controller regeneration failed" >> /boot/candle.log
+    echo "$(date) - forced controller regeneration failed" >> /boot/candle_log.txt
     echo "$(date) - forced controller regeneration failed" >> /dev/kmsg
     
     # Show error image
