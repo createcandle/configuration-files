@@ -46,6 +46,9 @@ fi
 if [ ! -d /home/pi/.webthings/addons/candleappstore ]; then
   echo "/home/pi/.webthings/addons/candleappstore dir is missing"
 fi
+if [ ! -d /home/pi/.webthings/addons/power-settings ]; then
+  echo "/home/pi/.webthings/addons/power-settings dir is missing"
+fi
 if [ ! -d /home/pi/webthings/gateway/build/static/bundle ]; then
   echo "/home/pi/webthings/gateway/build/static/bundle dir is missing"
 fi
