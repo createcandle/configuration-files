@@ -122,7 +122,12 @@ fi
 if [ ! -f /home/pi/candle/early.sh ]; then
   echo "/home/pi/candle/early.sh is missing"
 fi
-
+if [ ! -f /bin/chromium-browser ]; then
+  echo "/bin/chromium-browser is missing"
+fi
+if [ ! -f /bin/ply-image ]; then
+  echo "/bin/ply-image is missing"
+fi
 
 
 #/boot files
