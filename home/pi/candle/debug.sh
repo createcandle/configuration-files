@@ -113,14 +113,11 @@ fi
 if [ ! -f /home/pi/.webthings/etc/fake-hwclock.data ]; then
   echo "/home/pi/.webthings/etc/fake-hwclock.data is missing"
 fi
-if [ ! -f /home/pi/candle_requirements.txt ]; then
-  echo "/home/pi/candle_requirements.txt is missing"
+if [ ! -f /home/pi/candle/candle_requirements.txt ]; then
+  echo "/home/pi/candle/candle_requirements.txt is missing"
 fi
-if [ ! -f /home/pi/candle_requirements.txt ]; then
-  echo "/home/pi/candle_requirements.txt is missing"
-fi
-if [ ! -f /home/pi/candle_packages.txt ]; then
-  echo "/home/pi/candle_packages.txt is missing"
+if [ ! -f /home/pi/candle/candle_packages.txt ]; then
+  echo "/home/pi/candle/candle_packages.txt is missing"
 fi
 if [ ! -f /home/pi/candle/early.sh ]; then
   echo "/home/pi/candle/early.sh is missing"
