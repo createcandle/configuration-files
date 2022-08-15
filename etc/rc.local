@@ -103,7 +103,7 @@ then
 
   echo "missing build/app.js - attempting repair"
   echo "Candle: ERROR! /home/pi/webthings/gateway/build/app.js file was missing. Attempting repair. (rc)" >> /dev/kmsg
-  echo "$(date) - broken controller detected (rc)" >> /boot/candle.log
+  echo "$(date) - broken controller detected (rc)" >> /boot/candle_log.txt
 
   if [ -f /boot/rotate180.txt ];
   then
@@ -114,7 +114,7 @@ then
 
   if [ -d /ro ]
   then
-    echo "starting controller repair in /ro... (rc)" >> /boot/candle.log
+    echo "starting controller repair in /ro... (rc)" >> /boot/candle_log.txt
     echo "starting controller repair in /ro... (rc)" >> /dev/kmsg
     # This shouldn't even be possible really 
     echo "setting to RW"
@@ -132,7 +132,7 @@ elif [ -f /home/pi/webthings-old/gateway/build/app.js ] && [ -f /home/pi/webthin
 then
 mv ./webthings-old ./webthings
 echo "restored controller backup in /ro (rc)" >> /dev/kmsg
-echo "restored controller backup in /ro (rc)" >> /boot/candle.log
+echo "restored controller backup in /ro (rc)" >> /boot/candle_log.txt
 
 else
 wget https://raw.githubusercontent.com/createcandle/install-scripts/main/install_candle_controller.sh
@@ -155,7 +155,7 @@ END
     if [ -f /home/pi/controller_backup.tar ];
     then
       tar -xvf controller_backup.tar
-      echo "$(date) - restored controller backup (rc)" >> /boot/candle.log
+      echo "$(date) - restored controller backup (rc)" >> /boot/candle_log.txt
       echo "$(date) - restored controller backup (rc)" >> /dev/kmsg
       
     
@@ -164,13 +164,13 @@ END
     elif [ -f /home/pi/webthings-old/gateway/build/app.js ] && [ -f /home/pi/webthings/gateway/.post_upgrade_complete ] && [ -f /home/pi/webthings-old/gateway/build/static/index.html ]  && [ -d /home/pi/webthings-old/gateway/node_modules ] && [ -d /home/pi/webthings-old/gateway/build/static/bundle ]; 
     then
         mv ./webthings-old ./webthings
-        echo "$(date) - restored old controller directory (rc)" >> /boot/candle.log
+        echo "$(date) - restored old controller directory (rc)" >> /boot/candle_log.txt
         echo "$(date) - restored old controller directory (rc)" >> /dev/kmsg
     
     
     # If all else fails, try a complete rebuild
     else
-        echo "$(date) - starting controller regeneration... (rc)" >> /boot/candle.log
+        echo "$(date) - starting controller regeneration... (rc)" >> /boot/candle_log.txt
         echo "$(date) - starting controller regeneration... (rc)" >> /dev/kmsg
         wget https://raw.githubusercontent.com/createcandle/install-scripts/main/install_candle_controller.sh
         chmod +x ./install_candle_controller.sh
@@ -187,13 +187,13 @@ END
   
   if [ -f /home/pi/webthings/gateway/build/app.js ] && [ -f /home/pi/webthings/gateway/.post_upgrade_complete ] && [ -f /home/pi/webthings/gateway/build/static/index.html ]  && [ -d /home/pi/webthings/gateway/node_modules ] && [ -d /home/pi/webthings/gateway/build/static/bundle ];
   then
-    echo "$(date) - controller regeneration complete (rc)" >> /boot/candle.log
+    echo "$(date) - controller regeneration complete (rc)" >> /boot/candle_log.txt
     echo "$(date) - controller regeneration complete (rc)" >> /dev/kmsg
     reboot now
     sleep 5
     
   else
-    echo "$(date) - controller regeneration failed (rc)" >> /boot/candle.log
+    echo "$(date) - controller regeneration failed (rc)" >> /boot/candle_log.txt
     echo "$(date) - controller regeneration failed (rc)" >> /dev/kmsg
     
     # Show error image
