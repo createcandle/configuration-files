@@ -75,8 +75,12 @@ if [ ! -d /home/pi/webthings/gateway/build/static/bundle ]; then
   echo "/home/pi/webthings/gateway/build/static/bundle dir is missing"
 fi
 if [ ! -d /usr/local/lib/python3.9/dist-packages/gateway_addon ] && [ ! -d /home/pi/.local/lib/python3.9/site-packages/gateway_addon ]; then
-  echo "/usr/local/lib/python3.9/dist-packages/gateway_addon dir is missing"
-  echo "/home/pi/.local/lib/python3.9/site-packages/gateway_addon dir is missing"
+  if [ ! -d /usr/local/lib/python3.9/dist-packages/gateway_addon ]; then
+    echo "/usr/local/lib/python3.9/dist-packages/gateway_addon dir is missing"
+  fi
+  if [ ! -d /home/pi/.local/lib/python3.9/site-packages/gateway_addon ]; then 
+    echo "/home/pi/.local/lib/python3.9/site-packages/gateway_addon dir is missing"
+  fi
 fi
 
 
