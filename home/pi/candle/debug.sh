@@ -150,8 +150,8 @@ echo "Attached HMDI devices:"
 cat /sys/class/drm/card0/*HDMI*/status
 
 echo
-echo "Libcamera installed?"
-which libcamera-still
+echo "Libcamera"
+libcamera-still --list-cameras
 
 echo
 echo "Plugged in USB devices:"
