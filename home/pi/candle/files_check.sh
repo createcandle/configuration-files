@@ -86,6 +86,9 @@ fi
 if [ ! -f /home/pi/webthings/gateway/static/images/floorplan.svg ]; then
   echo "/home/pi/webthings/gateway/static/images/floorplan.svg is missing"
 fi
+if [ ! -f /home/pi/.webthings/addons/power-settings/factory_reset.sh ]; then
+  echo "/home/pi/.webthings/addons/power-settings/factory_reset.sh is missing"
+fi
 if [ ! -f /home/pi/webthings/gateway/build/static/css/candle.css ]; then
   echo "/home/pi/webthings/gateway/build/static/css/candle.css is missing"
 fi
