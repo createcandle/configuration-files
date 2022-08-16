@@ -172,6 +172,14 @@ echo
 vcgencmd measure_temp
 
 
+
+echo
+echo
+echo "--------------------------------------------- lsmod"
+echo
+
+lsmod
+
 echo
 echo
 echo "--------------------------------------------- memory"
