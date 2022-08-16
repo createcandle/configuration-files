@@ -151,6 +151,12 @@ echo "Plugged in USB devices:"
 lsusb
 
 echo
+echo "I2C"
+lsmod|grep i2c
+echo
+i2cdetect -y 1
+
+echo
 echo
 echo "--------------------------------------------- memory"
 echo
