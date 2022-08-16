@@ -126,6 +126,7 @@ cat /home/pi/.webthings/.node_version
 echo
 echo "package sources:"
 cat /etc/apt/sources.list
+cat /etc/apt/sources.list.d/raspi.list
 
 echo
 echo
