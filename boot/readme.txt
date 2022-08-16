@@ -67,3 +67,9 @@ candle_hardware_clock.txt 	# This file is present if the hardware clock module i
 # FAILURE INDICATORS
 candle.log 			# Upgrade processes and commands you give may output status and errors into this file.
 bootup_actions_failed.txt 	# If this file exists, it indicates that an upgrade process did not complete because it failed or was interupted.
+
+
+
+
+# Source code
+For source code please visit https://www.candlesmarthome.com
