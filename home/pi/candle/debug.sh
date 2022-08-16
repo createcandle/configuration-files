@@ -123,6 +123,9 @@ echo
 echo "/home/pi/.webthings/.node_version:"
 cat /home/pi/.webthings/.node_version
 
+echo
+echo "package sources:"
+cat /etc/apt/sources.list
 
 echo
 echo
