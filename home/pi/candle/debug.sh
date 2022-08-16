@@ -70,6 +70,13 @@ if [ -f /boot/emergency.txt ]; then
 fi
 
 echo
+if [[ $(vcgencmd get_throttled) != "throttled=0x0" ]]; then
+    echo "Your power supply is too weak"
+fi
+
+sleep 5
+
+echo
 echo
 echo "--------------------------------------------- systemctl"
 echo 
@@ -155,6 +162,15 @@ echo "I2C"
 lsmod|grep i2c
 echo
 i2cdetect -y 1
+
+echo
+echo "Speeds"
+vcgencmd get_config int | egrep "(arm|core|gpu|sdram)_freq|over_volt"
+
+echo
+# Temperature
+vcgencmd measure_temp
+
 
 echo
 echo
