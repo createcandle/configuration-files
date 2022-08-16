@@ -32,7 +32,7 @@ if [ ! -f /home/pi/candle/files_check.sh ]; then
 fi
 
 # Run the sub-script that checks for missing files
-./files_check.sh
+/home/pi/candle/files_check.sh
 
 
 # These are not "essential" to functioning, so are here instead of in the files_check script
