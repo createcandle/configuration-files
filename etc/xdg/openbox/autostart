@@ -58,12 +58,13 @@ fi
 
 if [ -f /boot/splash.mp4 ];
 then
-  if [ -f /boot/rotate180.txt ]
-  then
-    cvlc -L -f --no-osd --no-audio --fullscreen --video-on-top /boot/splash180.mp4 &    
-  else
-    cvlc -L -f --no-osd --no-audio --fullscreen --video-on-top /boot/splash.mp4 &
-  fi
+  cvlc -L -f --no-osd --no-audio --fullscreen --video-on-top /boot/splash.mp4 &
+  #if [ -f /boot/rotate180.txt ]
+  #then
+  #  cvlc -L -f --no-osd --no-audio --fullscreen --video-on-top /boot/splash180.mp4 &    
+  #else
+  #  cvlc -L -f --no-osd --no-audio --fullscreen --video-on-top /boot/splash.mp4 &
+  #fi
   #omxplayer -b --win "0 0 $resolution" --loop /boot/splash.mp4 &
 fi
 sleep 15
