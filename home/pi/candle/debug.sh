@@ -128,6 +128,17 @@ echo "package sources:"
 cat /etc/apt/sources.list
 cat /etc/apt/sources.list.d/raspi.list
 
+
+
+echo
+echo
+echo "--------------------------------------------- Linux"
+echo
+
+uname -a
+echo
+cat /etc/os-release
+
 echo
 echo
 echo "--------------------------------------------- time"
