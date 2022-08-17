@@ -56,7 +56,7 @@ fi
 #sed -i 's/x/ /' /home/pi/candle/resolution.txt
 #resolution=$(cat /home/pi/candle/resolution.txt)
 
-if [ -f /boot/splash.mp4 ]
+if [ -f /boot/splash.mp4 ];
 then
   if [ -f /boot/rotate180.txt ]
   then
