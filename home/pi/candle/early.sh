@@ -36,6 +36,7 @@ then
 fi
 
 
+# If it's provided, copy a controller_backup.tar file from the boot partition into the system partition
 if [ -f /boot/controller_backup.tar ]; then
   if [ -d /ro ]; then
     sudo mount -o remount,rw /ro
@@ -232,8 +233,6 @@ then
     rm ./install_candle_controller.sh
 
 
-
-  
   if [ -f /home/pi/webthings/gateway/build/app.js ] \
   && [ -f /home/pi/webthings/gateway/.post_upgrade_complete ] \
   && [ -f /home/pi/webthings/gateway/build/static/index.html ] \
@@ -258,6 +257,8 @@ then
   fi
 
 fi
+
+
 
 # Generate debug file if requested
 if [ -f /boot/generate_debug.txt ]; then
