@@ -1,5 +1,5 @@
 [Unit]
-Description=Candle bootup actions
+Description=Run a script
 After=home-pi-.webthings.mount
 #Before=webthings-gateway.service
 ConditionPathExists=/home/pi/.webthings/run_once.sh
@@ -8,6 +8,7 @@ ConditionPathExists=/home/pi/.webthings/run_once.sh
 Type=oneshot
 User=pi
 ExecStartPre=/bin/chmod +x /home/pi/.webthings/run_once.sh
+ExecStartPre=/bin/sleep 2
 ExecStart=/bin/bash /home/pi/.webthings/run_once.sh
 ExecStop=/bin/sleep 5
 ExecStop=/bin/rm /home/pi/.webthings/run_once.sh
