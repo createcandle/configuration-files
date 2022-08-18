@@ -361,6 +361,11 @@ if [ ! -f /boot/developer.txt ]; then
   journalctl --vacuum-size=10K
 fi
 
+# Do aditional checks for missing files, and restore them if possible.
+if [ -d /home/pi/candle/configuration-files-backup ]; then
+    rsync --ignore-existing -vr /home/pi/candle/configuration-files-backup/* /
+fi
+
 echo "Candle: end of rc.local" >> /dev/kmsg
 exit 0
 
