@@ -188,7 +188,9 @@ echo
 # Temperature
 vcgencmd measure_temp
 
-
+echo "Wi-Fi"
+wpa_cli -i wlan0 status | grep wpa_state
+wpa_cli -i wlan0 status | grep mode
 
 echo
 echo
