@@ -105,5 +105,5 @@ pkill vlc
 
 # Heal "aw snap" warnings in the browser
 # https://github.com/dubnom/awsnap
-python3 /home/pi/candle/awsnap.py >/dev/null 2>&1 &
+python3 /home/pi/candle/unsnap.py >/dev/null 2>&1 &
 
