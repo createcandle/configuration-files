@@ -1,6 +1,6 @@
 [Unit]
 Description=Candle bootup actions
-After=network.target
+After=network.target candle_early.service
 #PartOf=webthings-gateway.service
 Before=webthings-gateway.service
 ConditionPathExists=/boot/bootup_actions.sh
