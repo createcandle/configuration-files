@@ -303,4 +303,5 @@ echo
 systemctl --no-pager status webthings-gateway.service 
 echo
 systemctl --no-pager status bluealsa.service 
-
+echo
+systemctl --no-pager status mosquitto.service 
