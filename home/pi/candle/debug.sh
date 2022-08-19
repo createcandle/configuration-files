@@ -203,7 +203,8 @@ wpa_cli -i wlan0 status | grep wpa_state
 wpa_cli -i wlan0 status | grep mode
 echo
 rfkill list
-
+echo
+iwconfig
 
 echo
 echo
