@@ -46,6 +46,18 @@ if [ -f /boot/._cmdline.txt ]; then
   echo "/boot/._cmdline.txt file exists"
 fi
 
+
+# programs that should be running
+echo
+if ! ps aux | grep -q dhcpcd ; then
+    echo "dhcpcd is not running"
+fi
+if ! ps aux | grep -q mosquitto ; then
+    echo "mosquitto is not running"
+fi
+
+
+
 echo
 echo
 echo "--------------------------------------------- warnings"
@@ -72,12 +84,16 @@ if [ -f /boot/emergency.txt ]; then
   echo "boot/emergency.txt file exists"
 fi
 
+
+echo
+if ! ps aux | grep -q wpa_supplicant ; then
+    echo "wpa_supplicant is not running"
+fi
+
 echo
 if [[ $(vcgencmd get_throttled) != "throttled=0x0" ]]; then
     echo "Your power supply is too weak"
 fi
-
-sleep 5
 
 echo
 echo
@@ -205,6 +221,9 @@ echo
 rfkill list
 echo
 iwconfig
+
+CPU:
+cat /proc/cpuinfo | grep 'Revision'
 
 echo
 echo
