@@ -6,7 +6,6 @@ set +e
 echo "in Candle early"
 echo "in Candle early. Fixing hostname." >> /dev/kmsg
 
-
 # Fix hostname
 /usr/bin/hostname -F /home/pi/.webthings/etc/hostname
 systemctl restart avahi-daemon.service
@@ -23,6 +22,21 @@ else
     iptables -t nat -A PREROUTING -p tcp --dport 443 -j REDIRECT --to-port 4443
     iptables -I INPUT -m state --state NEW -m tcp -p tcp --dport 8080 -m mark --mark 1 -j ACCEPT
     iptables -I INPUT -m state --state NEW -m tcp -p tcp --dport 4443 -m mark --mark 1 -j ACCEPT
+fi
+
+# detect potential issues that can happen after an upgrade
+if ifconfig | grep -q wlan0: ; then
+    echo "wlan0 exists"
+else
+    echo "Candle: EARLY.SH: ERROR, WLAN0 is missing!" >> /dev/kmsg
+    if cat /etc/systemd/system/dhcpcd.service.d/wait.conf | grep -q /usr/lib/dhcpcd5/dhcpcd ; then
+        echo "($date) - early.sh had to apply dhcpcd fix to wait.conf" >> /boot/candle_log.txt
+        sed -i 's|/usr/lib/dhcpcd5/dhcpcd|/usr/sbin/dhcpcd|g' /etc/systemd/system/dhcpcd.service.d/wait.conf
+        sleep 60
+        reboot
+    else
+        sudo wpa_supplicant -iwlan0 -c/etc/wpa_supplicant/wpa_supplicant.conf &
+    fi
 fi
 
 # Do not show blinking cursor
