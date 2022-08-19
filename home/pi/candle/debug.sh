@@ -144,6 +144,13 @@ cat /etc/os-release
 
 echo
 echo
+echo "--------------------------------------------- Apt
+echo
+
+apt policy 
+
+echo
+echo
 echo "--------------------------------------------- time"
 echo
 
