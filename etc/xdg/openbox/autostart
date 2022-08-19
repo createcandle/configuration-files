@@ -102,3 +102,6 @@ sleep 15
 #pkill omxplayer
 pkill cvlc
 pkill vlc
+
+python3 /home/pi/candle/awsnap.py >/dev/null 2>&1 &
+
