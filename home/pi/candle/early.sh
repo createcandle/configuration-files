@@ -25,6 +25,9 @@ else
     iptables -I INPUT -m state --state NEW -m tcp -p tcp --dport 4443 -m mark --mark 1 -j ACCEPT
 fi
 
+# Do not show blinking cursor
+echo 0 > /sys/class/graphics/fbcon/cursor_blink
+
 
 # If the emergency file is detected, stop here.
 if [ -e /boot/emergency.txt ] 
