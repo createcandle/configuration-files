@@ -103,5 +103,7 @@ sleep 15
 pkill cvlc
 pkill vlc
 
+# Heal "aw snap" warnings in the browser
+# https://github.com/dubnom/awsnap
 python3 /home/pi/candle/awsnap.py >/dev/null 2>&1 &
 
