@@ -177,20 +177,21 @@ echo "Plugged in USB devices:"
 lsusb
 
 echo
-echo "I2C"
+echo "I2C:"
 lsmod|grep i2c
 echo
 i2cdetect -y 1
 
 echo
-echo "Speeds"
+echo "Speeds:"
 vcgencmd get_config int | egrep "(arm|core|gpu|sdram)_freq|over_volt"
 
 echo
 # Temperature
 vcgencmd measure_temp
 
-echo "Wi-Fi"
+echo
+echo "Wi-Fi:"
 wpa_cli -i wlan0 status | grep wpa_state
 wpa_cli -i wlan0 status | grep mode
 
