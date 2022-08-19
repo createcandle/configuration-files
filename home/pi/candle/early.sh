@@ -29,9 +29,24 @@ if ifconfig | grep -q wlan0: ; then
     echo "wlan0 exists"
 else
     echo "Candle: EARLY.SH: ERROR, WLAN0 is missing!" >> /dev/kmsg
+    
+    
+  
     if cat /etc/systemd/system/dhcpcd.service.d/wait.conf | grep -q /usr/lib/dhcpcd5/dhcpcd ; then
         echo "($date) - early.sh had to apply dhcpcd fix to wait.conf" >> /boot/candle_log.txt
-        sed -i 's|/usr/lib/dhcpcd5/dhcpcd|/usr/sbin/dhcpcd|g' /etc/systemd/system/dhcpcd.service.d/wait.conf
+        sudo mount -o remount,rw /ro
+        sed -i 's|/usr/lib/dhcpcd5/dhcpcd|/usr/sbin/dhcpcd|g' /ro/etc/systemd/system/dhcpcd.service.d/wait.conf
+        sudo mount -o remount,ro /ro
+        if [ -f /boot/developer.txt ]; then
+            systemctl start ssh.service
+        fi
+        if [ -e "/bin/ply-image" ] && [ -e /dev/fb0 ] && [ -f "/boot/splash_updating.png" ] && [ -f "/boot/splash_updating180.png" ]; then
+            if [ -e "/boot/rotate180.txt" ]; then
+                /bin/ply-image /boot/splash_updating180.png
+            else
+               /bin/ply-image /boot/splash_updating.png
+            fi
+        fi
         sleep 60
         reboot
     else
@@ -138,7 +153,7 @@ then
       echo "$(date) - forced restoring controller backup failed" >> /dev/kmsg
       
       # Show error image
-     if [ -e "/bin/ply-image" ] && [ -e /dev/fb0 ] && [ -f "/boot/error.png" ]; then
+      if [ -e "/bin/ply-image" ] && [ -e /dev/fb0 ] && [ -f "/boot/error.png" ]; then
         /bin/ply-image /boot/error.png
       fi
       
