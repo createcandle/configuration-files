@@ -72,16 +72,24 @@ then
   fi
   echo "Candle: rc.local doing bootup_actions: STARTING" >> /dev/kmsg
   chmod +x /boot/bootup_actions_failed.sh
-  /bin/bash /boot/bootup_actions_failed.sh
-  echo "Candle: bootup_actions.sh file complete" >> /dev/kmsg
-  echo " " >> /dev/kmsg
-  # rm /boot/bootup_actions_failed.sh
-  sleep 5
-  if [ -f /boot/developer.txt ]
-  then
-    sleep 60
+  
+  if [ -f /boot/bootup_actions_non_blocking.txt ]; then
+    { /bin/bash /boot/bootup_actions_failed.sh; \
+    echo "Candle: background bootup_actions.sh file complete" >> /dev/kmsg; \
+    echo "Candle: background bootup_actions.sh file complete" >> /boot/candle_log.txt; \
+    sleep 5; \
+    reboot; } &
+    
+  else
+    /bin/bash /boot/bootup_actions_failed.sh
+    echo "Candle: foreground bootup_actions.sh file complete" >> /dev/kmsg
+    echo "Candle: foreground bootup_actions.sh file complete" >> /boot/candle_log.txt
+    echo " " >> /dev/kmsg
+    # rm /boot/bootup_actions_failed.sh
+    sleep 5
+    reboot
+    
   fi
-  reboot now
   sleep 5
   exit 0
 fi
