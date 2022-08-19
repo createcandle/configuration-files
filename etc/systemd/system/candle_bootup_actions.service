@@ -1,3 +1,5 @@
+# No longer enabled, is now handled by rc-local service so that the controller and browser aren't started until the bootup_actions are done.
+
 [Unit]
 Description=Candle bootup actions
 After=network.target candle_early.service
