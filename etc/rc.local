@@ -102,7 +102,10 @@ fi
 
 # Fix missing gateway, just in case something went totally wrong.
 
-if [ ! -f /home/pi/webthings/gateway/build/app.js ] || [ ! -f /home/pi/webthings/gateway/build/static/index.html ] || [ ! -d /home/pi/webthings/gateway/node_modules ] || [ ! -d /home/pi/webthings/gateway/build/static/bundle ]; 
+if [ ! -f /home/pi/webthings/gateway/build/app.js ] \
+|| [ ! -f /home/pi/webthings/gateway/build/static/index.html ] \
+|| [ ! -d /home/pi/webthings/gateway/node_modules ] \
+|| [ ! -d /home/pi/webthings/gateway/build/static/bundle ]; 
 then
 
   if [ -f /boot/developer.txt ];
@@ -138,7 +141,10 @@ then
 echo "extracting controller_backup.tar"
 tar -xf controller_backup.tar
 
-elif [ -f /home/pi/webthings-old/gateway/build/app.js ] && [ -f /home/pi/webthings-old/gateway/build/static/index.html ] && [ -d /home/pi/webthings-old/gateway/node_modules ] && [ -d /home/pi/webthings-old/gateway/build/static/bundle ];
+elif [ -f /home/pi/webthings-old/gateway/build/app.js ] \
+&& [ -f /home/pi/webthings-old/gateway/build/static/index.html ] \
+&& [ -d /home/pi/webthings-old/gateway/node_modules ] \
+&& [ -d /home/pi/webthings-old/gateway/build/static/bundle ];
 then
 mv ./webthings-old ./webthings
 echo "restored controller backup in /ro (rc)" >> /dev/kmsg
