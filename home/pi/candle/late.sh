@@ -44,17 +44,18 @@ then
     fi
   done
 
+  # Start SSH if developer mode is active, or if we're handling a cutting edge post_bootup_action, which is more likely to fail
+  if [ -f /boot/developer.txt ] || [ -f /boot/candle_cutting_edge.txt ];
+  then
+    systemctl start ssh.service
+  fi
+
   # Force a synchronisation with a time server to avoid certificate issues
   if [ -f /boot/candle_hardware_clock.txt ]
   then
     echo "Candle: rc.local doing post_bootup_actions: hardware clock detected, forcing sync with NTP server" >> /dev/kmsg
     rm /boot/candle_hardware_clock.txt
     sudo systemctl start systemd-timesyncd
-  fi
- 
-  if [ -f /boot/developer.txt ] || [ -f /boot/candle_cutting_edge.txt ];
-  then
-    systemctl start ssh.service
   fi
   
   echo "Candle: late.sh doing post_bootup_actions: STARTING" >> /dev/kmsg
