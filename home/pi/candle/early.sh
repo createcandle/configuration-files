@@ -29,9 +29,6 @@ if ifconfig | grep -q wlan0: ; then
     echo "wlan0 exists"
 else
     echo "Candle: EARLY.SH: ERROR, WLAN0 is missing!" >> /dev/kmsg
-    
-    
-  
     if cat /etc/systemd/system/dhcpcd.service.d/wait.conf | grep -q /usr/lib/dhcpcd5/dhcpcd ; then
         echo "($date) - early.sh had to apply dhcpcd fix to wait.conf" >> /boot/candle_log.txt
         sudo mount -o remount,rw /ro
@@ -58,8 +55,23 @@ fi
 echo 0 > /sys/class/graphics/fbcon/cursor_blink
 
 
+
+if [ -f /boot/make_emergency_backup.txt ]; 
+then
+    if [ -d /home/pi/.webthings/data ] && [ -d /home/pi/.webthings/config ]; then
+        cd /home/pi/.webthings
+        find ./config ./data -maxdepth 2 -name "*.json" -o -name "*.yaml" -o -name "*.sqlite3" | tar -cf /boot/emergency_backup.tar -T -
+
+    else
+        
+    fi
+fi
+
+
+
+
 # If the emergency file is detected, stop here.
-if [ -e /boot/emergency.txt ] 
+if [ -e /boot/emergency.txt ]; 
 then
   systemctl start ssh.service
   echo "Emergency file detected. Stopping (120 minutes sleep)" >> /dev/kmsg
@@ -69,7 +81,8 @@ fi
 
 
 # If it's provided, copy a controller_backup.tar file from the boot partition into the system partition
-if [ -f /boot/controller_backup.tar ]; then
+if [ -f /boot/controller_backup.tar ]; 
+then
   if [ -d /ro ]; then
     sudo mount -o remount,rw /ro
     rm /ro/home/pi/boot/controller_backup.tar
