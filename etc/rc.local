@@ -80,8 +80,8 @@ then
   chmod +x /boot/bootup_actions_failed.sh
   
   /bin/bash /boot/bootup_actions_failed.sh
-  echo "Candle: foreground bootup_actions.sh file complete" >> /dev/kmsg
-  echo "Candle: foreground bootup_actions.sh file complete" >> /boot/candle_log.txt
+  echo "Candle: bootup_actions.sh file complete" >> /dev/kmsg
+  echo "Candle: bootup_actions.sh file complete" >> /boot/candle_log.txt
   echo " " >> /dev/kmsg
   # rm /boot/bootup_actions_failed.sh # Scripts should clean themselves up. If the self-cleanup failed, power-settings addon uses that as an indicator the script failed.
  
