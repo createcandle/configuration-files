@@ -34,7 +34,7 @@ else
         sudo mount -o remount,rw /ro
         sed -i 's|/usr/lib/dhcpcd5/dhcpcd|/usr/sbin/dhcpcd|g' /ro/etc/systemd/system/dhcpcd.service.d/wait.conf
         sudo mount -o remount,ro /ro
-        if [ -f /boot/developer.txt ]; then
+        if [ -f /boot/developer.txt ] || [ -f /boot/candle_cutting_edge.txt ]; then
             systemctl start ssh.service
         fi
         if [ -e "/bin/ply-image" ] && [ -e /dev/fb0 ] && [ -f "/boot/splash_updating.png" ] && [ -f "/boot/splash_updating180.png" ]; then
@@ -100,7 +100,7 @@ then
   rm /boot/restore_boot_backup.txt
   echo "Detected /boot/restore_boot_backup.txt"
   
-  if [ -f /boot/developer.txt ]; then
+  if [ -f /boot/developer.txt ] || [ -f /boot/candle_cutting_edge.txt ]; then
     systemctl start ssh.service
   fi
   
@@ -123,7 +123,7 @@ then
   rm /boot/restore_controller_backup.txt
   echo "Detected /boot/restore_controller_backup.txt"
   
-  if [ -f /boot/developer.txt ]; then
+  if [ -f /boot/developer.txt ] || [ -f /boot/candle_cutting_edge.txt ]; then
     systemctl start ssh.service
   fi
   
@@ -194,7 +194,7 @@ then
   rm /boot/force_controller_rebuild.txt
   echo "Detected /boot/force_controller_rebuild.txt"
   
-  if [ -f /boot/developer.txt ]; then
+  if [ -f /boot/developer.txt ] || [ -f /boot/candle_cutting_edge.txt ]; then
     systemctl start ssh.service
   fi
   
@@ -227,8 +227,7 @@ then
   echo "$(date) - starting forced controller regeneration..." >> /dev/kmsg
 
 
-
-    if [ -f /boot/developer.txt ]; then
+    if [ -f /boot/candle_cutting_edge ]; then
         wget https://raw.githubusercontent.com/createcandle/install-scripts/main/install_candle_controller.sh -O ./install_candle_controller.sh
     else
         curl -s https://api.github.com/repos/createcandle/install-scripts/releases/latest \
