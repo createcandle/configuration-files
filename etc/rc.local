@@ -99,10 +99,11 @@ fi
 if [ ! -f /home/pi/webthings/gateway/build/app.js ] \
 || [ ! -f /home/pi/webthings/gateway/build/static/index.html ] \
 || [ ! -d /home/pi/webthings/gateway/node_modules ] \
-|| [ ! -d /home/pi/webthings/gateway/build/static/bundle ]; 
+|| [ ! -d /home/pi/webthings/gateway/build/static/bundle ] \
+|| [ ! -f /home/pi/webthings/gateway/.post_upgrade_complete ]; 
 then
 
-  if [ -f /boot/developer.txt ];
+  if [ -f /boot/developer.txt ] || [ -f /boot/candle_cutting_edge.txt ];
   then
     systemctl start ssh.service
   fi
@@ -130,23 +131,21 @@ then
 chroot /ro sh -c "$(cat <<END
 cd /home/pi
 
-if [ -f /home/pi/controller_backup.tar ];
+# The fresh backup gets once chance
+if [ -f /home/pi/controller_backup_fresh.tar ];
+then
+echo "extracting controller_backup_fresh.tar"
+tar -xf controller_backup_fresh.tar
+rm /home/pi/controller_backup_fresh.tar
+
+elif [ -f /home/pi/controller_backup.tar ];
 then
 echo "extracting controller_backup.tar"
 tar -xf controller_backup.tar
 
-elif [ -f /home/pi/webthings-old/gateway/build/app.js ] \
-&& [ -f /home/pi/webthings-old/gateway/build/static/index.html ] \
-&& [ -d /home/pi/webthings-old/gateway/node_modules ] \
-&& [ -d /home/pi/webthings-old/gateway/build/static/bundle ];
-then
-mv ./webthings-old ./webthings
-echo "restored controller backup in /ro (rc)" >> /dev/kmsg
-echo "restored controller backup in /ro (rc)" >> /boot/candle_log.txt
-
 else
 
-if [ -f /boot/developer.txt ]; then
+if [ -f /boot/candle_cutting_edge.txt ]; then
 wget https://raw.githubusercontent.com/createcandle/install-scripts/main/install_candle_controller.sh -O ./install_candle_controller.sh
 else
 curl -s https://api.github.com/repos/createcandle/install-scripts/releases/latest \
@@ -204,30 +203,29 @@ END
   else
     cd /home/pi || exit
     
-    # If a backup file exists, restore that
-    if [ -f /home/pi/controller_backup.tar ];
+    # If a fresh backup file exists, restore that. It gets one chance.
+    if [ -f /home/pi/controller_backup_fresh.tar ];
+    then
+      tar -xvf controller_backup_fresh.tar
+      echo "$(date) - self-repair: restored fresh controller backup (rc)" >> /boot/candle_log.txt
+      echo "$(date) - self-repair: restored fresh controller backup (rc)" >> /dev/kmsg
+      rm /home/pi/controller_backup_fresh.tar
+    
+    # Otherwise fall back to the backup that came with the disk image
+    elif [ -f /home/pi/controller_backup.tar ];
     then
       tar -xvf controller_backup.tar
-      echo "$(date) - restored controller backup (rc)" >> /boot/candle_log.txt
-      echo "$(date) - restored controller backup (rc)" >> /dev/kmsg
+      echo "$(date) - self-repair: restored controller backup (rc)" >> /boot/candle_log.txt
+      echo "$(date) - self-repair: restored controller backup (rc)" >> /dev/kmsg
       
-    
-    
-    # If an old version is detected, try switching to that
-    elif [ -f /home/pi/webthings-old/gateway/build/app.js ] && [ -f /home/pi/webthings/gateway/.post_upgrade_complete ] && [ -f /home/pi/webthings-old/gateway/build/static/index.html ]  && [ -d /home/pi/webthings-old/gateway/node_modules ] && [ -d /home/pi/webthings-old/gateway/build/static/bundle ]; 
-    then
-        mv ./webthings-old ./webthings
-        echo "$(date) - restored old controller directory (rc)" >> /boot/candle_log.txt
-        echo "$(date) - restored old controller directory (rc)" >> /dev/kmsg
-    
     
     # If all else fails, try a complete rebuild
     else
-        echo "$(date) - starting controller regeneration... (rc)" >> /boot/candle_log.txt
-        echo "$(date) - starting controller regeneration... (rc)" >> /dev/kmsg
+        echo "$(date) - self-repair: starting controller regeneration... (rc)" >> /boot/candle_log.txt
+        echo "$(date) - self-repair: starting controller regeneration... (rc)" >> /dev/kmsg
         
         
-        if [ -f /boot/developer.txt ]; then
+        if [ -f /boot/candle_cutting_edge.txt ]; then
             wget https://raw.githubusercontent.com/createcandle/install-scripts/main/install_candle_controller.sh -O ./install_candle_controller.sh
         else
             curl -s https://api.github.com/repos/createcandle/install-scripts/releases/latest \
@@ -257,8 +255,9 @@ END
         # Check if the install_candle_controller.sh file now exists
         if [ ! -f install_candle_controller.sh ]; then
             echo
-            echo "ERROR, missing install_candle_controller.sh file"
-            echo "$(date) - Failed to download install_candle_controller script" >> /boot/candle_log.txt
+            echo "ERROR, self-repair: missing install_candle_controller.sh file"
+            echo "Candle: self-repair: failed to download install_candle_controller script" >> /boot/kmsg
+            echo "$(date) - self-repair:  failed to download install_candle_controller script" >> /boot/candle_log.txt
             echo
 
             # Show error image
@@ -278,18 +277,23 @@ END
     fi
   fi
 
-  if [ -f /boot/developer.txt ]
+  if [ -f /boot/developer.txt ] || [ -f /boot/candle_cutting_edge.txt ];
   then
+    echo "sleeping 60 seconds to make sure user can login via SSH
     sleep 60
   fi
   sleep 5
   
-  if [ -f /home/pi/webthings/gateway/build/app.js ] && [ -f /home/pi/webthings/gateway/.post_upgrade_complete ] && [ -f /home/pi/webthings/gateway/build/static/index.html ]  && [ -d /home/pi/webthings/gateway/node_modules ] && [ -d /home/pi/webthings/gateway/build/static/bundle ];
+  if [ -f /home/pi/webthings/gateway/build/app.js ] \
+  && [ -f /home/pi/webthings/gateway/.post_upgrade_complete ] \
+  && [ -f /home/pi/webthings/gateway/build/static/index.html ] \
+  && [ -d /home/pi/webthings/gateway/node_modules ] \
+  && [ -d /home/pi/webthings/gateway/build/static/bundle ];
   then
     echo "$(date) - controller regeneration complete (rc)" >> /boot/candle_log.txt
     echo "$(date) - controller regeneration complete (rc)" >> /dev/kmsg
-    reboot now
-    sleep 5
+    #reboot now
+    #sleep 5
     
   else
     echo "$(date) - controller regeneration failed (rc)" >> /boot/candle_log.txt
@@ -371,9 +375,33 @@ if [ ! -f /boot/developer.txt ]; then
   journalctl --vacuum-size=10K
 fi
 
+# Do aditional checks for missing files, and restore them if possible. late.sh does this too, as a fallback.
 # Do aditional checks for missing files, and restore them if possible.
 if [ -d /home/pi/candle/configuration-files-backup ]; then
-    rsync --ignore-existing -vr /home/pi/candle/configuration-files-backup/* /
+    if rsync --ignore-existing --dry-run -vri /home/pi/candle/configuration-files-backup/* / | grep -q  +++++; then
+        echo "Candle: ERROR, rc.local detected missing files. Attempting to fix" >> /dev/kmsg
+        echo "$(date) - ERROR, rc.local detected missing files. Attempting to fix." >> /boot/candle_log.txt
+        if [ -d /ro ]; then
+            if [ -d /ro/home/pi/candle/configuration-files-backup ]; then
+                sudo mount -o remount,ro /rw
+                rsync --ignore-existing -vr /ro/home/pi/candle/configuration-files-backup/* /ro >> /dev/kmsg
+                sudo mount -o remount,ro /ro
+            fi
+        else
+            rsync --ignore-existing -vr /home/pi/candle/configuration-files-backup/* / >> /dev/kmsg
+        fi
+        
+        sleep 2
+        if rsync --ignore-existing --dry-run -vri /home/pi/candle/configuration-files-backup/* / | grep -q  +++++; then
+            echo "Candle: ERROR, rc.local: missing files fix failed" >> /dev/kmsg
+            echo "$(date) - ERROR, rc.local: missing files fix failed" >> /boot/candle_log.txt
+        else
+            echo "Candle: rc.local: missing files fix succeeded" >> /dev/kmsg
+            echo "$(date) - rc.local: missing files fix succeeded" >> /boot/candle_log.txt
+        fi
+    fi
+else
+    echo "Candle: rc.local: warning, configuration files backup dir does not exist" >> /dev/kmsg
 fi
 
 echo "Candle: end of rc.local" >> /dev/kmsg
