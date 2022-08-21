@@ -1,4 +1,5 @@
 #!/bin/bash
+set +e
 
 export DISPLAY=:0
 
@@ -38,18 +39,27 @@ rm -rf /home/pi/.webthings/chromium/BrowserMetrics/*
 sed -i 's/"exited_cleanly":false/"exited_cleanly":true/' /home/pi/.webthings/chromium/'Local State'
 sed -i 's/"exited_cleanly":false/"exited_cleanly":true/; s/"exit_type":"[^"]\+"/"exit_type":"Normal"/' /home/pi/.webthings/chromium/Default/Preferences
 
-if [ -f /boot/bootup_actions.sh ] || [ -f /bootup_actions_failed.sh ]; then
-  if [ -f /boot/bootup_actions_non_blocking.txt ]; then
-     if [ -f /boot/rotate180.txt ]; then
-        feh --bg-fill /boot/splash_updating180.png
-     else
-        feh --bg-fill /boot/splash_updating.png
-     fi
+if [ -f /boot/post_bootup_actions.sh ]; then
+  if [ -f /boot/rotate180.txt ]; then
+    feh --bg-fill /boot/splash_updating180.png
   else
-     feh --bg-fill /boot/error.png
+    feh --bg-fill /boot/splash_updating.png
   fi
 else
-  feh --bg-fill /boot/splash.png
+  feh --bg-fill /boot/splashalt.png
+  
+  if [ -f /boot/splash.mp4 ];
+  then
+    cvlc -L -f --no-osd --no-audio --fullscreen --video-on-top /boot/splash.mp4 &
+    #if [ -f /boot/rotate180.txt ]
+    #then
+    #  cvlc -L -f --no-osd --no-audio --fullscreen --video-on-top /boot/splash180.mp4 &    
+    #else
+    #  cvlc -L -f --no-osd --no-audio --fullscreen --video-on-top /boot/splash.mp4 &
+    #fi
+    #omxplayer -b --win "0 0 $resolution" --loop /boot/splash.mp4 &
+  fi
+
 fi
 #feh --bg-fill /boot/splash.png
 #windowsize=$(xdpyinfo | awk '/dimensions/{print $2}')
@@ -68,17 +78,7 @@ fi
 #sed -i 's/x/ /' /home/pi/candle/resolution.txt
 #resolution=$(cat /home/pi/candle/resolution.txt)
 
-if [ -f /boot/splash.mp4 ];
-then
-  cvlc -L -f --no-osd --no-audio --fullscreen --video-on-top /boot/splash.mp4 &
-  #if [ -f /boot/rotate180.txt ]
-  #then
-  #  cvlc -L -f --no-osd --no-audio --fullscreen --video-on-top /boot/splash180.mp4 &    
-  #else
-  #  cvlc -L -f --no-osd --no-audio --fullscreen --video-on-top /boot/splash.mp4 &
-  #fi
-  #omxplayer -b --win "0 0 $resolution" --loop /boot/splash.mp4 &
-fi
+
 sleep 15
 
 
