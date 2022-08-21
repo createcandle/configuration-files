@@ -56,7 +56,9 @@ if ! ps aux | grep -q mosquitto ; then
     echo "mosquitto is not running"
 fi
 
-
+if ! cat /etc/hosts | grep -q "$(cat /etc/hostname)"; then
+    echo "hostname was not in /etc/hosts"
+fi
 
 echo
 echo
