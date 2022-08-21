@@ -37,7 +37,7 @@ sudo mount -o remount,rw /dev/mmcblk0p2 /
 The existence of these files can also toggle certain things:
 
 emergency.txt 			# Booting is mostly halted, and the SSH shell is activated.
-candle_emergency_backup.txt # If possible, creates an emergency backup which will be placed on the SD card as candle_emergency_backup.tar
+candle_emergency_backup.txt 	# If possible, creates an emergency backup which will be placed on the SD card as candle_emergency_backup.tar
 candle_kiosk.txt 		# The URL inside this file will be shown in the browser. If it's empty the kiosk browser will not load.
 keep_browser_session.txt 	# Don't delete browser sessions on boot.
 cloudless.txt 			# Experimental, to launch the controller even if there is no network at all.
@@ -54,7 +54,7 @@ restore_controller_backup.txt 	# Will try to restore the Candle Controller softw
 force_controller_rebuild.txt 	# Will download the very latest version of the Candle Controller and build it from scratch. This takes a long time.
 generate_debug.txt 		# Will generate a file called debug.txt which contains details about the state of the system.
 generate_raspinfo.txt 		# Will generate a file called raspinfo.txt which contains details about the operating system.
-candle_cutting_edge.txt # If present, any system update will attempt to get the very latest version of everything. Risky, For developers only.
+candle_cutting_edge.txt 	# If present, any system update will attempt to get the very latest version of everything. Risky, For developers only.
 
 
 # Factory reset related:
