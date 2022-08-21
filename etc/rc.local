@@ -310,8 +310,9 @@ echo "Candle: rc.local: normal run" >> /dev/kmsg
 modprobe hidp
 
 # Disable WiFi power save
-if [ -f /boot/disable_wifi_power_save.txt ] 
+if [ -f /boot/disable_wifi_power_save.txt ] || [ -d /home/pi/.webthings/addons/hotspot ];
 then
+  echo "Candle: rc.local: disabling wifi power saving" >> /dev/kmsg
   /sbin/iw dev wlan0 set power_save off
 fi
 
