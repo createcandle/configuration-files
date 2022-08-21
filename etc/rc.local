@@ -31,8 +31,13 @@ if [ -f /boot/bootup_actions.sh ]
 then
   echo " "
   echo "Candle: rc.local: detected bootup_actions.sh file." >> /dev/kmsg
-
+  echo "$(date) - rc.local: detected bootup_actions.sh file." >> /boot/candle_log.txt
+  
+  
   # Avoid bootloops
+  if [ -f /boot/bootup_actions_failed.sh ]; then
+    rm /boot/bootup_actions_failed.sh
+  fi
   mv -f /boot/bootup_actions.sh /boot/bootup_actions_failed.sh
 
   if [ -f /boot/rotate180.txt ]
