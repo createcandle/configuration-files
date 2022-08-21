@@ -55,19 +55,18 @@ fi
 echo 0 > /sys/class/graphics/fbcon/cursor_blink
 
 
-
-if [ -f /boot/make_emergency_backup.txt ]; 
+# Create emergency backup
+if [ -f /boot/candle_make_emergency_backup.txt ]; 
 then
+    rm /boot/candle_make_emergency_backup.txt
     if [ -d /home/pi/.webthings/data ] && [ -d /home/pi/.webthings/config ]; then
+        echo "$(date) - creating candle_emergency_backup.tar"
         cd /home/pi/.webthings
-        find ./config ./data -maxdepth 2 -name "*.json" -o -name "*.yaml" -o -name "*.sqlite3" | tar -cf /boot/emergency_backup.tar -T -
-
+        find ./config ./data -maxdepth 2 -name "*.json" -o -name "*.yaml" -o -name "*.sqlite3" | tar -cf /boot/candle_emergency_backup.tar -T -
     else
-        
+        echo "$(date) - ERROR, could not create emergency backup, config and data directories did not exist?"
     fi
 fi
-
-
 
 
 # If the emergency file is detected, stop here.
