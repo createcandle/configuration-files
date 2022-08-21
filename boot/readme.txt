@@ -27,8 +27,8 @@ If you would like to see information about the boot process on an attached displ
 Alternatively, you can connect a monitor and keyboard. Then pressing CTRL-ALT-F3 should reveal the shell.
 
 
-# RECOVERY
-If you are having a lot of trouble, you can try using the recovery version of cmdline.txt. It will boot the system into a bash shell. Note that the filesystem will be in read-only mode, but you can remount it if you need to make changes:
+# EMERGENCY RECOVERY
+If you are having a lot of trouble, and none of the tools mentioned below help, then as a last ditch attempt you can try using the recovery version of cmdline.txt. It will boot the system into a bash shell. Note that the filesystem will be in read-only mode, but you can remount it if you need to make changes:
 
 sudo mount -o remount,rw /dev/mmcblk0p2 /
 
@@ -47,6 +47,8 @@ rotate180.txt 			# Rotates the display 180 degrees.
 exhibit_mode.txt		# Disables installing and uninstalling addons.
 do_not_use_repeaker_hat.txt 	# Will stop ReSpeaker hat drivers from being loaded at boot.
 disable_wifi_power_save.txt 	# If present, wifi power saving feature will be disabled. This might improve some connections.
+candle_cutting_edge.txt 	# If present, any system update will attempt to get the very latest version of everything. Risky, For developers only.
+
 
 # TOOLS
 restore_boot_backup.txt 	# Will try to restore some fundamental files to older backed-up versions (if the backups exist)
@@ -54,7 +56,6 @@ restore_controller_backup.txt 	# Will try to restore the Candle Controller softw
 force_controller_rebuild.txt 	# Will download the very latest version of the Candle Controller and build it from scratch. This takes a long time.
 generate_debug.txt 		# Will generate a file called debug.txt which contains details about the state of the system.
 generate_raspinfo.txt 		# Will generate a file called raspinfo.txt which contains details about the operating system.
-candle_cutting_edge.txt 	# If present, any system update will attempt to get the very latest version of everything. Risky, For developers only.
 
 
 # Factory reset related:
@@ -62,13 +63,15 @@ keep_z2m.txt 			# Keep Zigbee2MQTT settings on factory reset.
 keep_bluetooth.txt 		# Keep paired bluetooth devices on factory reset.
 developer.txt 			# Enables logging. Will also cause a factory reset to write zeros to empty space, so as to prepare for creating a disk image.
 
+
 # INDICATORS 
 candle_swap_enabled.txt 	# On lower memory systems (Pi Zero 2) this file indicates that on the first run the swap file was enabled. Normally swap is disabled.
 candle_first_run_complete.txt 	# This file appears after the first boot. It indicates that a new machine ID and new SSH keys were generated.
-candle_hardware_clock.txt 	# This file is present if the hardware clock module is detected and enabled. Getting time from the internet will not work while this file exists.
+candle_hardware_clock.txt 	# This file is present if the hardware clock module is detected and enabled.
+
 
 # FAILURE INDICATORS
-candle.log 			# Upgrade processes and commands you give may output status and errors into this file.
+candle_log.txt 			# Upgrade processes and commands you give may output status and errors into this file.
 bootup_actions_failed.sh 	# If this file exists, it indicates that an upgrade process did not complete because it failed or was interupted.
 
 
