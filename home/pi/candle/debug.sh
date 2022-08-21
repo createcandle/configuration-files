@@ -209,7 +209,7 @@ i2cdetect -y 1
 
 echo
 echo "Speeds:"
-vcgencmd get_config int | egrep "(arm|core|gpu|sdram)_freq|over_volt"
+vcgencmd get_config int
 
 echo
 # Temperature
