@@ -13,10 +13,12 @@ then
   echo "Candle: late.sh: detected post_bootup_actions.sh file." >> /dev/kmsg
   echo "Candle: late.sh: detected post_bootup_actions.sh file." >> /boot/candle_log.txt
 
-  # Avoid bootloops
+
   if [ -f /boot/post_bootup_actions_failed.sh ]; then
     rm /boot/post_bootup_actions_failed.sh
   fi
+  
+  # Avoid bootloops
   mv -f /boot/post_bootup_actions.sh /boot/post_bootup_actions_failed.sh
 
   if [ -f /boot/rotate180.txt ]
