@@ -157,7 +157,9 @@ echo
 uname -a
 echo
 cat /etc/os-release
-
+echo
+echo "/etc/modules (kernel):"
+cat /etc/modules
 echo
 echo
 echo "--------------------------------------------- Apt
