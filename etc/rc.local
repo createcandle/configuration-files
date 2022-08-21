@@ -279,7 +279,7 @@ END
 
   if [ -f /boot/developer.txt ] || [ -f /boot/candle_cutting_edge.txt ];
   then
-    echo "sleeping 60 seconds to make sure user can login via SSH
+    echo "sleeping 60 seconds to make sure user can login via SSH"
     sleep 60
   fi
   sleep 5
