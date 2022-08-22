@@ -1,0 +1,16 @@
+[Unit]
+Description=Candle late       
+After=rc-local.service
+ConditionPathExists=/home/pi/candle/late.sh
+
+[Service]
+Type=simple
+User=root
+ExecStartPre=/bin/chmod +x /home/pi/candle/late.sh
+ExecStart=/bin/bash /home/pi/candle/late.sh
+
+#RemainAfterExit=yes
+StandardOutput=journal
+
+[Install]
+WantedBy=multi-user.target
