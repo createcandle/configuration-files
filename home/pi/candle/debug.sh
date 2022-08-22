@@ -335,6 +335,8 @@ systemctl --no-pager status candle_early.service
 echo
 systemctl --no-pager status rc-local.service 
 echo
+systemctl --no-pager status candle_late.service 
+echo
 systemctl --no-pager status webthings-gateway.service 
 echo
 systemctl --no-pager status bluealsa.service 
