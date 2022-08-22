@@ -197,7 +197,7 @@ cat /sys/class/drm/card0/*HDMI*/status
 echo
 echo "Libcamera:"
 libcamera-still --list-cameras
-libcamera-still 2>&1 | tee output
+#libcamera-still 2>&1 | tee output
 
 echo
 echo "Plugged in USB devices:"
@@ -226,7 +226,7 @@ rfkill list
 echo
 iwconfig
 
-CPU:
+echo "CPU:"
 cat /proc/cpuinfo | grep 'Revision'
 
 echo
