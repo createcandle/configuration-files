@@ -68,7 +68,7 @@ developer.txt 			# Enables logging. Will also cause a factory reset to write zer
 candle_swap_enabled.txt 	# On lower memory systems (Pi Zero 2) this file indicates that on the first run the swap file was enabled. Normally swap is disabled.
 candle_first_run_complete.txt 	# This file appears after the first boot. It indicates that a new machine ID and new SSH keys were generated.
 candle_hardware_clock.txt 	# This file is present if the hardware clock module is detected and enabled.
-
+candle_has_4th_partition.txt	# Indicates a Candle controller with an additional fourth (rescue) partition.
 
 # FAILURE INDICATORS
 candle_log.txt 			# Upgrade processes and commands you give may output status and errors into this file.
