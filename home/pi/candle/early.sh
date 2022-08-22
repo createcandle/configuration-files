@@ -321,6 +321,7 @@ if [ -f /boot/generate_raspinfo.txt ]; then
   raspinfo > /boot/raspinfo.txt
 fi
 
+# Automatically generates a file that lists which files on the controller are missing.
 if [ -f /home/pi/candle/files_check.sh ]; then
   if [ -n "$(/home/pi/candle/files_check.sh)" ]; then
     /home/pi/candle/files_check.sh > /boot/candle_issues.txt
