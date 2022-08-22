@@ -322,8 +322,17 @@ if [ -f /boot/generate_raspinfo.txt ]; then
 fi
 
 if [ -f /home/pi/candle/files_check.sh ]; then
-  /home/pi/candle/files_check.sh > /boot/candle_issues.txt
+  if [ -n "$(/home/pi/candle/files_check.sh)" ]; then
+    /home/pi/candle/files_check.sh > /boot/candle_issues.txt
+  elif [ -f /boot/candle_issues.txt ]; then
+    rm /boot/candle_issues.txt
+  fi
 fi
+
+if [ -f /boot/candle_rw_once.txt ]; then
+  rm /boot/candle_rw_once.txt
+fi
+
 
 echo "End of Candle early." >> /dev/kmsg
 
