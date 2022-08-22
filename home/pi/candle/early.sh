@@ -330,6 +330,7 @@ if [ -f /home/pi/candle/files_check.sh ]; then
 fi
 
 if [ -f /boot/candle_rw_once.txt ]; then
+  echo "Candle: removing candle_rw_once.txt" >> /dev/kmsg
   rm /boot/candle_rw_once.txt
 fi
 
