@@ -51,7 +51,3 @@ Host *
 #    SendEnv LANG LC_*
     HashKnownHosts yes
     GSSAPIAuthentication no
-    PermitEmptyPasswords no
-    MaxAuthTries 5
-    PermitRootLogin prohibit-password
-    ClientAliveInterval 1200
