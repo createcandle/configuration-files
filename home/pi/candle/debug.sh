@@ -217,6 +217,18 @@ echo
 # Temperature
 vcgencmd measure_temp
 
+echo "CPU:"
+cat /proc/cpuinfo | grep 'Revision'
+
+
+
+echo
+echo
+echo "--------------------------------------------- network"
+echo
+
+ifconfig
+
 echo
 echo "Wi-Fi:"
 wpa_cli -i wlan0 status | grep wpa_state
@@ -226,8 +238,13 @@ rfkill list
 echo
 iwconfig
 
-echo "CPU:"
-cat /proc/cpuinfo | grep 'Revision'
+echo
+echo
+echo "--------------------------------------------- iptables (firewall)"
+echo
+
+iptables -t nat --list
+
 
 echo
 echo
@@ -310,20 +327,6 @@ echo
 echo "NOTE:"
 echo "- This shows how long it took the start the controller, and which parts of the process took a long time and/or kept other parts waiting"
 
-echo
-echo
-echo "--------------------------------------------- iptables (firewall)"
-echo
-
-iptables -t nat --list
-
-
-echo
-echo
-echo "--------------------------------------------- network"
-echo
-
-ifconfig
 
 
 echo
