@@ -409,6 +409,7 @@ if [ -f /boot/restore_boot_backup.txt ] && [ ! -d /ro ]; then
         echo "Candle: rc.local: warning, configuration files backup dir does not exist" >> /dev/kmsg
     fi
 fi
+
 echo "Candle: end of rc.local" >> /dev/kmsg
 exit 0
 
