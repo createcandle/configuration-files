@@ -303,6 +303,9 @@ echo
 findmnt
 
 echo
+mount
+
+echo
 df -h
 
 echo
