@@ -35,7 +35,12 @@ if [ ! -f /home/pi/candle/files_check.sh ]; then
 fi
 
 # Run the sub-script that checks for missing files
-/home/pi/candle/files_check.sh
+if [ -f /home/pi/candle/files_check.sh ]; then
+  chmod +x /home/pi/candle/files_check.sh
+  /home/pi/candle/files_check.sh
+else
+  echo "/home/pi/candle/files_check.sh is missing"
+fi
 
 
 # These are not "essential" to functioning, so are here instead of in the files_check script
