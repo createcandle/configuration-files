@@ -163,9 +163,6 @@ fi
 if [ ! -f /usr/bin/bluealsa ]; then
   echo "/usr/bin/bluealsa is missing"
 fi
-if [ ! -f /opt/vc/lib/plugins/plugins/reader_metadata_id3.so ]; then
-  echo "/opt/vc/lib/plugins/plugins/reader_metadata_id3.so is missing"
-fi
 
 if [ ! -d /var/run/mosquitto ]; then
   echo "/var/run/mosquitto dir is missing"
@@ -195,4 +192,7 @@ fi
 if [ -f /home/pi/.webthings/zero.fill ]; then
   echo "/home/pi/.webthings/zero.fill file exists"
   rm /home/pi/.webthings/zero.fill
+fi
+if [ -d /opt/vc/lib ]; then
+  echo "/opt/vc/lib directory still exists"
 fi
