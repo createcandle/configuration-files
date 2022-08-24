@@ -377,7 +377,7 @@ if [ ! -f /boot/developer.txt ]; then
 fi
 
 # Do aditional checks for missing files, and restore them if possible. late.sh does this too, as a fallback.
-if [ ! -f /boot/candle_no_repair.txt ]; then
+if [ -f /boot/restore_boot_backup.txt ] && [ ! -d /ro ]; then
     if [ -d /home/pi/candle/configuration-files-backup ]; then
         if rsync --ignore-existing --dry-run --inplace -vri /home/pi/candle/configuration-files-backup/* / | grep -q  +++++; then
             echo "Candle: ERROR, rc.local detected missing files. Attempting to fix" >> /dev/kmsg
