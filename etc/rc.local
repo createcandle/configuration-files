@@ -368,6 +368,7 @@ if [ -f /boot/generate_debug.txt ]; then
   sleep 5
   echo "Candle: generating debug file" >> /dev/kmsg
   rm /boot/debug.txt
+  chmod +x /home/pi/candle/debug.sh
   /home/pi/candle/debug.sh > /boot/debug.txt
 fi
 
