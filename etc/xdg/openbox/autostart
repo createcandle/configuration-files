@@ -22,7 +22,7 @@ fi
 
 if [ ! -s /boot/candle_kiosk.txt ]
 then
-    echo "The candle_kiosk.txt file was empty, so not loading the browser" >> /var/log/syslog
+    echo "The candle_kiosk.txt file was empty, so not loading the browser" >> /boot/candle_log.txt
     exit 0
 fi
 
@@ -84,14 +84,20 @@ sleep 15
 
 file="/boot/candle_kiosk.txt"
 url=$(cat "$file")
+wrapper=/home/pi/candle/start.html
 
 if [ ! -n "$url" ]
 then
-    echo "The candle_kiosk.txt file was empty, so not loading the browser" >> /var/log/syslog
+    echo "The candle_kiosk.txt file was empty, so not loading the browser" >> /boot/candle_log.txt
     exit 0
 else
     cp /home/pi/candle/start_bak.html /home/pi/candle/start.html
     sed -i "s|replace_url_here|$url|g" /home/pi/candle/start.html
+fi
+
+if [ ! -f /home/pi/candle/start.html ]; then
+  echo "Error, start.html was missing" >> /boot/candle_log.txt
+  wrapper=http://localhost:8080
 fi
 
 # --enable-touchview  --disable-file-system --use-gl=swiftshader --disable-software-rasterizer --disable-gpu
@@ -100,7 +106,7 @@ fi
 # WebUIDarkMode
 
 #chromium-browser --kiosk $url --load-extension=/home/pi/candle/virtual_keyboard &
-chromium-browser --kiosk /home/pi/candle/start.html --load-extension=/home/pi/candle/virtual_keyboard --disable-infobars --noerrdialogs --disable-file-system \
+chromium-browser --kiosk $wrapper --load-extension=/home/pi/candle/virtual_keyboard --disable-infobars --noerrdialogs --disable-file-system \
  --block-new-web-contents --disable-remote-fonts --disable-speech-api --no-crash-upload --force-tablet-mode --enable-touchview \
  --disable-translate --enable-top-drag-gesture --pull-to-refresh=2 --progress-bar-animation --no-first-run --deny-permission-prompts \
  --disable-breakpad --enable-auto-reload --unsafely-treat-insecure-origin-as-secure=$url --disable-seccomp-filter-sandbox \
