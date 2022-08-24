@@ -10,6 +10,8 @@ touch /boot/developer.txt # will cause the real factory_reset script to also wri
 rm /home/pi/.webthings/candle.log
 rm /boot/candle_log.txt
 rm /boot/candle_issues.txt
+rm /boot/candle_fix.txt
+rm /boot/candle_fix_failed.txt
 rm /boot/debug.txt
 rm /boot/raspinfo.txt
 rm /boot/candle_cutting_edge.txt
