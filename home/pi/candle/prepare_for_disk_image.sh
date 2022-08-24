@@ -21,8 +21,18 @@ rm /boot/candle_rw_once.txt
 rm /boot/tunnel.txt
 rm /etc/asound.conf
 rm /var/log/*
-cp /home/pi/candle/candle_first_run.sh /boot/candle_first_run.sh
+if [ -f /home/pi/candle/candle_first_run.sh ]; then
+  rm /boot/candle_first_run.sh
+  cp /home/pi/candle/candle_first_run.sh /boot/candle_first_run.sh
+else
+  echo "ERROR, candle_first_run.sh is missing"
+  exit 1
+fi
+rm /home/pi/.fehbg
+rm -rf /home/pi/.pki
+rm /home/pi/.wget-hsts
 
+echo "Well hello there" > /home/pi/.bash_history
 
 chmod +x /home/pi/.webthings/addons/power-settings/factory_reset.sh
 /home/pi/.webthings/addons/power-settings/factory_reset.sh
