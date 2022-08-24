@@ -46,7 +46,6 @@ if [ -f /boot/post_bootup_actions.sh ]; then
     feh --bg-fill /boot/splash_updating.png
   fi
 else
-  feh --bg-fill /boot/splashalt.png
   
   if [ -f /boot/splash.mp4 ];
   then
@@ -59,6 +58,8 @@ else
     #fi
     #omxplayer -b --win "0 0 $resolution" --loop /boot/splash.mp4 &
   fi
+  sleep 1
+  feh --bg-fill /boot/splashalt.png
 
 fi
 #feh --bg-fill /boot/splash.png
