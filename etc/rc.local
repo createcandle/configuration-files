@@ -377,7 +377,6 @@ if [ ! -f /boot/developer.txt ]; then
 fi
 
 # Do aditional checks for missing files, and restore them if possible. late.sh does this too, as a fallback.
-# Do aditional checks for missing files, and restore them if possible.
 if [ -d /home/pi/candle/configuration-files-backup ]; then
     if rsync --ignore-existing --dry-run -vri /home/pi/candle/configuration-files-backup/* / | grep -q  +++++; then
         echo "Candle: ERROR, rc.local detected missing files. Attempting to fix" >> /dev/kmsg
@@ -385,20 +384,24 @@ if [ -d /home/pi/candle/configuration-files-backup ]; then
         if [ -d /ro ]; then
             if [ -d /ro/home/pi/candle/configuration-files-backup ]; then
                 sudo mount -o remount,ro /rw
-                rsync --ignore-existing -vr /ro/home/pi/candle/configuration-files-backup/* /ro >> /dev/kmsg
+                rsync --ignore-existing -vri /ro/home/pi/candle/configuration-files-backup/* /ro >> /dev/kmsg
                 sudo mount -o remount,ro /ro
             fi
         else
-            rsync --ignore-existing -vr /home/pi/candle/configuration-files-backup/* / >> /dev/kmsg
+            rsync -vr --ignore-existing --inplace /home/pi/candle/configuration-files-backup/* / >> /dev/kmsg
         fi
         
         sleep 2
         if rsync --ignore-existing --dry-run -vri /home/pi/candle/configuration-files-backup/* / | grep -q  +++++; then
             echo "Candle: ERROR, rc.local: missing files fix failed" >> /dev/kmsg
-            echo "$(date) - ERROR, rc.local: missing files fix failed" >> /boot/candle_log.txt
+            echo "$(date) - ERROR, rc.local: missing files fix failed. See candle_failed_fix.txt" >> /boot/candle_log.txt
+            rsync --ignore-existing --dry-run -vri /home/pi/candle/configuration-files-backup/* / > /boot/candle_failed_fix.txt
         else
             echo "Candle: rc.local: missing files fix succeeded" >> /dev/kmsg
             echo "$(date) - rc.local: missing files fix succeeded" >> /boot/candle_log.txt
+            if [ -f /boot/candle_failed_fix.txt ]; then
+                rm /boot/candle_failed_fix.txt
+            fi
         fi
     fi
 else
