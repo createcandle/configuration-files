@@ -315,7 +315,8 @@ echo
 echo "NOTE:"
 echo "- /dev/mmcblk0p1 is the boot partition, which is what you see when you plug the SD card into your computer. Candle.log and debug.txt are safe to delete from it."
 echo "- /dev/mmcblk0p2 is the system partition. It this is (almost) full, that means an upgrade went very wrong."
-echo "- /dev/mmcblk0p3 is the user partition, where your actual personal data is stored. If it is (almost) full, delete some logs or photos?"
+echo "- /dev/mmcblk0p3 Is intended to become a rescue partition"
+echo "- /dev/mmcblk0p4 is the user partition, where your actual personal data is stored. If it is (almost) full, delete some logs or photos?"
 echo
 echo "Details:"
 du /home/pi --max-depth=1 -h
