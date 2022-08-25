@@ -24,6 +24,7 @@ rm /boot/candle_rw_once.txt
 rm /boot/tunnel.txt
 rm /etc/asound.conf
 rm /var/log/*
+rm /home/pi/.npm/anonymous-cli-metrics.json 
 
 if [ -f /home/pi/candle/candle_first_run.sh ]; then
   rm /boot/candle_first_run.sh
