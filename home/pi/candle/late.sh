@@ -76,7 +76,7 @@ fi
 # Do aditional checks for missing files, and restore them if possible. rc.local does this too.
 if [ -f /boot/restore_boot_backup.txt ] && [ ! -d /ro ]; then
     if [ -d /home/pi/candle/configuration-files-backup ]; then
-        if rsync --ignore-existing --dry-run --inplace -vri /home/pi/candle/configuration-files-backup/* / | grep -q  +++++; then
+        if rsync --ignore-existing --dry-run --inplace -vri /home/pi/candle/configuration-files-backup/ / | grep -q  +++++; then
             echo "Candle: ERROR, late.sh detected missing files. Attempting to fix" >> /dev/kmsg
             echo "$(date) - ERROR, late.sh detected missing files. Attempting to fix." >> /boot/candle_log.txt
             if [ -d /ro ]; then
@@ -86,14 +86,14 @@ if [ -f /boot/restore_boot_backup.txt ] && [ ! -d /ro ]; then
                     sudo mount -o remount,ro /ro
                 fi
             else
-                rsync -vr --ignore-existing --inplace /home/pi/candle/configuration-files-backup/* / >> /dev/kmsg
+                rsync -vr --ignore-existing --inplace /home/pi/candle/configuration-files-backup/ / >> /dev/kmsg
             fi
 
             sleep 2
-            if rsync --ignore-existing --inplace --dry-run -vri /home/pi/candle/configuration-files-backup/* / | grep -q  +++++; then
+            if rsync --ignore-existing --inplace --dry-run -vri /home/pi/candle/configuration-files-backup/ / | grep -q  +++++; then
                 echo "Candle: ERROR, late.sh: missing files fix failed" >> /dev/kmsg
                 echo "$(date) - ERROR, late.sh: missing files fix failed. See candle_fix_failed.txt" >> /boot/candle_log.txt
-                rsync --ignore-existing --inplace --dry-run -vri /home/pi/candle/configuration-files-backup/* / > /boot/candle_fix_failed.txt
+                rsync --ignore-existing --inplace --dry-run -vri /home/pi/candle/configuration-files-backup/ / > /boot/candle_fix_failed.txt
             else
                 echo "Candle: late.sh: missing files fix succeeded" >> /dev/kmsg
                 echo "$(date) - late.sh: missing files fix succeeded" >> /boot/candle_log.txt
