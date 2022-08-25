@@ -37,7 +37,6 @@ rm /home/pi/.fehbg
 rm /home/pi/.wget-hsts
 
 rm -rf /home/pi/.pki
-rm -rf /home/pi/.npm
 
 echo "Well hello there" > /home/pi/.bash_history
 
