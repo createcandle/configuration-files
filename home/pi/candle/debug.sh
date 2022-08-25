@@ -225,6 +225,9 @@ vcgencmd measure_temp
 echo "CPU:"
 cat /proc/cpuinfo | grep 'Revision'
 
+echo
+echo "Watchdog:"
+wdctl
 
 
 echo
