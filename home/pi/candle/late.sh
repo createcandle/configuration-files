@@ -114,6 +114,7 @@ if [ -f /boot/restore_boot_backup.txt ] && [ ! -d /ro ]; then
         fi
     fi
     
+    # Also make sure the candle_log.txt file isn't getting too big
     if [ -f /boot/candle_log.txt ]; then
         if [ "$(stat -c%s /boot/candle_log.txt)" -gt 5000000 ]; then
             echo "Candle: Warning, deleted large candle_log.txt" >> /dev/kmsg
