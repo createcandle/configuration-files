@@ -105,4 +105,20 @@ if [ -f /boot/restore_boot_backup.txt ] && [ ! -d /ro ]; then
     else
         echo "Candle: late.sh: warning, configuration files backup dir does not exist" >> /dev/kmsg
     fi
+    
+    # This can occur is developer mode is permanently enabled
+    if [ -f /var/log/syslog ]; then
+        if [ "$(stat -c%s /var/log/syslog)" -gt 10000000 ]; then
+            echo "Candle: Warning, deleted large syslog" >> /dev/kmsg
+            rm /var/log/syslog
+        fi
+    fi
+    
+    if [ -f /boot/candle_log.txt ]; then
+        if [ "$(stat -c%s /boot/candle_log.txt)" -gt 5000000 ]; then
+            echo "Candle: Warning, deleted large candle_log.txt" >> /dev/kmsg
+            rm /boot/candle_log.txt
+        fi
+    fi
+    
 fi
