@@ -121,12 +121,12 @@ echo
 echo "--------------------------------------------- dmesg"
 echo 
 
-echo "dmesg errors:"
-dmesg --level=emerg,alert,crit,err
+echo "Last 100 dmesg errors:"
+dmesg --level=emerg,alert,crit,err | tail -100
 
 echo
-echo "dmesg warnings:"
-dmesg --level=warn
+echo "Last 100 dmesg warnings:"
+dmesg --level=warn | tail -100
 
 echo
 echo "NOTE:"
