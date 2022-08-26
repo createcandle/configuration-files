@@ -24,7 +24,13 @@ rm /boot/candle_rw_once.txt
 rm /boot/tunnel.txt
 rm /etc/asound.conf
 rm /var/log/*
-rm /home/pi/.npm/anonymous-cli-metrics.json 
+
+# Clean NPM cache
+export NVM_DIR="/home/pi/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+npm cache clean --force # already done in install_candle_controller script
+#rm /home/pi/.npm/anonymous-cli-metrics.json 
 
 if [ -f /home/pi/candle/candle_first_run.sh ]; then
   rm /boot/candle_first_run.sh
@@ -38,6 +44,8 @@ rm /home/pi/.fehbg
 rm /home/pi/.wget-hsts
 
 rm -rf /home/pi/.pki
+
+find /tmp -type f -atime +10 -delete
 
 echo "Well hello there" > /home/pi/.bash_history
 
