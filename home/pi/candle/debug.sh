@@ -91,6 +91,10 @@ if [ -f /boot/emergency.txt ]; then
   echo "boot/emergency.txt file exists"
 fi
 
+if [ -d /home/pi/.webthings/data/zigbee2mqtt/zigbee2mqtt ]; then
+  echo "/home/pi/.webthings/data/zigbee2mqtt/zigbee2mqtt directory does not exist"
+fi
+
 
 echo
 if ! ps aux | grep -q wpa_supplicant ; then
