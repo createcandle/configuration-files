@@ -232,7 +232,7 @@ cat /proc/cpuinfo | grep 'Revision'
 echo
 echo "Watchdog:"
 wdctl
-
+grep . /sys/class/watchdog/*/*
 
 echo
 echo
