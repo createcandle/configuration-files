@@ -122,4 +122,22 @@ if [ -f /boot/restore_boot_backup.txt ] && [ ! -d /ro ]; then
         fi
     fi
     
+    # Try to upgrade security of the wifi password
+    if cat /home/pi/.webthings/etc/wpa_supplicant/wpa_supplicant.conf | grep -q psk=; then
+
+        current_ssid="$(cat /home/pi/.webthings/etc/wpa_supplicant/wpa_supplicant.conf | grep 'ssid=' | cut -d'"' -f 2 )"
+        current_pass="$(cat /home/pi/.webthings/etc/wpa_supplicant/wpa_supplicant.conf | grep 'psk=' | cut -d'"' -f 2 )"
+
+        if [ "$(echo -n $current_pass | wc -c)" != 64 ]; then
+            echo "wifi password was not 64 characters. Upgrading wifi password security."
+            echo "Candle: upgrading wifi password security" >> /dev/kmsg
+            phrase="$(wpa_passphrase '$current_ssid' '$current_pass' | grep -v '#psk=' | grep 'psk=' | cut -d'=' -f 2  )"
+            #echo "phrase: $phrase"
+            sed -i "s'${current_pass}'${phrase}'" /home/pi/.webthings/etc/wpa_supplicant/wpa_supplicant.conf
+        else
+            echo "Wifi password seems to already be upgraded"
+        fi
+        
+    fi
+    
 fi
