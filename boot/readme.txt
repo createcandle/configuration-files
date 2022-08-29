@@ -56,6 +56,7 @@ restore_controller_backup.txt 	# Will try to restore the Candle Controller softw
 force_controller_rebuild.txt 	# Will download the very latest version of the Candle Controller and build it from scratch. This takes a long time.
 generate_debug.txt 		# Will generate a file called debug.txt which contains details about the state of the system.
 generate_raspinfo.txt 		# Will generate a file called raspinfo.txt which contains details about the operating system.
+candle_forget_wifi.txt		# Will clear the currently stored wifi details (ssid, password).
 
 
 # Factory reset related:
