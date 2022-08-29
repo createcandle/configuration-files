@@ -1,6 +1,6 @@
 [Unit]
 Description=Candle late       
-After=rc-local.service
+After=rc-local.service candle_early.service
 ConditionPathExists=/home/pi/candle/late.sh
 
 [Service]
