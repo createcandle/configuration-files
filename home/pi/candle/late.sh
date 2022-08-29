@@ -150,4 +150,4 @@ if cat /home/pi/.webthings/etc/wpa_supplicant/wpa_supplicant.conf | grep -q psk=
 fi
 
 
-echo "Candle: end of late.sh" >> /dev/kmsg
+echo "end of late.sh" >> /dev/kmsg
