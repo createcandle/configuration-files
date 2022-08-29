@@ -74,6 +74,10 @@ else
     echo "/etc/fstab does not reference third partition"
   fi
 fi
+if ! lsb_release -i -s | grep -q Raspbian; then
+    echo "OS string is not Raspbian, it is: $(lsb_release -i -s)" 
+fi
+
 
 
 echo
