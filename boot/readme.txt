@@ -30,7 +30,7 @@ Alternatively, you can connect a monitor and keyboard. Then pressing CTRL-ALT-F3
 # EMERGENCY RECOVERY
 If you are having a lot of trouble, and none of the tools mentioned below help, then as a last ditch attempt you can try using the recovery version of cmdline.txt. It will boot the system into a bash shell. Note that the filesystem will be in read-only mode, but you can remount it if you need to make changes:
 
-sudo mount -o remount,rw /dev/mmcblk0p2 /
+mount -o remount,rw /dev/mmcblk0p2 /
 
 
 # TOGGLES
