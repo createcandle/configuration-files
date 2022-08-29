@@ -65,6 +65,17 @@ if ! cat /etc/hosts | grep -q "$(cat /etc/hostname)"; then
     echo "hostname was not in /etc/hosts"
 fi
 
+if lsblk | grep -q 'mmcblk0p4'; then
+  if ! cat /etc/fstab | grep -q 'mmcblk0p4'; then
+    echo "/etc/fstab does not reference fourth partition"
+  fi
+else
+  if ! cat /etc/fstab | grep -q 'mmcblk0p3'; then
+    echo "/etc/fstab does not reference third partition"
+  fi
+fi
+
+
 echo
 echo
 echo "--------------------------------------------- warnings"
