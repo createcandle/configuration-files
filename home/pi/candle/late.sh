@@ -122,6 +122,14 @@ if [ -f /boot/restore_boot_backup.txt ] && [ ! -d /ro ]; then
         fi
     fi
     
+    
+    # Forget the wifi password
+    if [ -f /boot/candle_forget_wifi.txt ]; then
+        rm /boot/candle_forget_wifi.txt
+        echo -e 'ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev\nupdate_config=1\ncountry=NL\n' > /home/pi/.webthings/etc/wpa_supplicant/wpa_supplicant.conf
+    fi
+    
+    
     # Try to upgrade security of the wifi password
     if cat /home/pi/.webthings/etc/wpa_supplicant/wpa_supplicant.conf | grep -q psk=; then
 
