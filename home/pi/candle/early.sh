@@ -335,6 +335,11 @@ if [ -f /boot/candle_rw_once.txt ]; then
   rm /boot/candle_rw_once.txt
 fi
 
+# Forget the wifi password
+if [ -f /boot/candle_forget_wifi.txt ]; then
+  rm /boot/candle_forget_wifi.txt
+  echo -e 'ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev\nupdate_config=1\ncountry=NL\n' > /home/pi/.webthings/etc/wpa_supplicant/wpa_supplicant.conf
+fi
 
 echo "End of Candle early." >> /dev/kmsg
 
