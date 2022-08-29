@@ -9,8 +9,9 @@ User=root
 ExecStartPre=/bin/chmod +x /home/pi/candle/late.sh
 ExecStart=/bin/bash /home/pi/candle/late.sh
 
-#RemainAfterExit=yes
+RemainAfterExit=yes
 StandardOutput=journal
+
 
 [Install]
 WantedBy=multi-user.target
