@@ -139,7 +139,10 @@ if cat /home/pi/.webthings/etc/wpa_supplicant/wpa_supplicant.conf | grep -q psk=
     current_pass="$(cat /home/pi/.webthings/etc/wpa_supplicant/wpa_supplicant.conf | grep 'psk=' | cut -d'"' -f 2 )"
     if [ "$(echo -n $current_pass | wc -c)" -lt 64 ]; then
         echo "Candle: late.sh: upgrading wifi password security" >> /dev/kmsg
-        phrase="$(wpa_passphrase '$current_ssid' '$current_pass' | grep -v '#psk=' | grep 'psk=' | cut -d'=' -f 2  )"
+        echo "$current_pass" | wpa_passphrase "$current_ssid" > ./temporary
+        phrase=$(cat ./temporary | grep -v '#psk=' | grep 'psk=' | cut -d'=' -f 2)
+        rm ./temporary
+        #phrase="$(wpa_passphrase '$current_ssid' '$current_pass' | grep -v '#psk=' | grep 'psk=' | cut -d'=' -f 2  )"
         sed -i "s'\\\"${current_pass}\\\"'${phrase}'" /home/pi/.webthings/etc/wpa_supplicant/wpa_supplicant.conf
     else
         echo "Candle: late.sh: Wifi password seems to already be upgraded" >> /dev/kmsg
