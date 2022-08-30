@@ -187,6 +187,10 @@ echo
 echo "/etc/modules (kernel):"
 cat /etc/modules
 echo
+echo "/lib/modules (kernel)"
+ls -l /lib/modules/ | awk -F" " '{print $9}'
+
+echo
 echo
 echo "--------------------------------------------- Apt"
 echo
