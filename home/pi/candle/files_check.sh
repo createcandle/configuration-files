@@ -92,7 +92,9 @@ fi
 if [ ! -f /home/pi/candle/installed_respeaker_version.txt ]; then
   echo "/home/pi/candle/installed_respeaker_version.txt is missing"
 fi
-
+if [ ! -f /home/pi/candle/creation_date.txt ]; then
+  echo "/home/pi/candle/creation_date.txt is missing"
+fi
 if [ ! -f /home/pi/.webthings/addons/power-settings/factory_reset.sh ]; then
   echo "/home/pi/.webthings/addons/power-settings/factory_reset.sh is missing"
 fi
