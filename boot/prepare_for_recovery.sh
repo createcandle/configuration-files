@@ -1,5 +1,12 @@
 #!/bin/bash
 
+# Check if script is being run as root
+if [ "$EUID" -ne 0 ]; then
+  echo "Please run this script as root (use sudo)"
+  exit
+fi
+
+
 echo "backing up all files in /boot to /boot/candle"
 rm -rf candle
 mkdir -p candle
