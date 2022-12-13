@@ -1,5 +1,5 @@
 
-The Candle 2.0 disk image has three partitions. 
+The Candle 2.0 disk image has multiple partitions. 
 - The first is /boot
 - The second has the main OS and the Candle Controller.
 - The third partition is for a factory restore/upgrade system that downloads the latest disk image and partially writes it to disk.
