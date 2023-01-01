@@ -39,6 +39,7 @@ The existence of these files can also toggle certain things:
 emergency.txt 			# Booting is mostly halted, and the SSH shell is activated.
 candle_emergency_backup.txt 	# If possible, creates an emergency backup which will be placed on the SD card as candle_emergency_backup.tar
 candle_kiosk.txt 		# The URL inside this file will be shown in the browser. If it's empty the kiosk browser will not load.
+candle_kiosk_forced.txt # Force the kiosk mode to start on low memory systems (such as the Raspberry Pi 3).
 keep_browser_session.txt 	# Don't delete browser sessions on boot.
 cloudless.txt 			# Experimental, to launch the controller even if there is no network at all.
 nohotspot.txt 			# Aborts hotspot launch. Useful if that feature somehow causes trouble.
