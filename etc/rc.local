@@ -334,7 +334,7 @@ fi
 # Start X server
 if [ -f /boot/candle_kiosk.txt ]
 then
-  if [ "$totalk" -gt 1500000 ]
+  if [ "$totalk" -gt 1500000 ] || [ -f /boot/candle_kiosk_forced.txt ]
   then
     echo "Candle: Enough memory to start X server" >> /dev/kmsg
     logger Starting X
