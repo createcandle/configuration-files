@@ -15,8 +15,8 @@ ConditionPathExists=/home/pi/.webthings/etc/hostname
 Type=oneshot
 #RemainAfterExit=yes
 #Type=simple
-ExecStart=/usr/bin/hostname -F /home/pi/.webthings/etc/hostname
-#ExecStart=/bin/bash /usr/bin/candle_hostname_fix.sh
+#ExecStart=/usr/bin/hostname -F /home/pi/.webthings/etc/hostname
+ExecStart=/bin/bash /usr/bin/candle_hostname_fix.sh
 
 [Install]
 WantedBy=bluetooth.target
