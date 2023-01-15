@@ -47,7 +47,7 @@ else
         sleep 60
         reboot
     else
-        sudo wpa_supplicant -iwlan0 -c/etc/wpa_supplicant/wpa_supplicant.conf &
+        sudo wpa_supplicant -i wlan0 -c /etc/wpa_supplicant/wpa_supplicant.conf -B
     fi
 fi
 
