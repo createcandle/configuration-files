@@ -47,9 +47,6 @@ fi
 if [ -f /boot/bootup_actions_failed.sh ]; then
   echo "/boot/bootup_actions_failed.sh file exists"
 fi
-if [ -f /boot/._cmdline.txt ]; then
-  echo "/boot/._cmdline.txt file exists"
-fi
 
 
 # programs that should be running
@@ -84,6 +81,10 @@ echo
 echo
 echo "--------------------------------------------- warnings"
 echo 
+
+if [ -f /boot/._cmdline.txt ]; then
+  echo "/boot/._cmdline.txt file exists"
+fi
 
 if ! lsblk | grep -q 'mmcblk0p4'; 
 then
