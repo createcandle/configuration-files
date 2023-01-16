@@ -178,8 +178,10 @@ fi
 
 
 # Backups
-if [ ! -f /home/pi/controller_backup.tar ]; then
-  echo "/home/pi/controller_backup.tar backup is missing"
+if [ -f /boot/candle_first_run_complete.txt ]; then
+  if [ ! -f /home/pi/controller_backup.tar ]; then
+    echo "/home/pi/controller_backup.tar backup is missing"
+  fi
 fi
 if [ ! -f /home/pi/candle/early.sh.bak ]; then
   echo "/home/pi/candle/early.sh.bak backup is missing"
