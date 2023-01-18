@@ -1,10 +1,10 @@
 #!/bin/bash
 set +e
 
-# This runs even before rc.local
+# This runs even before early.sh
 
 echo "in Candle early"
-echo "in Candle early. Fixing hostname." >> /dev/kmsg
+echo "$(date) - in Candle early. Fixing hostname." >> /dev/kmsg
 
 # Fix hostname
 /usr/bin/hostname -F /home/pi/.webthings/etc/hostname
@@ -94,7 +94,7 @@ then
 fi
 
 
-# Handle forced restore of rc.local
+# Handle forced restore of early.sh
 if [ -f /boot/restore_boot_backup.txt ];
 then
   rm /boot/restore_boot_backup.txt
@@ -104,9 +104,9 @@ then
     systemctl start ssh.service
   fi
   
-  if [ -f /etc/rc.local.bak ];
+  if [ -f /etc/early.sh.bak ];
   then
-    cp /etc/rc.local.bak /etc/rc.local
+    cp /etc/early.sh.bak /etc/early.sh
     echo "$(date) - forced restored boot backup" >> /boot/candle_log.txt
     echo "$(date) - forced restored boot backup" >> /dev/kmsg
 
@@ -343,18 +343,18 @@ fi
 
 
 # RUN BOOTUP SCRIPT IF IT EXISTS
-if [ -f /boot/bootup_actions.sh ]
+if [ -f /boot/bootup_actions_early.sh ]
 then
   echo " "
-  echo "Candle: rc.local: detected bootup_actions.sh file." >> /dev/kmsg
-  echo "$(date) - rc.local: detected bootup_actions.sh file." >> /boot/candle_log.txt
+  echo "Candle: early.sh: detected bootup_actions_early.sh file." >> /dev/kmsg
+  echo "$(date) - early.sh: detected bootup_actions_early.sh file." >> /boot/candle_log.txt
   
   
   # Avoid bootloops
-  if [ -f /boot/bootup_actions_failed.sh ]; then
-    rm /boot/bootup_actions_failed.sh
+  if [ -f /boot/bootup_actions_early_failed.sh ]; then
+    rm /boot/bootup_actions_early_failed.sh
   fi
-  mv -f /boot/bootup_actions.sh /boot/bootup_actions_failed.sh
+  mv -f /boot/bootup_actions_early.sh /boot/bootup_actions_early_failed.sh
 
   if [ -f /boot/rotate180.txt ]
   then
@@ -370,11 +370,11 @@ then
     #echo "current hostname: $(hostname -I)"
     if [ "$(hostname -I)" = "" ]
     then
-      echo "Candle: rc.local doing bootup_actions: no network yet $i" >> /dev/kmsg
+      echo "Candle: early.sh doing bootup_actions_early: no network yet $i" >> /dev/kmsg
       echo "no network yet $i"
       sleep 1    
     else
-      echo "Candle: rc.local doing bootup_actions: IP address detected: $(hostname -I)" >> /dev/kmsg
+      echo "Candle: early.sh doing bootup_actions_early: IP address detected: $(hostname -I)" >> /dev/kmsg
       break
     fi
   done
@@ -382,7 +382,7 @@ then
   # Force a synchronisation with a time server to avoid certificate issues
   if [ -f /boot/candle_hardware_clock.txt ]
   then
-    echo "Candle: rc.local doing bootup_actions: hardware clock detected, forcing sync with NTP server" >> /dev/kmsg
+    echo "Candle: early.sh doing bootup_actions_early: hardware clock detected, forcing sync with NTP server" >> /dev/kmsg
     rm /boot/candle_hardware_clock.txt
     sudo systemctl start systemd-timesyncd
   fi
@@ -392,20 +392,20 @@ then
     systemctl start ssh.service
   fi
   
-  echo "Candle: rc.local doing bootup_actions: STARTING" >> /dev/kmsg
-  chmod +x /boot/bootup_actions_failed.sh
+  echo "Candle: early.sh doing bootup_actions_early: STARTING" >> /dev/kmsg
+  chmod +x /boot/bootup_actions_early_failed.sh
   
-  /bin/bash /boot/bootup_actions_failed.sh
-  echo "Candle: rc.local: bootup_actions.sh file is done" >> /dev/kmsg
-  echo "Candle: rc.local: bootup_actions.sh file is done" >> /boot/candle_log.txt
+  /bin/bash /boot/bootup_actions_early_failed.sh
+  echo "Candle: early.sh: bootup_actions_early.sh file is done" >> /dev/kmsg
+  echo "Candle: early.sh: bootup_actions_early.sh file is done" >> /boot/candle_log.txt
   echo " " >> /dev/kmsg
-  # rm /boot/bootup_actions_failed.sh # Scripts should clean themselves up. If the self-cleanup failed, power-settings addon uses that as an indicator the script failed.
+  # rm /boot/bootup_actions_early_failed.sh # Scripts should clean themselves up. If the self-cleanup failed, power-settings addon uses that as an indicator the script failed.
  
   sleep 5
   #exit 0
 fi
 
-echo "End of Candle early." >> /dev/kmsg
+echo "$(date) - End of Candle early." >> /dev/kmsg
 
 exit 0
 
