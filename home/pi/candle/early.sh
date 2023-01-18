@@ -28,7 +28,7 @@ fi
 if ifconfig | grep -q wlan0: ; then
     echo "wlan0 exists"
 else
-    echo "Candle: EARLY.SH: ERROR, WLAN0 is missing!" >> /dev/kmsg
+    echo "Candle: EARLY.SH: WLAN0 is not in ifconfig (yet?)" >> /dev/kmsg
     if cat /etc/systemd/system/dhcpcd.service.d/wait.conf | grep -q /usr/lib/dhcpcd5/dhcpcd ; then
         echo "($date) - early.sh had to apply dhcpcd fix to wait.conf" >> /boot/candle_log.txt
         sudo mount -o remount,rw /ro
