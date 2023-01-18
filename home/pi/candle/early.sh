@@ -341,6 +341,70 @@ if [ -f /boot/candle_forget_wifi.txt ]; then
   echo -e 'ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev\nupdate_config=1\ncountry=NL\n' > /home/pi/.webthings/etc/wpa_supplicant/wpa_supplicant.conf
 fi
 
+
+# RUN BOOTUP SCRIPT IF IT EXISTS
+if [ -f /boot/bootup_actions.sh ]
+then
+  echo " "
+  echo "Candle: rc.local: detected bootup_actions.sh file." >> /dev/kmsg
+  echo "$(date) - rc.local: detected bootup_actions.sh file." >> /boot/candle_log.txt
+  
+  
+  # Avoid bootloops
+  if [ -f /boot/bootup_actions_failed.sh ]; then
+    rm /boot/bootup_actions_failed.sh
+  fi
+  mv -f /boot/bootup_actions.sh /boot/bootup_actions_failed.sh
+
+  if [ -f /boot/rotate180.txt ]
+  then
+    /bin/ply-image /boot/splash_updating180.png
+  else
+    /bin/ply-image /boot/splash_updating.png
+  fi
+
+  # Wait for IP address for at most 30 seconds
+  echo "waiting for IP address"
+  for i in {1..30}
+  do
+    #echo "current hostname: $(hostname -I)"
+    if [ "$(hostname -I)" = "" ]
+    then
+      echo "Candle: rc.local doing bootup_actions: no network yet $i" >> /dev/kmsg
+      echo "no network yet $i"
+      sleep 1    
+    else
+      echo "Candle: rc.local doing bootup_actions: IP address detected: $(hostname -I)" >> /dev/kmsg
+      break
+    fi
+  done
+
+  # Force a synchronisation with a time server to avoid certificate issues
+  if [ -f /boot/candle_hardware_clock.txt ]
+  then
+    echo "Candle: rc.local doing bootup_actions: hardware clock detected, forcing sync with NTP server" >> /dev/kmsg
+    rm /boot/candle_hardware_clock.txt
+    sudo systemctl start systemd-timesyncd
+  fi
+
+  if [ -f /boot/developer.txt ]
+  then
+    systemctl start ssh.service
+  fi
+  
+  echo "Candle: rc.local doing bootup_actions: STARTING" >> /dev/kmsg
+  chmod +x /boot/bootup_actions_failed.sh
+  
+  /bin/bash /boot/bootup_actions_failed.sh
+  echo "Candle: rc.local: bootup_actions.sh file is done" >> /dev/kmsg
+  echo "Candle: rc.local: bootup_actions.sh file is done" >> /boot/candle_log.txt
+  echo " " >> /dev/kmsg
+  # rm /boot/bootup_actions_failed.sh # Scripts should clean themselves up. If the self-cleanup failed, power-settings addon uses that as an indicator the script failed.
+ 
+  sleep 5
+  #exit 0
+fi
+
 echo "End of Candle early." >> /dev/kmsg
 
 exit 0
