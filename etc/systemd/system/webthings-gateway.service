@@ -14,10 +14,7 @@ User=pi
 # Edit this line, if needed, to specify where you installed the server
 WorkingDirectory=/home/pi/webthings/gateway
 # Edit this line, if needed, to set the correct path to node
-ExecStartPre=/bin/sleep 2
-ExecStartPre=/bin/echo "Launching controller..." >> /dev/kmsg
 ExecStart=/home/pi/webthings/gateway/run-app.sh
-ExecStartPost=/bin/echo "Controller launched" >> /dev/kmsg
 Restart=always
 RestartSec=10s
 
