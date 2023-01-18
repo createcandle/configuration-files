@@ -47,6 +47,7 @@ else
         sleep 60
         reboot
     else
+        echo "Early: starting wpa_supplicant" >> /dev/kmsg
         sudo wpa_supplicant -i wlan0 -c /etc/wpa_supplicant/wpa_supplicant.conf -B
     fi
 fi
