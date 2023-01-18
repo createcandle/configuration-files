@@ -1,1 +1,1 @@
-console=tty1 root=/dev/mmcblk0p3 rootfstype=ext4 elevator=deadline fsck.repair=yes rootwait consoleblank=0 net.ifnames=0 selinux=0
+console=tty3 root=/dev/mmcblk0p3 rootfstype=ext4 elevator=deadline fsck.repair=yes rootwait consoleblank=0 net.ifnames=0 quiet plymouth.ignore-serial-consoles splash logo.nologo vt.global_cursor_default=0
