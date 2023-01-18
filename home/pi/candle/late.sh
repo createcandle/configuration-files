@@ -2,7 +2,7 @@
 set +e
 
 #/bin/echo "in late" | sudo tee -a /dev/kmsg
-echo "In late" >> /dev/kmsg
+echo "$(date) - In late" >> /dev/kmsg
 
 
 # RUN POST BOOTUP SCRIPT IF IT EXISTS
@@ -150,4 +150,4 @@ if cat /home/pi/.webthings/etc/wpa_supplicant/wpa_supplicant.conf | grep -q psk=
 fi
 
 
-echo "end of late.sh" >> /dev/kmsg
+echo "$(date) - end of late.sh" >> /dev/kmsg
