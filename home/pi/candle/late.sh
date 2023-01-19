@@ -161,6 +161,6 @@ systemctl stop triggerhappy.service
 
 # Stop the serial console once the system is safely up and running
 sleep 60
-sudo systemctl stop getty@tty3.service 
+systemctl stop getty@tty3.service 
 
 echo "$(date) - end of late.sh" >> /dev/kmsg
