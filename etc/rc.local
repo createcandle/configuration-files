@@ -282,22 +282,6 @@ then
   fi
 fi
 
-
-# Generate debug file if requested
-if [ -f /boot/generate_debug.txt ]; then
-  rm /boot/generate_debug.txt
-  sleep 5
-  echo "Candle: generating debug file" >> /dev/kmsg
-  rm /boot/debug.txt
-  chmod +x /home/pi/candle/debug.sh
-  /home/pi/candle/debug.sh > /boot/debug.txt
-fi
-
-# clean up the journal
-if [ ! -f /boot/developer.txt ]; then
-  journalctl --vacuum-size=10K
-fi
-
 # Do aditional checks for missing files, and restore them if possible. late.sh does this too, as a fallback.
 if [ -f /boot/restore_boot_backup.txt ] && [ ! -d /ro ]; then
     if [ -d /home/pi/candle/configuration-files-backup ]; then
