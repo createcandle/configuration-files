@@ -1,12 +1,12 @@
 [Unit]
-Description=Candle every minute
+Description=Candle every minute timer
 After=candle_late.service
 
 [Timer]
 OnCalendar=*-*-* *:*:00
 AccuracySec=5s
 Persistent=true
-ExecStart=/bin/bash /home/pi/candle/every_minute.sh
+Unit=candle_every_minute.service
 
 [Install]
 WantedBy=timers.target
