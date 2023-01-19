@@ -55,6 +55,16 @@ fi
 # Do not show blinking cursor
 echo 0 > /sys/class/graphics/fbcon/cursor_blink
 
+# For bluetooth keyboard?
+modprobe hidp
+
+# Disable WiFi power save
+if [ -f /boot/disable_wifi_power_save.txt ] || [ -d /home/pi/.webthings/addons/hotspot ];
+then
+  echo "Candle: rc.local: disabling wifi power saving" >> /dev/kmsg
+  /sbin/iw dev wlan0 set power_save off
+fi
+
 
 # Create emergency backup
 if [ -f /boot/candle_make_emergency_backup.txt ]; 
@@ -424,8 +434,14 @@ then
   echo " " >> /dev/kmsg
   # rm /boot/bootup_actions_failed.sh # Scripts should clean themselves up. If the self-cleanup failed, power-settings addon uses that as an indicator the script failed.
  
-  sleep 5
-  #exit 0
+  # if /boot/bootup_actions_failed.sh still exists now, that means the bootup_actions script didn't clean up after itself.
+  if [ -f /boot/bootup_actions_failed.sh ];; then
+      echo "warning, bootup_actions_failed.sh still existed after the script completed" >> /dev/kmsg
+  fi
+ 
+  sleep 1
+  
+  
 fi
 
 echo "$(date) - End of Candle early." >> /dev/kmsg
