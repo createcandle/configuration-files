@@ -3,4 +3,5 @@ Description=Candle every minute service
 
 [Service]
 Type=oneshot
+User=root
 ExecStart=/bin/bash /home/pi/candle/every_minute.sh
