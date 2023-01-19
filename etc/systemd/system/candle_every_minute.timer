@@ -6,6 +6,7 @@ After=candle_late.service
 OnCalendar=*-*-* *:*:00
 AccuracySec=5s
 Persistent=true
+ExecStart=/bin/bash /home/pi/candle/every_minute.sh
 
 [Install]
 WantedBy=timers.target
