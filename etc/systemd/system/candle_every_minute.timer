@@ -1,0 +1,11 @@
+[Unit]
+Description=Candle every minute
+After=candle_late.service
+
+[Timer]
+OnCalendar=*-*-* *:*:00
+AccuracySec=5s
+Persistent=true
+
+[Install]
+WantedBy=timers.target
