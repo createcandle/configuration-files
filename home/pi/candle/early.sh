@@ -314,7 +314,7 @@ fi
 
 
 
-# Generate debug file if requested
+# Generate debug.sh output if requested
 if [ -f /boot/generate_debug.txt ]; then
   rm /boot/generate_debug.txt
   rm /boot/debug.txt
@@ -323,7 +323,7 @@ if [ -f /boot/generate_debug.txt ]; then
   /home/pi/candle/debug.sh > /boot/debug.txt
 fi
 
-# Generate debug file if requested
+# Generate raspinfo debug output if requested
 if [ -f /boot/generate_raspinfo.txt ]; then
   rm /boot/generate_raspinfo.txt
   rm /boot/raspinfo.txt
