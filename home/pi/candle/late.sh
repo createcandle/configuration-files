@@ -125,6 +125,11 @@ if [ -f /boot/candle_log.txt ]; then
     fi
 fi
 
+# Clean up the journal
+if [ ! -f /boot/developer.txt ]; then
+  journalctl --vacuum-size=10K
+fi
+
 
 # Forget the wifi password
 if [ -f /boot/candle_forget_wifi.txt ]; then
