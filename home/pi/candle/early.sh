@@ -44,11 +44,11 @@ else
                /bin/ply-image /boot/splash_updating.png
             fi
         fi
-        sleep 60
+        sleep 10
         reboot
     else
-        echo "Early: starting wpa_supplicant" >> /dev/kmsg
-        sudo wpa_supplicant -i wlan0 -c /etc/wpa_supplicant/wpa_supplicant.conf -B
+        #echo "Early: starting wpa_supplicant" >> /dev/kmsg
+        #sudo wpa_supplicant -i wlan0 -c /etc/wpa_supplicant/wpa_supplicant.conf -B
     fi
 fi
 
@@ -343,19 +343,41 @@ if [ -f /boot/candle_forget_wifi.txt ]; then
 fi
 
 
+totalk=$(awk '/^MemTotal:/{print $2}' /proc/meminfo)
+#logger total memory: $totalk
+
+if [ "$totalk" -lt 600000 ]
+then
+  echo "Candle: low memory, so enabling swap: $totalk" >> /dev/kmsg
+  touch /boot/candle_swap_enabled.txt
+  /usr/sbin/dphys-swapfile setup
+  /usr/sbin/dphys-swapfile swapon
+else
+  echo "Candle: enough memory, no need to enable swap: $totalk" >> /dev/kmsg
+  if [ -e /boot/candle_swap_enabled.txt ] 
+  then
+    rm /boot/candle_swap_enabled.txt
+  fi
+  /usr/sbin/dphys-swapfile swapoff
+  if [ -e /home/pi/.webthings/swap ] 
+  then
+    rm /home/pi/.webthings/swap
+  fi
+fi
+
 # RUN BOOTUP SCRIPT IF IT EXISTS
-if [ -f /boot/bootup_actions_early.sh ]
+if [ -f /boot/bootup_actions.sh ]
 then
   echo " "
-  echo "Candle: early.sh: detected bootup_actions_early.sh file." >> /dev/kmsg
-  echo "$(date) - early.sh: detected bootup_actions_early.sh file." >> /boot/candle_log.txt
+  echo "Candle: early: detected bootup_actions.sh file." >> /dev/kmsg
+  echo "$(date) - rc.local: detected bootup_actions.sh file." >> /boot/candle_log.txt
   
   
   # Avoid bootloops
-  if [ -f /boot/bootup_actions_early_failed.sh ]; then
-    rm /boot/bootup_actions_early_failed.sh
+  if [ -f /boot/bootup_actions_failed.sh ]; then
+    rm /boot/bootup_actions_failed.sh
   fi
-  mv -f /boot/bootup_actions_early.sh /boot/bootup_actions_early_failed.sh
+  mv -f /boot/bootup_actions.sh /boot/bootup_actions_failed.sh
 
   if [ -f /boot/rotate180.txt ]
   then
@@ -371,11 +393,11 @@ then
     #echo "current hostname: $(hostname -I)"
     if [ "$(hostname -I)" = "" ]
     then
-      echo "Candle: early.sh doing bootup_actions_early: no network yet $i" >> /dev/kmsg
+      echo "Candle: early doing bootup_actions: no network yet $i" >> /dev/kmsg
       echo "no network yet $i"
       sleep 1    
     else
-      echo "Candle: early.sh doing bootup_actions_early: IP address detected: $(hostname -I)" >> /dev/kmsg
+      echo "Candle: early doing bootup_actions: IP address detected: $(hostname -I)" >> /dev/kmsg
       break
     fi
   done
@@ -383,7 +405,7 @@ then
   # Force a synchronisation with a time server to avoid certificate issues
   if [ -f /boot/candle_hardware_clock.txt ]
   then
-    echo "Candle: early.sh doing bootup_actions_early: hardware clock detected, forcing sync with NTP server" >> /dev/kmsg
+    echo "Candle: early doing bootup_actions: hardware clock detected, forcing sync with NTP server" >> /dev/kmsg
     rm /boot/candle_hardware_clock.txt
     sudo systemctl start systemd-timesyncd
   fi
@@ -393,14 +415,14 @@ then
     systemctl start ssh.service
   fi
   
-  echo "Candle: early.sh doing bootup_actions_early: STARTING" >> /dev/kmsg
-  chmod +x /boot/bootup_actions_early_failed.sh
+  echo "Candle: early doing bootup_actions: STARTING" >> /dev/kmsg
+  chmod +x /boot/bootup_actions_failed.sh
   
-  /bin/bash /boot/bootup_actions_early_failed.sh
-  echo "Candle: early.sh: bootup_actions_early.sh file is done" >> /dev/kmsg
-  echo "Candle: early.sh: bootup_actions_early.sh file is done" >> /boot/candle_log.txt
+  /bin/bash /boot/bootup_actions_failed.sh
+  echo "Candle: early: bootup_actions.sh file is done" >> /dev/kmsg
+  echo "Candle: early: bootup_actions.sh file is done" >> /boot/candle_log.txt
   echo " " >> /dev/kmsg
-  # rm /boot/bootup_actions_early_failed.sh # Scripts should clean themselves up. If the self-cleanup failed, power-settings addon uses that as an indicator the script failed.
+  # rm /boot/bootup_actions_failed.sh # Scripts should clean themselves up. If the self-cleanup failed, power-settings addon uses that as an indicator the script failed.
  
   sleep 5
   #exit 0
