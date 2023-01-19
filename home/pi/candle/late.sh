@@ -154,5 +154,9 @@ if cat /home/pi/.webthings/etc/wpa_supplicant/wpa_supplicant.conf | grep -q psk=
     fi
 fi
 
+# After booting it's not longer necessary to keep triggerhappy running
+systemctl stop triggerhappy.socket
+systemctl stop triggerhappy.service
+
 
 echo "$(date) - end of late.sh" >> /dev/kmsg
