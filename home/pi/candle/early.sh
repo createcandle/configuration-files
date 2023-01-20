@@ -67,7 +67,7 @@ modprobe hidp
 # Disable WiFi power save
 if [ -f /boot/disable_wifi_power_save.txt ] || [ -d /home/pi/.webthings/addons/hotspot ];
 then
-  echo "Candle: rc.local: disabling wifi power saving" >> /dev/kmsg
+  echo "Candle: early: disabling wifi power saving" >> /dev/kmsg
   /sbin/iw dev wlan0 set power_save off
 fi
 
@@ -386,7 +386,7 @@ if [ -f /boot/bootup_actions.sh ]
 then
   echo " "
   echo "Candle: early: detected bootup_actions.sh file." >> /dev/kmsg
-  echo "$(date) - rc.local: detected bootup_actions.sh file." >> /boot/candle_log.txt
+  echo "$(date) - early: detected bootup_actions.sh file." >> /boot/candle_log.txt
   
   
   # Avoid bootloops
