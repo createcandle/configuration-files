@@ -369,7 +369,7 @@ then
   /usr/sbin/dphys-swapfile setup
   /usr/sbin/dphys-swapfile swapon
 else
-  echo "Candle: enough memory, no need to enable swap: $totalk" >> /dev/kmsg
+  echo "Candle: early: enough memory, no need to enable swap: $totalk" >> /dev/kmsg
   if [ -e /boot/candle_swap_enabled.txt ] 
   then
     rm /boot/candle_swap_enabled.txt
@@ -409,7 +409,7 @@ then
     #echo "current hostname: $(hostname -I)"
     if [ "$(hostname -I)" = "" ]
     then
-      echo "Candle: early doing bootup_actions: no network yet $i" >> /dev/kmsg
+      echo "Candle: early: doing bootup_actions: no network yet $i" >> /dev/kmsg
       echo "no network yet $i"
       sleep 1    
     else
@@ -421,7 +421,7 @@ then
   # Force a synchronisation with a time server to avoid certificate issues
   if [ -f /boot/candle_hardware_clock.txt ]
   then
-    echo "Candle: early doing bootup_actions: hardware clock detected, forcing sync with NTP server" >> /dev/kmsg
+    echo "Candle: early: doing bootup_actions: hardware clock detected, forcing sync with NTP server" >> /dev/kmsg
     rm /boot/candle_hardware_clock.txt
     sudo systemctl start systemd-timesyncd
   fi
