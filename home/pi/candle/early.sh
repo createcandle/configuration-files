@@ -1,7 +1,7 @@
 #!/bin/bash
 set +e
 
-# This runs even before early.sh
+# This runs before rc.local
 
 echo "in Candle early"
 echo "$(date) - in Candle early. Fixing hostname." >> /dev/kmsg
@@ -10,6 +10,17 @@ echo "$(date) - in Candle early. Fixing hostname." >> /dev/kmsg
 /usr/bin/hostname -F /home/pi/.webthings/etc/hostname
 systemctl restart avahi-daemon.service
 
+# Do not show blinking cursor
+echo 0 > /sys/class/graphics/fbcon/cursor_blink
+
+if [ -e "/bin/ply-image" ] && [ -e /dev/fb0 ] && [ -f "/boot/splash.png" ] && [ -f "/boot/splash180.png" ]; then
+    if [ -e "/boot/rotate180.txt" ]; then
+        /bin/ply-image /boot/splash180.png
+    else
+        /bin/ply-image /boot/splash.png
+    fi
+    sleep 1
+fi
 
 # Add firewall rules
 if iptables --list | grep 4443; then
@@ -29,6 +40,7 @@ if ifconfig | grep -q wlan0: ; then
     echo "wlan0 exists"
 else
     echo "Candle: EARLY.SH: WLAN0 is not in ifconfig (yet?)" >> /dev/kmsg
+    echo "Candle: Early.sh: error, WLAN0 is not in ifconfig (yet?)" >> /boot/candle_log.txt
     if cat /etc/systemd/system/dhcpcd.service.d/wait.conf | grep -q /usr/lib/dhcpcd5/dhcpcd ; then
         echo "($date) - early.sh had to apply dhcpcd fix to wait.conf" >> /boot/candle_log.txt
         sudo mount -o remount,rw /ro
@@ -48,9 +60,6 @@ else
         reboot
     fi
 fi
-
-# Do not show blinking cursor
-echo 0 > /sys/class/graphics/fbcon/cursor_blink
 
 # For bluetooth keyboard?
 modprobe hidp
@@ -432,7 +441,7 @@ then
   # rm /boot/bootup_actions_failed.sh # Scripts should clean themselves up. If the self-cleanup failed, power-settings addon uses that as an indicator the script failed.
  
   # if /boot/bootup_actions_failed.sh still exists now, that means the bootup_actions script didn't clean up after itself.
-  if [ -f /boot/bootup_actions_failed.sh ];; then
+  if [ -f /boot/bootup_actions_failed.sh ]; then
       echo "warning, bootup_actions_failed.sh still existed after the script completed" >> /dev/kmsg
   fi
  
