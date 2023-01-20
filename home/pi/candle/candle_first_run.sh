@@ -78,6 +78,7 @@ fi
 # Create initial tar backup of controller
 if [ ! -f /home/pi/controller_backup.tar ];
 then
+    cd /home/pi
     if [ -f /home/pi/webthings/gateway/build/app.js ] \
     && [ -f /home/pi/webthings/gateway/build/static/index.html ] \
     && [ -f /home/pi/webthings/gateway/.post_upgrade_complete ] \
