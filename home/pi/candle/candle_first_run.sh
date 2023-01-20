@@ -14,7 +14,17 @@ fi
 
 
 echo "in candle_first_run.sh"
-echo "Candle: in candle_first_run.sh" >> /dev/kmsg
+echo "($date) - Candle: in candle_first_run.sh" >> /dev/kmsg
+echo "($date) - Candle: doing first run" >> boot/candle_log.txt
+
+if [ -e "/bin/ply-image" ] && [ -e /dev/fb0 ] && [ -f "/boot/splash_updating.png" ] && [ -f "/boot/splash_updating180.png" ]; then
+  if [ -e "/boot/rotate180.txt" ]; then
+    /bin/ply-image /boot/splash_updating180.png
+  else
+    /bin/ply-image /boot/splash_updating.png
+  fi
+  sleep 2
+fi
 
 
 # Set machine ID
@@ -37,7 +47,7 @@ fi
 /bin/dd if=/dev/hwrng of=/dev/urandom count=1 bs=4096
 /bin/sh -c "/bin/rm -f -v /etc/ssh/ssh_host_*_key*"
 /usr/bin/ssh-keygen -A -v
-echo "$(date) - New SSH security keys generated." >> /boot/candle_log.txt
+echo "$(date) - candle_first_run.sh: new SSH security keys generated." >> /boot/candle_log.txt
 
 
 # Re-enable the tunnel. For developer use only!
@@ -92,9 +102,11 @@ if [ -f /home/pi/controller_backup.tar ]; then
     chown pi:pi /home/pi/controller_backup.tar
 fi
 
+echo "($date) - first run done" >> boot/candle_log.txt
 
 # Mark first run as complete and reboot
 if [ ! -f /boot/candle_first_run_complete.txt ]; then
   touch /boot/candle_first_run_complete.txt
   reboot
 fi
+
