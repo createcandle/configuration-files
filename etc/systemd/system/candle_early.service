@@ -7,7 +7,7 @@ Before=webthings-gateway.service rc-local.service
 ConditionPathExists=/home/pi/candle/early.sh
 
 [Service]
-Type=simple
+Type=oneshot
 User=root
 ExecStartPre=/bin/chmod +x /home/pi/candle/early.sh
 ExecStart=/bin/bash /home/pi/candle/early.sh
