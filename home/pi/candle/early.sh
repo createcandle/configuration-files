@@ -44,11 +44,8 @@ else
                /bin/ply-image /boot/splash_updating.png
             fi
         fi
-        sleep 10
+        sleep 5
         reboot
-    else
-        #echo "Early: starting wpa_supplicant" >> /dev/kmsg
-        #sudo wpa_supplicant -i wlan0 -c /etc/wpa_supplicant/wpa_supplicant.conf -B
     fi
 fi
 
