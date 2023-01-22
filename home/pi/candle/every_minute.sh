@@ -7,3 +7,9 @@ if [ "$AVAHI_HOSTNAME" != "$HOSTNAME" ]; then
      echo "Hostname mismatch (hostname:$HOSTNAME, avahi:$AVAHI_HOSTNAME). Restarting avahi."
      systemctl restart avahi-daemon.service
 fi
+
+# keep the syslog smaller than 2 megabytes
+SYSLOG_FILESIZE=$(stat --printf="%s" /var/log/syslog)
+if [ "$SYSLOG_FILESIZE" -gt 2000000 ]; then
+    echo "$(tail -200 /var/log/syslog)" > /var/log/syslog
+fi
