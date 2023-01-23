@@ -10,9 +10,9 @@ if [ "$EUID" -ne 0 ]; then
 fi
 
 
-WEBTHINGS_HOME="${WEBTHINGS_HOME:=${HOME}/.webthings}"
-CONTROLLER_NODE_VERSION_FILE_PATH="${WEBTHINGS_HOME}/.node_version"
-_current_controller_version=$(cat ${CONTROLLER_NODE_VERSION_FILE_PATH})
+#WEBTHINGS_HOME="${WEBTHINGS_HOME:=${HOME}/.webthings}"
+#CONTROLLER_NODE_VERSION_FILE_PATH="${WEBTHINGS_HOME}/.node_version"
+#_current_controller_version=$(cat ${CONTROLLER_NODE_VERSION_FILE_PATH})
 
 # Make NVM available in this script
 NVM_DIR="/home/pi/.nvm"
@@ -26,7 +26,7 @@ echo "IP address     : $(hostname -I)"
 echo "Nameserver     : $(cat /etc/resolv.conf | grep -v resolv | cut -d " " -f2-)"
 echo "Candle version : $(cat /boot/candle_version.txt)"
 echo "Orig. version  : $(cat /boot/candle_original_version.txt)"
-echo "Node build v.  : $_current_controller_version"
+echo "Node build v.  : $(cat /home/pi/.webthings/.node_version)"
 echo "Python version : $(python3 --version)"
 echo "SQLite version : $(sqlite3 --version | cut -d' ' -f1)"
 echo "Node version   : $(sudo -i -u pi node --version)"
