@@ -42,7 +42,7 @@ else
     echo "Candle: EARLY.SH: WLAN0 is not in ifconfig (yet?)" >> /dev/kmsg
     echo "Candle: Early.sh: error, WLAN0 is not in ifconfig (yet?)" >> /boot/candle_log.txt
     if cat /etc/systemd/system/dhcpcd.service.d/wait.conf | grep -q /usr/lib/dhcpcd5/dhcpcd ; then
-        echo "($date) - early.sh had to apply dhcpcd fix to wait.conf" >> /boot/candle_log.txt
+        echo "$(date) - early.sh had to apply dhcpcd fix to wait.conf" >> /boot/candle_log.txt
         sudo mount -o remount,rw /ro
         sed -i 's|/usr/lib/dhcpcd5/dhcpcd|/usr/sbin/dhcpcd|g' /ro/etc/systemd/system/dhcpcd.service.d/wait.conf
         sudo mount -o remount,ro /ro
