@@ -44,6 +44,19 @@ then
     fi
     echo "$(date) - Machine ID generated" >> /boot/candle_log.txt
     echo "Candle: generated machine ID" >> /dev/kmsg
+    
+    # Re-enable the tunnel. For developer use only!
+    if [ -f /boot/tunnel.txt ]; then
+      cp /home/pi/.webthings/etc/webthings_tunnel_default.js /home/pi/.webthings/etc/webthings_settings.js
+      sqlite3 /home/pi/.webthings/config/db.sqlite3 "DELETE FROM settings WHERE key='tunneltoken'"
+      sqlite3 /home/pi/.webthings/config/db.sqlite3 "DELETE FROM settings WHERE key='notunnel'"
+      rm -rf /home/pi/.webthings/ssl/
+      echo "$(date) - You have enabled the secret tunnel option. Please use this only for development reasons." >> /boot/candle_log.txt
+    else
+      cp /home/pi/.webthings/etc/webthings_settings_backup.js /home/pi/.webthings/etc/webthings_settings.js
+    fi
+    
+    
   fi
   
 fi
@@ -56,28 +69,23 @@ fi
 echo "$(date) - candle_first_run.sh: new SSH security keys generated." >> /boot/candle_log.txt
 
 
-# Re-enable the tunnel. For developer use only!
-if [ -f /boot/tunnel.txt ]; then
-  cp /home/pi/.webthings/etc/webthings_tunnel_default.js /home/pi/.webthings/etc/webthings_settings.js
-  sqlite3 /home/pi/.webthings/config/db.sqlite3 "DELETE FROM settings WHERE key='tunneltoken'"
-  sqlite3 /home/pi/.webthings/config/db.sqlite3 "DELETE FROM settings WHERE key='notunnel'"
-  rm -rf /home/pi/.webthings/ssl/
-  echo "$(date) - You have enabled the secret tunnel option. Please use this only for development reasons." >> /boot/candle_log.txt
-else
-  cp /home/pi/.webthings/etc/webthings_settings_backup.js /home/pi/.webthings/etc/webthings_settings.js
-fi
 
-
-# If the disk image was created on Windows or Mac, it may leaves behind cruft...
+# If the disk image was created on Windows or Mac, it may leaves behind cruft
 rm -rf /boot/'System Volume Information'
 rm -rf /boot/.Spotlight*
 if [ -f /boot/._cmdline.txt ]; then
     rm /boot/._cmdline.txt
 fi
 
+
 # Remember which version of Candle this SD card originally came with
-if [ ! -f /boot/candle_original_version.txt ] && [ -f /boot/candle_version.txt ]; then
-  cp /boot/candle_version.txt /boot/candle_original_version.txt
+if [ -f /home/pi/.webthings/candle_original_version.txt ]; then
+  cp /home/pi/.webthings/candle_original_version.txt /boot/candle_original_version.txt
+else
+  if [ ! -f /boot/candle_original_version.txt ] && [ -f /boot/candle_version.txt ]; then
+    cp /boot/candle_version.txt /boot/candle_original_version.txt
+    cp /boot/candle_version.txt /home/pi/.webthings/candle_original_version.txt
+  fi
 fi
 
 
