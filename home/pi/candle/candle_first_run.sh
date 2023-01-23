@@ -30,16 +30,22 @@ fi
 # Set machine ID
 if [ -s /etc/machine-id ];
 then
-  systemd-machine-id-setup --commit
 
-  if [ -d /ro ];
-  then
-    mount -o remount,rw /ro
-    cp /etc/machine-id /ro/etc/machine-id
-    mount -o remount,ro /ro
+  if [ -f /home/pi/.webthings/machine-id ]; then
+    cp /home/pi/.webthings/machine-id /etc/machine-id 
+  else
+    systemd-machine-id-setup --commit
+    cp /etc/machine-id /home/pi/.webthings/machine-id
+    if [ -d /ro ];
+    then
+      mount -o remount,rw /ro
+      cp /etc/machine-id /ro/etc/machine-id
+      mount -o remount,ro /ro
+    fi
+    echo "$(date) - Machine ID generated" >> /boot/candle_log.txt
+    echo "Candle: generated machine ID" >> /dev/kmsg
   fi
-  echo "$(date) - Machine ID generated" >> /boot/candle_log.txt
-  echo "Candle: generated machine ID" >> /dev/kmsg
+  
 fi
 
 
