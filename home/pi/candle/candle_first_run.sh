@@ -14,8 +14,8 @@ fi
 
 
 echo "in candle_first_run.sh"
-echo "($date) - Candle: in candle_first_run.sh" >> /dev/kmsg
-echo "($date) - Candle: doing first run" >> boot/candle_log.txt
+echo "$(date) - Candle: in candle_first_run.sh" >> /dev/kmsg
+echo "$(date) - Candle: doing first run" >> boot/candle_log.txt
 
 if [ -e "/bin/ply-image" ] && [ -e /dev/fb0 ] && [ -f "/boot/splash_updating.png" ] && [ -f "/boot/splash_updating180.png" ]; then
   if [ -e "/boot/rotate180.txt" ]; then
@@ -103,7 +103,7 @@ if [ -f /home/pi/controller_backup.tar ]; then
     chown pi:pi /home/pi/controller_backup.tar
 fi
 
-echo "($date) - first run done" >> boot/candle_log.txt
+echo "$(date) - first run done" >> boot/candle_log.txt
 
 # Mark first run as complete and reboot
 if [ ! -f /boot/candle_first_run_complete.txt ]; then
