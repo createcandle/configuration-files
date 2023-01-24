@@ -101,6 +101,13 @@ then
   systemctl start ssh.service
 fi
 
+# Enable SSH once
+if [ -e /boot/candle_ssh_once.txt ]; 
+then
+  systemctl start ssh.service
+  rm /boot/candle_ssh_once.txt
+fi
+
 
 # If it's provided, copy a controller_backup.tar file from the boot partition into the system partition
 if [ -f /boot/controller_backup.tar ]; 
