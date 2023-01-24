@@ -96,7 +96,7 @@ then
 fi
 
 # Just enable SSH
-if [ -e /boot/candle_start_ssh.txt ]; 
+if [ -e /boot/candle_ssh.txt ]; 
 then
   systemctl start ssh.service
 fi
