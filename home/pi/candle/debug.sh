@@ -15,8 +15,12 @@ fi
 #_current_controller_version=$(cat ${CONTROLLER_NODE_VERSION_FILE_PATH})
 
 # Make NVM available in this script
-NVM_DIR="/home/pi/.nvm"
-source $NVM_DIR/nvm.sh
+#NVM_DIR="/home/pi/.nvm"
+#source $NVM_DIR/nvm.sh
+
+export NVM_DIR="/home/pi/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
 
 echo "Candle Controller debug information"
 echo
