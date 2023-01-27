@@ -1,11 +1,13 @@
 [Unit]
 Description=Candle every minute timer
-After=candle_late.service
+After=candle_early.service
+Requires=candle_early.service
 
 [Timer]
-OnCalendar=*-*-* *:*:00
-AccuracySec=5s
-Persistent=true
+#OnCalendar=*-*-* *:*:00
+OnActiveSec=30
+#AccuracySec=5s
+#Persistent=true
 Unit=candle_every_minute.service
 
 [Install]
