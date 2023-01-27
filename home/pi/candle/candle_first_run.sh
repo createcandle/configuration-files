@@ -42,7 +42,7 @@ then
       cp /etc/machine-id /ro/etc/machine-id
       mount -o remount,ro /ro
     fi
-    echo "$(date) - Machine ID generated" >> /boot/candle_log.txt
+    echo "FIRST_RUN: Machine ID generated" >> /boot/candle_log.txt
     echo "Candle: generated machine ID" >> /dev/kmsg
     
     # Re-enable the tunnel. For developer use only!
@@ -51,7 +51,7 @@ then
       sqlite3 /home/pi/.webthings/config/db.sqlite3 "DELETE FROM settings WHERE key='tunneltoken'"
       sqlite3 /home/pi/.webthings/config/db.sqlite3 "DELETE FROM settings WHERE key='notunnel'"
       rm -rf /home/pi/.webthings/ssl/
-      echo "$(date) - You have enabled the secret tunnel option. Please use this only for development reasons." >> /boot/candle_log.txt
+      echo "FIRST_RUN: - You have enabled the secret tunnel option. Please use this only for development reasons." >> /boot/candle_log.txt
     else
       cp /home/pi/.webthings/etc/webthings_settings_backup.js /home/pi/.webthings/etc/webthings_settings.js
     fi
@@ -66,7 +66,7 @@ fi
 /bin/dd if=/dev/hwrng of=/dev/urandom count=1 bs=4096
 /bin/sh -c "/bin/rm -f -v /etc/ssh/ssh_host_*_key*"
 /usr/bin/ssh-keygen -A -v
-echo "$(date) - candle_first_run.sh: new SSH security keys generated." >> /boot/candle_log.txt
+echo "FIRST_RUN: new SSH security keys generated." >> /boot/candle_log.txt
 
 
 # Generate SSL keys
@@ -81,6 +81,8 @@ openssl x509 -req -in "${SSL_DIR}/csr.pem" -signkey "${SSL_DIR}/privatekey.pem" 
 # If the disk image was created on Windows or Mac, it may leaves behind cruft
 rm -rf /boot/'System Volume Information'
 rm -rf /boot/.Spotlight*
+rm -rf /boot/.Trashes
+rm -rf /boot/.fseventsd
 if [ -f /boot/._cmdline.txt ]; then
     rm /boot/._cmdline.txt
 fi
