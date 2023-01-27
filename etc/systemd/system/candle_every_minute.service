@@ -1,6 +1,5 @@
 [Unit]
 Description=Candle every minute service
-After=candle_early.service
 
 [Service]
 Type=oneshot
