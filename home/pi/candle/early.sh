@@ -61,8 +61,14 @@ else
     fi
 fi
 
-# For bluetooth keyboard?
-modprobe hidp
+# For bluetooth keyboard
+if lsmod | grep hidp &> /dev/null ; then
+  echo "hidp already loaded" >> /dev/kmsg
+else
+  echo "manually loading modprobe hidp" >> /dev/kmsg
+  modprobe hidp
+fi
+
 
 # Disable WiFi power save
 if [ -f /boot/disable_wifi_power_save.txt ] || [ -d /home/pi/.webthings/addons/hotspot ];
