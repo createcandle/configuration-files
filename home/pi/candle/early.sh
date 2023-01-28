@@ -101,17 +101,19 @@ then
   exit 0
 fi
 
-# Just enable SSH
-if [ -e /boot/candle_ssh.txt ]; 
-then
-  systemctl start ssh.service
-fi
+
 
 # Enable SSH once
 if [ -e /boot/candle_ssh_once.txt ]; 
 then
   systemctl start ssh.service
   rm /boot/candle_ssh_once.txt
+else
+  # Just enable SSH
+  if [ -e /boot/candle_ssh.txt ]; 
+  then
+    systemctl start ssh.service
+  fi
 fi
 
 
