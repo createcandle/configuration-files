@@ -35,6 +35,9 @@ else
   fi
 fi
 
+# Disable the ALT key reboot-to-recovery shortcut
+systemctl stop triggerhappy.socket
+systemctl stop triggerhappy.service
 
 
 # SELF-REPAIR
