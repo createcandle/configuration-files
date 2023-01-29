@@ -27,35 +27,50 @@ If you would like to see information about the boot process on an attached displ
 Alternatively, you can connect a monitor and keyboard. Then pressing CTRL-ALT-F3 should reveal the shell.
 
 
+# RECOVERY
+From Candle 2.0.2 onwards Candle has a built-in recovery partition. Booting into that will normally start a process which downloads and installs the latest version of Candle. It fully replaces the system partition with a downloaded disk image, and similarly copies files over the boot partition too. It does not change the recovery partition or user data partition. 
+
+It is possible to boot into recovery without starting the update process; creating the file candle_recovery_type.txt with the string 'nothing' inside will cause the recovery to do nothing. It also won't copy the hostname, so (currently) you may login in to the recovery system with: ssh root@candleupdate.local and password 'smarthome'.
+
+
 # EMERGENCY RECOVERY
-If you are having a lot of trouble, and none of the tools mentioned below help, then as a last ditch attempt you can try using the recovery version of cmdline.txt. It will boot the system into a bash shell. Note that the filesystem will be in read-only mode, but you can remount it if you need to make changes:
+Another last ditch attempt you could try if the recovery option doesn't work or is unavailable: using the recovery version of cmdline.txt. It will boot the system into a bash shell. Note that the filesystem will be in read-only mode, but you can remount it if you need to make changes:
 
 mount -o remount,rw /dev/mmcblk0p2 /
 
 
 # TOGGLES
-The existence of these files can also toggle certain things:
+The existence of these files can influence how the system operates:
 
-candle_ssh.txt 			# Start SSH at boot
+candle_ssh.txt 			# Start SSH server at boot. Login with username 'pi' and password 'smarthome'.
 emergency.txt 			# Booting is mostly halted, and SSH access is activated.
 candle_emergency_backup.txt 	# If possible, creates an emergency backup which will be placed on the SD card as candle_emergency_backup.tar
 candle_kiosk.txt 		# The URL inside this file will be shown in the browser. If it's empty the kiosk browser will not load.
 candle_kiosk_forced.txt 	# Force the kiosk mode to start on low memory systems (such as the Raspberry Pi 3).
 keep_browser_session.txt 	# Don't delete browser sessions on boot.
-cloudless.txt 			# Experimental, to launch the controller even if there is no network at all.
-nohotspot.txt 			# Aborts hotspot launch. Useful if that feature somehow causes trouble.
+cloudless.txt 			# Experimental, to launch the controller even if there is no network at all. Use with the Hotspot addon.
+nohotspot.txt 			# Aborts hotspot addon launch. Useful if that feature somehow causes trouble.
 hide_mouse_pointer.txt 		# Hides the mouse pointer on the HDMI output. Enabled by default.
 rotate180.txt 			# Rotates the display 180 degrees.
-exhibit_mode.txt		# Disables installing and uninstalling addons.
+exhibit_mode.txt		# Disables installing and uninstalling addons, as well as most mayor settings.
 do_not_use_repeaker_hat.txt 	# Will stop ReSpeaker hat drivers from being loaded at boot.
 disable_wifi_power_save.txt 	# If present, wifi power saving feature will be disabled. This might improve some connections.
 candle_cutting_edge.txt 	# If present, any system update will attempt to get the very latest version of everything. Risky, For developers only.
 
 
+# RECOVERY OPTIONS
+By default starting the recovery partition starts the update process, but this can be overridden:
+
+candle_update.txt		# If it exists, then this file will be renamed to candle_update.sh and run as a script. Also, the normal update process is not run.
+candle_recovery_type.txt # The contents of this file overrides the recovery type. Set its contents to the word "nothing" to boot into recovery and do nothing.
+
+
 # TOOLS
-restore_boot_backup.txt 	# Will try to restore some fundamental files to older backed-up versions (if the backups exist)
-restore_controller_backup.txt 	# Will try to restore the Candle Controller software (if the backups exist)
-force_controller_rebuild.txt 	# Will download the very latest version of the Candle Controller and build it from scratch. This takes a long time.
+A lot of these 'restore' methods will be phased out. It's recommended to use the recovery partition instead, and simply replace a malfunctioning system partition.
+
+restore_boot_backup.txt 	# Will try to restore some fundamental files to older backed-up versions (if the backups exist). Deprecated.
+restore_controller_backup.txt 	# Will try to restore the Candle Controller software (if the backups exist). Deprecated.
+force_controller_rebuild.txt 	# Will download the very latest version of the Candle Controller and build it from scratch. This takes a long time. Deprecated.
 generate_debug.txt 		# Will generate a file called debug.txt which contains details about the state of the system.
 generate_raspinfo.txt 		# Will generate a file called raspinfo.txt which contains details about the operating system.
 candle_forget_wifi.txt		# Will clear the currently stored wifi details (ssid, password).
@@ -69,13 +84,13 @@ developer.txt 			# Enables logging. Will also cause a factory reset to write zer
 
 # INDICATORS 
 candle_swap_enabled.txt 	# On lower memory systems (Pi Zero 2) this file indicates that on the first run the swap file was enabled. Normally swap is disabled.
-candle_first_run_complete.txt 	# This file appears after the first boot. It indicates that a new machine ID and new SSH keys were generated.
+candle_first_run_complete.txt 	# This file appears after the first boot, and blocks first_run.sh. It indicates that a new machine ID and new SSH keys were generated. 
 candle_hardware_clock.txt 	# This file is present if the hardware clock module is detected and enabled.
-candle_has_4th_partition.txt	# Indicates a Candle controller with an additional fourth (rescue) partition.
+candle_has_4th_partition.txt	# Indicates a Candle controller with an additional fourth (rescue) partition. Deprecated (use df or lsblk to check instead).
 
 # FAILURE INDICATORS
 candle_log.txt 			# Upgrade processes and commands you give may output status and errors into this file.
-bootup_actions_failed.sh 	# If this file exists, it indicates that an upgrade process did not complete because it failed or was interupted.
+bootup_actions_failed.sh 	# If this file exists, it indicates that an upgrade process did not complete because it failed or was interupted. Deprecated.
 
 
 
