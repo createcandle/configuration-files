@@ -43,7 +43,7 @@ mount -o remount,rw /dev/mmcblk0p2 /
 The existence of these files can influence how the system operates:
 
 candle_ssh.txt 			# Start SSH server at every boot. Login with username 'pi' and password 'smarthome'.
-candle_ssh_once.txt           # Start SSH server after the next reboot.
+candle_ssh_once.txt            # Start SSH server after the next reboot.
 emergency.txt 			# Booting is mostly halted, and SSH access is activated.
 candle_emergency_backup.txt 	# If possible, creates an emergency backup which will be placed on the SD card as candle_emergency_backup.tar
 candle_kiosk.txt 		# The URL inside this file will be shown in the browser. If it's empty the kiosk browser will not load.
