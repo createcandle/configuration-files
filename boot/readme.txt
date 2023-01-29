@@ -4,7 +4,7 @@ This is the disk of a Candle Controller. Learn more at www.candlesmarthome.com
 If you are having trouble, visit: 
 www.candlesmarthome.com/troubleshooting
 
-- Output to HDMI is only enabled for systems with more than 1Gb of memory.
+- Output to HDMI is normally only enabled for systems with more than 1Gb of memory, but this can be changes. See below.
 
 The information below is for advanced users.
 
@@ -88,11 +88,12 @@ candle_first_run_complete.txt 	# This file appears after the first boot, and blo
 candle_hardware_clock.txt 	# This file is present if the hardware clock module is detected and enabled.
 candle_has_4th_partition.txt	# Indicates a Candle controller with an additional fourth (rescue) partition. Deprecated (use df or lsblk to check instead).
 
+
 # FAILURE INDICATORS
 candle_log.txt 			# Upgrade processes and commands you give may output status and errors into this file.
 bootup_actions_failed.sh 	# If this file exists, it indicates that an upgrade process did not complete because it failed or was interupted. Deprecated.
-
-
+candle_recovery_aborted.txt # The recovery partition's system update script ran into a problem and aborted the update.
+candle_recovery_interupted.txt # If this file exists, the recovery partition's system update process was unexpectedly interupted during the critical part of the update.
 
 
 # Source code
