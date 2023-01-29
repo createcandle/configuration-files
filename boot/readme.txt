@@ -62,7 +62,7 @@ candle_cutting_edge.txt 	# If present, any system update will attempt to get the
 By default starting the recovery partition starts the update process, but this can be overridden:
 
 candle_update.txt		# If it exists, then this file will be renamed to candle_update.sh and run as a script. Also, the normal update process is not run.
-candle_recovery_type.txt  # The contents of this file overrides the recovery type. Set its contents to the word "nothing" to boot into recovery and do nothing.
+candle_recovery_type.txt   # The contents of this file overrides the recovery type. Set its contents to the word "nothing" to boot into recovery and do nothing.
 
 
 # TOOLS
@@ -92,7 +92,7 @@ candle_has_4th_partition.txt	# Indicates a Candle controller with an additional 
 # FAILURE INDICATORS
 candle_log.txt 			# Upgrade processes and commands you give may output status and errors into this file.
 bootup_actions_failed.sh 	# If this file exists, it indicates that an upgrade process did not complete because it failed or was interupted. Deprecated.
-candle_recovery_aborted.txt # The recovery partition's system update script ran into a problem and aborted the update.
+candle_recovery_aborted.txt   # The recovery partition's system update script ran into a problem and aborted the update.
 candle_recovery_interupted.txt  # If this file exists, the recovery partition's system update process was unexpectedly interupted during the critical part of the update.
 
 
