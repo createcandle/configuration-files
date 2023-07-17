@@ -15,7 +15,7 @@ fi
 
 echo "in candle_first_run.sh"
 echo "$(date) - Candle: in candle_first_run.sh" >> /dev/kmsg
-echo "$(date) - Candle: doing first run" >> boot/candle_log.txt
+echo "$(date) - FIRST_RUN: doing first run" >> boot/candle_log.txt
 
 if [ -e "/bin/ply-image" ] && [ -e /dev/fb0 ] && [ -f "/boot/splash_preparing.png" ] && [ -f "/boot/splash_preparing180.png" ]; then
   if [ -e "/boot/rotate180.txt" ]; then
@@ -111,14 +111,14 @@ then
     then
         echo "Creating initial backup of webthings folder"
         echo "Candle: creating initial backup of controller" >> /dev/kmsg
-        echo "Candle: creating initial backup of controller" >> /boot/candle_log.txt
+        echo "FIRST_RUN: creating initial backup of controller" >> /boot/candle_log.txt
         tar -czf ./controller_backup.tar ./webthings
 
     else
         echo
         echo "ERROR, NOT MAKING INITIAL BACKUP, MISSING WEBTHINGS DIRECTORY OR PARTS MISSING"
         echo "Candle: WARNING, the Candle controller installation seems to be incomplete. Will not create initial backup" >> /dev/kmsg
-        echo "Candle: WARNING, the Candle controller installation seems to be incomplete. Will not create initial backup" >> /boot/candle_log.txt
+        echo "FIRST_RUN: WARNING, the Candle controller installation seems to be incomplete. Will not create initial backup" >> /boot/candle_log.txt
         echo
     fi
 fi
@@ -127,7 +127,7 @@ if [ -f /home/pi/controller_backup.tar ]; then
     chown pi:pi /home/pi/controller_backup.tar
 fi
 
-echo "$(date) - first run done" >> boot/candle_log.txt
+echo "$(date) - first run done" >> /boot/candle_log.txt
 
 # Mark first run as complete and reboot
 if [ ! -f /boot/candle_first_run_complete.txt ]; then
