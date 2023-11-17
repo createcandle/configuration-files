@@ -2,11 +2,11 @@
 Description=Show updating splash screen
 DefaultDependencies=no
 After=local-fs.target
-ConditionPathExists=!/boot/rotate180.txt
-ConditionPathExists=/boot/bootup_actions.sh
+ConditionPathExists=!/boot/firmware/rotate180.txt
+ConditionPathExists=/boot/firmware/bootup_actions.sh
 
 [Service]
-ExecStart=/usr/bin/ply-image /boot/splash_updating.png
+ExecStart=/usr/bin/ply-image /boot/firmware/splash_updating.png
 StandardInput=tty
 StandardOutput=tty
 
