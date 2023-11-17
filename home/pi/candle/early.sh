@@ -3,6 +3,12 @@ set +e
 
 # This runs before rc.local
 
+BOOT_DIR="/boot"
+if lsblk | grep $BOOT_DIR/firmware; then
+    echo "firmware partition is mounted at $BOOT_DIR/firmware"
+    BOOT_DIR="$BOOT_DIR/firmware"
+fi
+
 echo "in Candle early"
 echo "$(date) - in Candle early. Fixing hostname." >> /dev/kmsg
 
@@ -13,11 +19,11 @@ systemctl restart avahi-daemon.service
 # Do not show blinking cursor
 echo 0 > /sys/class/graphics/fbcon/cursor_blink
 
-if [ -e "/bin/ply-image" ] && [ -e /dev/fb0 ] && [ -f "/boot/splash.png" ] && [ -f "/boot/splash180.png" ]; then
-    if [ -e "/boot/rotate180.txt" ]; then
-        /bin/ply-image /boot/splash180.png
+if [ -e "/bin/ply-image" ] && [ -e /dev/fb0 ] && [ -f "$BOOT_DIR/splash.png" ] && [ -f "$BOOT_DIR/splash180.png" ]; then
+    if [ -e "$BOOT_DIR/rotate180.txt" ]; then
+        /bin/ply-image $BOOT_DIR/splash180.png
     else
-        /bin/ply-image /boot/splash.png
+        /bin/ply-image $BOOT_DIR/splash.png
     fi
     sleep 1
 fi
@@ -40,20 +46,20 @@ if ifconfig | grep -q wlan0: ; then
     echo "wlan0 exists"
 else
     echo "Candle: EARLY.SH: WLAN0 is not in ifconfig (yet?)" >> /dev/kmsg
-    echo "Candle: Early.sh: error, WLAN0 is not in ifconfig (yet?)" >> /boot/candle_log.txt
+    echo "Candle: Early.sh: error, WLAN0 is not in ifconfig (yet?)" >> $BOOT_DIR/candle_log.txt
     if cat /etc/systemd/system/dhcpcd.service.d/wait.conf | grep -q /usr/lib/dhcpcd5/dhcpcd ; then
-        echo "$(date) - early.sh had to apply dhcpcd fix to wait.conf" >> /boot/candle_log.txt
+        echo "$(date) - early.sh had to apply dhcpcd fix to wait.conf" >> $BOOT_DIR/candle_log.txt
         sudo mount -o remount,rw /ro
         sed -i 's|/usr/lib/dhcpcd5/dhcpcd|/usr/sbin/dhcpcd|g' /ro/etc/systemd/system/dhcpcd.service.d/wait.conf
         sudo mount -o remount,ro /ro
-        if [ -f /boot/developer.txt ] || [ -f /boot/candle_cutting_edge.txt ]; then
+        if [ -f $BOOT_DIR/developer.txt ] || [ -f $BOOT_DIR/candle_cutting_edge.txt ]; then
             systemctl start ssh.service
         fi
-        if [ -e "/bin/ply-image" ] && [ -e /dev/fb0 ] && [ -f "/boot/splash_updating.png" ] && [ -f "/boot/splash_updating180.png" ]; then
-            if [ -e "/boot/rotate180.txt" ]; then
-                /bin/ply-image /boot/splash_updating180.png
+        if [ -e "/bin/ply-image" ] && [ -e /dev/fb0 ] && [ -f "$BOOT_DIR/splash_updating.png" ] && [ -f "$BOOT_DIR/splash_updating180.png" ]; then
+            if [ -e "$BOOT_DIR/rotate180.txt" ]; then
+                /bin/ply-image $BOOT_DIR/splash_updating180.png
             else
-               /bin/ply-image /boot/splash_updating.png
+               /bin/ply-image $BOOT_DIR/splash_updating.png
             fi
         fi
         sleep 5
@@ -71,7 +77,7 @@ fi
 
 
 # Disable WiFi power save
-if [ -f /boot/disable_wifi_power_save.txt ] || [ -d /home/pi/.webthings/addons/hotspot ];
+if [ -f $BOOT_DIR/disable_wifi_power_save.txt ] || [ -d /home/pi/.webthings/addons/hotspot ];
 then
   echo "Candle: early: disabling wifi power saving" >> /dev/kmsg
   /sbin/iw dev wlan0 set power_save off
@@ -79,13 +85,13 @@ fi
 
 
 # Create emergency backup
-if [ -f /boot/candle_make_emergency_backup.txt ]; 
+if [ -f $BOOT_DIR/candle_make_emergency_backup.txt ]; 
 then
-    rm /boot/candle_make_emergency_backup.txt
+    rm $BOOT_DIR/candle_make_emergency_backup.txt
     if [ -d /home/pi/.webthings/data ] && [ -d /home/pi/.webthings/config ]; then
         echo "$(date) - creating candle_emergency_backup.tar"
         cd /home/pi/.webthings
-        find ./config ./data -maxdepth 2 -name "*.json" -o -name "*.yaml" -o -name "*.sqlite3" | tar -cf /boot/candle_emergency_backup.tar -T -
+        find ./config ./data -maxdepth 2 -name "*.json" -o -name "*.yaml" -o -name "*.sqlite3" | tar -cf $BOOT_DIR/candle_emergency_backup.tar -T -
     else
         echo "$(date) - ERROR, could not create emergency backup, config and data directories did not exist?"
     fi
@@ -93,7 +99,7 @@ fi
 
 
 # If the emergency file is detected, stop here.
-if [ -e /boot/emergency.txt ]; 
+if [ -e $BOOT_DIR/emergency.txt ]; 
 then
   systemctl start ssh.service
   echo "Emergency file detected. Stopping (120 minutes sleep)" >> /dev/kmsg
@@ -104,13 +110,13 @@ fi
 
 
 # Enable SSH once
-if [ -e /boot/candle_ssh_once.txt ]; 
+if [ -e $BOOT_DIR/candle_ssh_once.txt ]; 
 then
   systemctl start ssh.service
-  rm /boot/candle_ssh_once.txt
+  rm $BOOT_DIR/candle_ssh_once.txt
 else
   # Just enable SSH
-  if [ -e /boot/candle_ssh.txt ]; 
+  if [ -e $BOOT_DIR/candle_ssh.txt ]; 
   then
     systemctl start ssh.service
   fi
@@ -118,50 +124,50 @@ fi
 
 
 # If it's provided, copy a controller_backup.tar file from the boot partition into the system partition
-if [ -f /boot/controller_backup.tar ]; 
+if [ -f $BOOT_DIR/controller_backup.tar ]; 
 then
   if [ -d /ro ]; then
     sudo mount -o remount,rw /ro
     rm /ro/home/pi/boot/controller_backup.tar
-    mv /boot/controller_backup.tar /ro/home/pi/controller_backup.tar
+    mv $BOOT_DIR/controller_backup.tar /ro/home/pi/controller_backup.tar
     sudo mount -o remount,ro /ro
   else
     rm /home/pi/boot/controller_backup.tar
-    mv /boot/controller_backup.tar /home/pi/controller_backup.tar
+    mv $BOOT_DIR/controller_backup.tar /home/pi/controller_backup.tar
   fi
 fi
 
 
 # Handle forced restore of early.sh
-if [ -f /boot/restore_boot_backup.txt ];
+if [ -f $BOOT_DIR/restore_boot_backup.txt ];
 then
-  rm /boot/restore_boot_backup.txt
-  echo "Detected /boot/restore_boot_backup.txt"
+  rm $BOOT_DIR/restore_boot_backup.txt
+  echo "Detected $BOOT_DIR/restore_boot_backup.txt"
   
-  if [ -f /boot/developer.txt ] || [ -f /boot/candle_cutting_edge.txt ]; then
+  if [ -f $BOOT_DIR/developer.txt ] || [ -f $BOOT_DIR/candle_cutting_edge.txt ]; then
     systemctl start ssh.service
   fi
   
   if [ -f /etc/early.sh.bak ];
   then
     cp /etc/early.sh.bak /etc/early.sh
-    echo "$(date) - forced restored boot backup" >> /boot/candle_log.txt
+    echo "$(date) - forced restored boot backup" >> $BOOT_DIR/candle_log.txt
     echo "$(date) - forced restored boot backup" >> /dev/kmsg
 
   else
-    echo "$(date) - forced restoring boot backup: no backup found" >> /boot/candle_log.txt
+    echo "$(date) - forced restoring boot backup: no backup found" >> $BOOT_DIR/candle_log.txt
     echo "$(date) - forced restoring boot backup: no backup found" >> /dev/kmsg
   fi
 fi
 
 
 # Handle forced restore of Candle Controller backup
-if [ -f /boot/restore_controller_backup.txt ];
+if [ -f $BOOT_DIR/restore_controller_backup.txt ];
 then
-  rm /boot/restore_controller_backup.txt
-  echo "Detected /boot/restore_controller_backup.txt"
+  rm $BOOT_DIR/restore_controller_backup.txt
+  echo "Detected $BOOT_DIR/restore_controller_backup.txt"
   
-  if [ -f /boot/developer.txt ] || [ -f /boot/candle_cutting_edge.txt ]; then
+  if [ -f $BOOT_DIR/developer.txt ] || [ -f $BOOT_DIR/candle_cutting_edge.txt ]; then
     systemctl start ssh.service
   fi
   
@@ -169,21 +175,21 @@ then
   then
   
     # Show updating image
-    if [ -e "/bin/ply-image" ] && [ -e /dev/fb0 ] && [ -f "/boot/splash_updating.png" ] && [ -f "/boot/splash_updating180.png" ]; then
-      if [ -e "/boot/rotate180.txt" ]; then
-        /bin/ply-image /boot/splash_updating180.png
+    if [ -e "/bin/ply-image" ] && [ -e /dev/fb0 ] && [ -f "$BOOT_DIR/splash_updating.png" ] && [ -f "$BOOT_DIR/splash_updating180.png" ]; then
+      if [ -e "$BOOT_DIR/rotate180.txt" ]; then
+        /bin/ply-image $BOOT_DIR/splash_updating180.png
       else
-        /bin/ply-image /boot/splash_updating.png
+        /bin/ply-image $BOOT_DIR/splash_updating.png
       fi
     fi
     
     # Restore backup
     cd /home/pi || exit
-    echo "$(date) - forced restoring controller backup..." >> /boot/candle_log.txt
+    echo "$(date) - forced restoring controller backup..." >> $BOOT_DIR/candle_log.txt
     echo "$(date) - forced restoring controller backup..." >> /dev/kmsg
     rm -rf /home/pi/webthings
     tar -xvf controller_backup.tar
-    echo "$(date) - forced restoring controller backup done" >> /boot/candle_log.txt
+    echo "$(date) - forced restoring controller backup done" >> $BOOT_DIR/candle_log.txt
     echo "$(date) - forced restoring controller backup done" >> /dev/kmsg
   
   
@@ -193,18 +199,18 @@ then
     && [ -d /home/pi/webthings/gateway/node_modules ] \
     && [ -d /home/pi/webthings/gateway/build/static/bundle ];
     then
-      echo "$(date) - forced restoring controller backup done" >> /boot/candle_log.txt
+      echo "$(date) - forced restoring controller backup done" >> $BOOT_DIR/candle_log.txt
       echo "$(date) - forced restoring controller backup done" >> /dev/kmsg
       reboot now
       sleep 5
       
     else
-      echo "$(date) - forced restoring controller backup failed" >> /boot/candle_log.txt
+      echo "$(date) - forced restoring controller backup failed" >> $BOOT_DIR/candle_log.txt
       echo "$(date) - forced restoring controller backup failed" >> /dev/kmsg
       
       # Show error image
-      if [ -e "/bin/ply-image" ] && [ -e /dev/fb0 ] && [ -f "/boot/error.png" ]; then
-        /bin/ply-image /boot/error.png
+      if [ -e "/bin/ply-image" ] && [ -e /dev/fb0 ] && [ -f "$BOOT_DIR/error.png" ]; then
+        /bin/ply-image $BOOT_DIR/error.png
       fi
       
       sleep 7200
@@ -213,12 +219,12 @@ then
   
   else
     # Record that no backup was found
-    echo "$(date) - forced restoring controller backup: no backup found" >> /boot/candle_log.txt
+    echo "$(date) - forced restoring controller backup: no backup found" >> $BOOT_DIR/candle_log.txt
     echo "$(date) - forced restoring controller backup: no backup found" >> /dev/kmsg
     
     # Show error image
-    if [ -e "/bin/ply-image" ] && [ -e /dev/fb0 ] && [ -f "/boot/error.png" ]; then
-      /bin/ply-image /boot/error.png
+    if [ -e "/bin/ply-image" ] && [ -e /dev/fb0 ] && [ -f "$BOOT_DIR/error.png" ]; then
+      /bin/ply-image $BOOT_DIR/error.png
     fi
     
     sleep 7200
@@ -227,20 +233,20 @@ then
 
 
 # If the user wants a forced rebuild, do that.
-elif [ -f /boot/force_controller_rebuild.txt ];
+elif [ -f $BOOT_DIR/force_controller_rebuild.txt ];
 then
-  rm /boot/force_controller_rebuild.txt
-  echo "Detected /boot/force_controller_rebuild.txt"
+  rm $BOOT_DIR/force_controller_rebuild.txt
+  echo "Detected $BOOT_DIR/force_controller_rebuild.txt"
   
-  if [ -f /boot/developer.txt ] || [ -f /boot/candle_cutting_edge.txt ]; then
+  if [ -f $BOOT_DIR/developer.txt ] || [ -f $BOOT_DIR/candle_cutting_edge.txt ]; then
     systemctl start ssh.service
   fi
   
-  if [ -e "/bin/ply-image" ] && [ -e /dev/fb0 ] && [ -f "/boot/splash_updating.png" ] && [ -f "/boot/splash_updating180.png" ]; then
-    if [ -e "/boot/rotate180.txt" ]; then
-      /bin/ply-image /boot/splash_updating180.png
+  if [ -e "/bin/ply-image" ] && [ -e /dev/fb0 ] && [ -f "$BOOT_DIR/splash_updating.png" ] && [ -f "$BOOT_DIR/splash_updating180.png" ]; then
+    if [ -e "$BOOT_DIR/rotate180.txt" ]; then
+      /bin/ply-image $BOOT_DIR/splash_updating180.png
     else
-      /bin/ply-image /boot/splash_updating.png
+      /bin/ply-image $BOOT_DIR/splash_updating.png
     fi
   fi
   
@@ -261,11 +267,11 @@ then
   done
   
   cd /home/pi || exit
-  echo "$(date) - starting forced controller regeneration..." >> /boot/candle_log.txt
+  echo "$(date) - starting forced controller regeneration..." >> $BOOT_DIR/candle_log.txt
   echo "$(date) - starting forced controller regeneration..." >> /dev/kmsg
 
 
-    if [ -f /boot/candle_cutting_edge ]; then
+    if [ -f $BOOT_DIR/candle_cutting_edge ]; then
         wget https://raw.githubusercontent.com/createcandle/install-scripts/main/install_candle_controller.sh -O ./install_candle_controller.sh
     else
         curl -s https://api.github.com/repos/createcandle/install-scripts/releases/latest \
@@ -296,12 +302,12 @@ then
     if [ ! -f install_candle_controller.sh ]; then
         echo
         echo "ERROR, missing install_candle_controller.sh file"
-        echo "$(date) - Failed to download install_candle_controller script" >> /boot/candle_log.txt
+        echo "$(date) - Failed to download install_candle_controller script" >> $BOOT_DIR/candle_log.txt
         echo
 
         # Show error image
-        if [ -e "/bin/ply-image" ] && [ -e /dev/fb0 ] && [ -f /boot/error.png ]; then
-            /bin/ply-image /boot/error.png
+        if [ -e "/bin/ply-image" ] && [ -e /dev/fb0 ] && [ -f $BOOT_DIR/error.png ]; then
+            /bin/ply-image $BOOT_DIR/error.png
             sleep 7200
         fi
 
@@ -320,18 +326,18 @@ then
   && [ -d /home/pi/webthings/gateway/node_modules ] \
   && [ -d /home/pi/webthings/gateway/build/static/bundle ];
   then
-    echo "$(date) - forced controller regeneration done" >> /boot/candle_log.txt
+    echo "$(date) - forced controller regeneration done" >> $BOOT_DIR/candle_log.txt
     echo "$(date) - forced controller regeneration done" >> /dev/kmsg
     reboot now
     sleep 5
       
   else
-    echo "$(date) - forced controller regeneration failed" >> /boot/candle_log.txt
+    echo "$(date) - forced controller regeneration failed" >> $BOOT_DIR/candle_log.txt
     echo "$(date) - forced controller regeneration failed" >> /dev/kmsg
     
     # Show error image
-    if [ -e "/bin/ply-image" ] && [ -e /dev/fb0 ] && [ -f "/boot/error.png" ]; then
-      /bin/ply-image /boot/error.png
+    if [ -e "/bin/ply-image" ] && [ -e /dev/fb0 ] && [ -f "$BOOT_DIR/error.png" ]; then
+      /bin/ply-image $BOOT_DIR/error.png
     fi
     sleep 7200
     exit 1
@@ -342,40 +348,40 @@ fi
 
 
 # Generate debug.sh output if requested
-if [ -f /boot/generate_debug.txt ]; then
-  rm /boot/generate_debug.txt
-  rm /boot/debug.txt
+if [ -f $BOOT_DIR/generate_debug.txt ]; then
+  rm $BOOT_DIR/generate_debug.txt
+  rm $BOOT_DIR/debug.txt
   sleep 15
   echo "Candle: generating debug file" >> /dev/kmsg
-  /home/pi/candle/debug.sh > /boot/debug.txt
+  /home/pi/candle/debug.sh > $BOOT_DIR/debug.txt
 fi
 
 # Generate raspinfo debug output if requested
-if [ -f /boot/generate_raspinfo.txt ]; then
-  rm /boot/generate_raspinfo.txt
-  rm /boot/raspinfo.txt
+if [ -f $BOOT_DIR/generate_raspinfo.txt ]; then
+  rm $BOOT_DIR/generate_raspinfo.txt
+  rm $BOOT_DIR/raspinfo.txt
   sleep 15
   echo "Candle: generating raspinfo file" >> /dev/kmsg
-  raspinfo > /boot/raspinfo.txt
+  raspinfo > $BOOT_DIR/raspinfo.txt
 fi
 
 # Automatically generates a file that lists which files on the controller are missing.
 if [ -f /home/pi/candle/files_check.sh ]; then
   if [ -n "$(/home/pi/candle/files_check.sh)" ]; then
-    /home/pi/candle/files_check.sh > /boot/candle_issues.txt
-  elif [ -f /boot/candle_issues.txt ]; then
-    rm /boot/candle_issues.txt
+    /home/pi/candle/files_check.sh > $BOOT_DIR/candle_issues.txt
+  elif [ -f $BOOT_DIR/candle_issues.txt ]; then
+    rm $BOOT_DIR/candle_issues.txt
   fi
 fi
 
-if [ -f /boot/candle_rw_once.txt ]; then
+if [ -f $BOOT_DIR/candle_rw_once.txt ]; then
   echo "Candle: removing candle_rw_once.txt" >> /dev/kmsg
-  rm /boot/candle_rw_once.txt
+  rm $BOOT_DIR/candle_rw_once.txt
 fi
 
 # Forget the wifi password
-if [ -f /boot/candle_forget_wifi.txt ]; then
-  rm /boot/candle_forget_wifi.txt
+if [ -f $BOOT_DIR/candle_forget_wifi.txt ]; then
+  rm $BOOT_DIR/candle_forget_wifi.txt
   echo -e 'ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev\nupdate_config=1\ncountry=NL\n' > /home/pi/.webthings/etc/wpa_supplicant/wpa_supplicant.conf
 fi
 
@@ -386,14 +392,14 @@ totalk=$(awk '/^MemTotal:/{print $2}' /proc/meminfo)
 if [ "$totalk" -lt 600000 ]
 then
   echo "Candle: low memory, so enabling swap: $totalk" >> /dev/kmsg
-  touch /boot/candle_swap_enabled.txt
+  touch $BOOT_DIR/candle_swap_enabled.txt
   /usr/sbin/dphys-swapfile setup
   /usr/sbin/dphys-swapfile swapon
 else
   echo "Candle: early: enough memory, no need to enable swap: $totalk" >> /dev/kmsg
-  if [ -e /boot/candle_swap_enabled.txt ] 
+  if [ -e $BOOT_DIR/candle_swap_enabled.txt ] 
   then
-    rm /boot/candle_swap_enabled.txt
+    rm $BOOT_DIR/candle_swap_enabled.txt
   fi
   /usr/sbin/dphys-swapfile swapoff
   if [ -e /home/pi/.webthings/swap ] 
@@ -403,24 +409,24 @@ else
 fi
 
 # RUN BOOTUP SCRIPT IF IT EXISTS
-if [ -f /boot/bootup_actions.sh ]
+if [ -f $BOOT_DIR/bootup_actions.sh ]
 then
   echo " "
   echo "Candle: early: detected bootup_actions.sh file." >> /dev/kmsg
-  echo "$(date) - early: detected bootup_actions.sh file." >> /boot/candle_log.txt
+  echo "$(date) - early: detected bootup_actions.sh file." >> $BOOT_DIR/candle_log.txt
   
   
   # Avoid bootloops
-  if [ -f /boot/bootup_actions_failed.sh ]; then
-    rm /boot/bootup_actions_failed.sh
+  if [ -f $BOOT_DIR/bootup_actions_failed.sh ]; then
+    rm $BOOT_DIR/bootup_actions_failed.sh
   fi
-  mv -f /boot/bootup_actions.sh /boot/bootup_actions_failed.sh
+  mv -f $BOOT_DIR/bootup_actions.sh $BOOT_DIR/bootup_actions_failed.sh
 
-  if [ -f /boot/rotate180.txt ]
+  if [ -f $BOOT_DIR/rotate180.txt ]
   then
-    /bin/ply-image /boot/splash_updating180.png
+    /bin/ply-image $BOOT_DIR/splash_updating180.png
   else
-    /bin/ply-image /boot/splash_updating.png
+    /bin/ply-image $BOOT_DIR/splash_updating.png
   fi
 
   # Wait for IP address for at most 30 seconds
@@ -440,29 +446,29 @@ then
   done
 
   # Force a synchronisation with a time server to avoid certificate issues
-  if [ -f /boot/candle_hardware_clock.txt ]
+  if [ -f $BOOT_DIR/candle_hardware_clock.txt ]
   then
     echo "Candle: early: doing bootup_actions: hardware clock detected, forcing sync with NTP server" >> /dev/kmsg
-    rm /boot/candle_hardware_clock.txt
+    rm $BOOT_DIR/candle_hardware_clock.txt
     sudo systemctl start systemd-timesyncd
   fi
 
-  if [ -f /boot/developer.txt ]
+  if [ -f $BOOT_DIR/developer.txt ]
   then
     systemctl start ssh.service
   fi
   
   echo "Candle: early doing bootup_actions: STARTING" >> /dev/kmsg
-  chmod +x /boot/bootup_actions_failed.sh
+  chmod +x $BOOT_DIR/bootup_actions_failed.sh
   
-  /bin/bash /boot/bootup_actions_failed.sh
+  /bin/bash $BOOT_DIR/bootup_actions_failed.sh
   echo "Candle: early: bootup_actions.sh file is done" >> /dev/kmsg
-  echo "Candle: early: bootup_actions.sh file is done" >> /boot/candle_log.txt
+  echo "Candle: early: bootup_actions.sh file is done" >> $BOOT_DIR/candle_log.txt
   echo " " >> /dev/kmsg
-  # rm /boot/bootup_actions_failed.sh # Scripts should clean themselves up. If the self-cleanup failed, power-settings addon uses that as an indicator the script failed.
+  # rm $BOOT_DIR/bootup_actions_failed.sh # Scripts should clean themselves up. If the self-cleanup failed, power-settings addon uses that as an indicator the script failed.
  
-  # if /boot/bootup_actions_failed.sh still exists now, that means the bootup_actions script didn't clean up after itself.
-  if [ -f /boot/bootup_actions_failed.sh ]; then
+  # if $BOOT_DIR/bootup_actions_failed.sh still exists now, that means the bootup_actions script didn't clean up after itself.
+  if [ -f $BOOT_DIR/bootup_actions_failed.sh ]; then
       echo "warning, bootup_actions_failed.sh still existed after the script completed" >> /dev/kmsg
   fi
  
