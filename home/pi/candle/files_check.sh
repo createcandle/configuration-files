@@ -1,5 +1,10 @@
 #!/bin/bash
 
+BOOT_DIR="/boot"
+if lsblk | grep /boot/firmware; then
+    BOOT_DIR="/boot/firmware"
+fi
+
 # Links
 if [ ! -L /etc/hosts ]; then
   echo "/etc/hosts is not a link"
@@ -131,8 +136,8 @@ fi
 
 
 #/boot files
-if [ ! -f /boot/error.png ]; then
-  echo "/boot/error.png is missing"
+if [ ! -f $BOOT_DIR/error.png ]; then
+  echo "$BOOT_DIR/error.png is missing"
 fi
 
 
@@ -178,7 +183,7 @@ fi
 
 
 # Backups
-if [ -f /boot/candle_first_run_complete.txt ]; then
+if [ -f $BOOT_DIR/candle_first_run_complete.txt ]; then
   if [ ! -f /home/pi/controller_backup.tar ]; then
     echo "/home/pi/controller_backup.tar backup is missing"
   fi
