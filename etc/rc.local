@@ -1,13 +1,19 @@
 #!/bin/bash
 
+BOOT_DIR="/boot"
+if lsblk | grep $BOOT_DIR/firmware; then
+    echo "firmware partition is mounted at $BOOT_DIR/firmware"
+    BOOT_DIR="$BOOT_DIR/firmware"
+fi
+
 #logger In rc.local
 echo "$(date) - Candle: in rc.local" >> /dev/kmsg
 
-if [ -e "/bin/ply-image" ] && [ -e /dev/fb0 ] && [ -f "/boot/splash.png" ] && [ -f "/boot/splash180.png" ]; then
-    if [ -e "/boot/rotate180.txt" ]; then
-        /bin/ply-image /boot/splash180.png
+if [ -e "/bin/ply-image" ] && [ -e /dev/fb0 ] && [ -f "$BOOT_DIR/splash.png" ] && [ -f "$BOOT_DIR/splash180.png" ]; then
+    if [ -e "$BOOT_DIR/rotate180.txt" ]; then
+        /bin/ply-image $BOOT_DIR/splash180.png
     else
-        /bin/ply-image /boot/splash.png
+        /bin/ply-image $BOOT_DIR/splash.png
     fi
     sleep 1
 fi
@@ -19,14 +25,14 @@ totalk=$(awk '/^MemTotal:/{print $2}' /proc/meminfo)
 if [ "$totalk" -lt 600000 ]
 then
   echo "Candle: low memory, so enabling swap: $totalk" >> /dev/kmsg
-  touch /boot/candle_swap_enabled.txt
+  touch $BOOT_DIR/candle_swap_enabled.txt
   /usr/sbin/dphys-swapfile setup
   /usr/sbin/dphys-swapfile swapon
 else
   echo "Candle: enough memory, no need to enable swap: $totalk" >> /dev/kmsg
-  if [ -e /boot/candle_swap_enabled.txt ] 
+  if [ -e $BOOT_DIR/candle_swap_enabled.txt ] 
   then
-    rm /boot/candle_swap_enabled.txt
+    rm $BOOT_DIR/candle_swap_enabled.txt
   fi
   /usr/sbin/dphys-swapfile swapoff
   if [ -e /home/pi/.webthings/swap ] 
@@ -51,25 +57,25 @@ if [ ! -f /home/pi/webthings/gateway/build/app.js ] \
 || [ ! -f /home/pi/webthings/gateway/.post_upgrade_complete ]; 
 then
 
-  if [ -f /boot/developer.txt ] || [ -f /boot/candle_cutting_edge.txt ];
+  if [ -f $BOOT_DIR/developer.txt ] || [ -f $BOOT_DIR/candle_cutting_edge.txt ];
   then
     systemctl start ssh.service
   fi
 
   echo "missing build/app.js - attempting repair"
   echo "Candle: ERROR! /home/pi/webthings/gateway/build/app.js file was missing. Attempting repair. (rc)" >> /dev/kmsg
-  echo "$(date) - broken controller detected (rc)" >> /boot/candle_log.txt
+  echo "$(date) - broken controller detected (rc)" >> $BOOT_DIR/candle_log.txt
 
-  if [ -f /boot/rotate180.txt ];
+  if [ -f $BOOT_DIR/rotate180.txt ];
   then
-    /bin/ply-image /boot/splash_updating180.png
+    /bin/ply-image $BOOT_DIR/splash_updating180.png
   else
-    /bin/ply-image /boot/splash_updating.png
+    /bin/ply-image $BOOT_DIR/splash_updating.png
   fi
 
   if [ -d /ro ]
   then
-    echo "starting controller repair in /ro... (rc)" >> /boot/candle_log.txt
+    echo "starting controller repair in /ro... (rc)" >> $BOOT_DIR/candle_log.txt
     echo "starting controller repair in /ro... (rc)" >> /dev/kmsg
     # This shouldn't even be possible really 
     echo "setting to RW"
@@ -93,7 +99,7 @@ tar -xf controller_backup.tar
 
 else
 
-if [ -f /boot/candle_cutting_edge.txt ]; then
+if [ -f $BOOT_DIR/candle_cutting_edge.txt ]; then
 wget https://raw.githubusercontent.com/createcandle/install-scripts/main/install_candle_controller.sh -O ./install_candle_controller.sh
 else
 curl -s https://api.github.com/repos/createcandle/install-scripts/releases/latest \
@@ -121,12 +127,12 @@ fi
 if [ ! -f install_candle_controller.sh ]; then
 echo
 echo "ERROR, missing install_candle_controller.sh file"
-echo "$(date) - Failed to download install_candle_controller script" >> /boot/candle_log.txt
+echo "$(date) - Failed to download install_candle_controller script" >> $BOOT_DIR/candle_log.txt
 echo
 
 # Show error image
-if [ -e "/bin/ply-image" ] && [ -e /dev/fb0 ] && [ -f /boot/error.png ]; then
-/bin/ply-image /boot/error.png
+if [ -e "/bin/ply-image" ] && [ -e /dev/fb0 ] && [ -f $BOOT_DIR/error.png ]; then
+/bin/ply-image $BOOT_DIR/error.png
 sleep 7200
 fi
 
@@ -155,7 +161,7 @@ END
     if [ -f /home/pi/controller_backup_fresh.tar ];
     then
       tar -xvf controller_backup_fresh.tar
-      echo "$(date) - self-repair: restored fresh controller backup (rc)" >> /boot/candle_log.txt
+      echo "$(date) - self-repair: restored fresh controller backup (rc)" >> $BOOT_DIR/candle_log.txt
       echo "$(date) - self-repair: restored fresh controller backup (rc)" >> /dev/kmsg
       rm /home/pi/controller_backup_fresh.tar
     
@@ -163,17 +169,17 @@ END
     elif [ -f /home/pi/controller_backup.tar ];
     then
       tar -xvf controller_backup.tar
-      echo "$(date) - self-repair: restored controller backup (rc)" >> /boot/candle_log.txt
+      echo "$(date) - self-repair: restored controller backup (rc)" >> $BOOT_DIR/candle_log.txt
       echo "$(date) - self-repair: restored controller backup (rc)" >> /dev/kmsg
       
     
     # If all else fails, try a complete rebuild
     else
-        echo "$(date) - self-repair: starting controller regeneration... (rc)" >> /boot/candle_log.txt
+        echo "$(date) - self-repair: starting controller regeneration... (rc)" >> $BOOT_DIR/candle_log.txt
         echo "$(date) - self-repair: starting controller regeneration... (rc)" >> /dev/kmsg
         
         
-        if [ -f /boot/candle_cutting_edge.txt ]; then
+        if [ -f $BOOT_DIR/candle_cutting_edge.txt ]; then
             wget https://raw.githubusercontent.com/createcandle/install-scripts/main/install_candle_controller.sh -O ./install_candle_controller.sh
         else
             curl -s https://api.github.com/repos/createcandle/install-scripts/releases/latest \
@@ -204,13 +210,13 @@ END
         if [ ! -f install_candle_controller.sh ]; then
             echo
             echo "ERROR, self-repair: missing install_candle_controller.sh file"
-            echo "Candle: self-repair: failed to download install_candle_controller script" >> /boot/kmsg
-            echo "$(date) - self-repair:  failed to download install_candle_controller script" >> /boot/candle_log.txt
+            echo "Candle: self-repair: failed to download install_candle_controller script" >> $BOOT_DIR/kmsg
+            echo "$(date) - self-repair:  failed to download install_candle_controller script" >> $BOOT_DIR/candle_log.txt
             echo
 
             # Show error image
-            if [ -e "/bin/ply-image" ] && [ -e /dev/fb0 ] && [ -f /boot/error.png ]; then
-                /bin/ply-image /boot/error.png
+            if [ -e "/bin/ply-image" ] && [ -e /dev/fb0 ] && [ -f $BOOT_DIR/error.png ]; then
+                /bin/ply-image $BOOT_DIR/error.png
                 sleep 7200
             fi
 
@@ -225,7 +231,7 @@ END
     fi
   fi
 
-  if [ -f /boot/developer.txt ] || [ -f /boot/candle_cutting_edge.txt ];
+  if [ -f $BOOT_DIR/developer.txt ] || [ -f $BOOT_DIR/candle_cutting_edge.txt ];
   then
     echo "sleeping 60 seconds to make sure user can login via SSH"
     sleep 60
@@ -238,20 +244,20 @@ END
   && [ -d /home/pi/webthings/gateway/node_modules ] \
   && [ -d /home/pi/webthings/gateway/build/static/bundle ];
   then
-    echo "$(date) - controller regeneration complete (rc)" >> /boot/candle_log.txt
+    echo "$(date) - controller regeneration complete (rc)" >> $BOOT_DIR/candle_log.txt
     echo "$(date) - controller regeneration complete (rc)" >> /dev/kmsg
     #reboot now
     #sleep 5
     
   else
-    echo "$(date) - controller regeneration failed (rc)" >> /boot/candle_log.txt
+    echo "$(date) - controller regeneration failed (rc)" >> $BOOT_DIR/candle_log.txt
     echo "$(date) - controller regeneration failed (rc)" >> /dev/kmsg
     
     # Show error image
     pkill xinit
     sleep 1
     if [ -e "/bin/ply-image" ]; then
-      /bin/ply-image /boot/error.png
+      /bin/ply-image $BOOT_DIR/error.png
     fi
     sleep 7200
   fi
@@ -265,9 +271,9 @@ echo "Candle: rc.local: half way" >> /dev/kmsg
 
 
 # Start X server
-if [ -f /boot/candle_kiosk.txt ] && [ -f /boot/candle_first_run_complete.txt ]
+if [ -f $BOOT_DIR/candle_kiosk.txt ] && [ -f $BOOT_DIR/candle_first_run_complete.txt ]
 then
-  if [ "$totalk" -gt 1500000 ] || [ -f /boot/candle_kiosk_forced.txt ]
+  if [ "$totalk" -gt 1500000 ] || [ -f $BOOT_DIR/candle_kiosk_forced.txt ]
   then
     echo "Candle: Enough memory to start X server" >> /dev/kmsg
     logger Starting X
@@ -282,7 +288,7 @@ then
         su - pi -c startx &
         #su - pi -c 'unclutter -idle 10 -root -display :0 &'
       else
-        if [ ! -f /boot/hide_mouse_pointer.txt ]
+        if [ ! -f $BOOT_DIR/hide_mouse_pointer.txt ]
         then
           su - pi    startx &
         else
@@ -295,15 +301,15 @@ then
 fi
 
 # Do aditional checks for missing files, and restore them if possible. late.sh does this too, as a fallback.
-if [ -f /boot/restore_boot_backup.txt ] && [ ! -d /ro ]; then
+if [ -f $BOOT_DIR/restore_boot_backup.txt ] && [ ! -d /ro ]; then
     if [ -d /home/pi/candle/configuration-files-backup ]; then
         if rsync --ignore-existing --dry-run --inplace -vri /home/pi/candle/configuration-files-backup/ / | grep -q  +++++; then
             echo "Candle: ERROR, rc.local detected missing files. Attempting to fix" >> /dev/kmsg
-            echo "$(date) - ERROR, rc.local detected missing files. Attempting to fix." >> /boot/candle_log.txt
+            echo "$(date) - ERROR, rc.local detected missing files. Attempting to fix." >> $BOOT_DIR/candle_log.txt
             if [ -d /ro ]; then
                 if [ -d /ro/home/pi/candle/configuration-files-backup ]; then
                     sudo mount -o remount,ro /rw
-                    rsync --ignore-existing --inplace -vri /ro/home/pi/candle/configuration-files-backup/ /ro/ > /boot/candle_fix.txt
+                    rsync --ignore-existing --inplace -vri /ro/home/pi/candle/configuration-files-backup/ /ro/ > $BOOT_DIR/candle_fix.txt
                     sudo mount -o remount,ro /ro
                 fi
             else
@@ -313,13 +319,13 @@ if [ -f /boot/restore_boot_backup.txt ] && [ ! -d /ro ]; then
             sleep 2
             if rsync --ignore-existing --inplace --dry-run -vri /home/pi/candle/configuration-files-backup/* / | grep -q  +++++; then
                 echo "Candle: ERROR, rc.local: missing files fix failed" >> /dev/kmsg
-                echo "$(date) - ERROR, rc.local: missing files fix failed. See candle_fix_failed.txt" >> /boot/candle_log.txt
-                rsync --ignore-existing --inplace --dry-run -vri /home/pi/candle/configuration-files-backup/ / > /boot/candle_fix_failed.txt
+                echo "$(date) - ERROR, rc.local: missing files fix failed. See candle_fix_failed.txt" >> $BOOT_DIR/candle_log.txt
+                rsync --ignore-existing --inplace --dry-run -vri /home/pi/candle/configuration-files-backup/ / > $BOOT_DIR/candle_fix_failed.txt
             else
                 echo "Candle: rc.local: missing files fix succeeded" >> /dev/kmsg
-                echo "$(date) - rc.local: missing files fix succeeded" >> /boot/candle_log.txt
-                if [ -f /boot/candle_failed_fix.txt ]; then
-                    rm /boot/candle_failed_fix.txt
+                echo "$(date) - rc.local: missing files fix succeeded" >> $BOOT_DIR/candle_log.txt
+                if [ -f $BOOT_DIR/candle_failed_fix.txt ]; then
+                    rm $BOOT_DIR/candle_failed_fix.txt
                 fi
             fi
         fi
