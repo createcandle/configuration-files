@@ -3,12 +3,12 @@ Description=Show Candle logo on boot
 DefaultDependencies=no
 After=local-fs.target
 ConditionPathExists=/dev/fb0
-ConditionPathExists=!/boot/rotate180.txt
-ConditionPathExists=!/boot/bootup_actions.sh
+ConditionPathExists=!/boot/firmware/rotate180.txt
+ConditionPathExists=!/boot/firmware/bootup_actions.sh
 ConditionKernelCommandLine=splash
 
 [Service]
-ExecStart=/usr/bin/ply-image /boot/splash.png
+ExecStart=/usr/bin/ply-image /boot/firmware/splash.png
 StandardInput=tty
 StandardOutput=tty
 
