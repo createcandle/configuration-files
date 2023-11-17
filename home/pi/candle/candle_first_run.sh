@@ -13,12 +13,10 @@ if [ "$EUID" -ne 0 ]
 fi
 
 
-BOOKWORM=0
 BOOT_DIR="/boot"
 if lsblk | grep /boot/firmware; then
     echo "firmware partition is mounted at /boot/firmware"
     BOOT_DIR="/boot/firmware"
-    BOOKWORM=1
 fi
 
 
