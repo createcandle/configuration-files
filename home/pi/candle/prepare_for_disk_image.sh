@@ -5,23 +5,29 @@ if [ "$EUID" -ne 0 ]
   exit
 fi
 
+BOOT_DIR="/boot"
+if lsblk | grep $BOOT_DIR/firmware; then
+    echo "firmware partition is mounted at $BOOT_DIR/firmware"
+    BOOT_DIR="$BOOT_DIR/firmware"
+fi
+
 # prepare for factory reset script
-touch /boot/developer.txt # will cause the real factory_reset script to also write zeroes to empty space
+touch $BOOT_DIR/developer.txt # will cause the real factory_reset script to also write zeroes to empty space
 rm /home/pi/.webthings/candle.log
-rm /boot/candle_log.txt
-rm /boot/candle_issues.txt
-rm /boot/candle_fix.txt
-rm /boot/candle_fix_failed.txt
-rm /boot/debug.txt
-rm /boot/raspinfo.txt
-rm /boot/candle_cutting_edge.txt
-rm /boot/keep_z2m.txt
-rm /boot/keep_bluetooth.txt
-rm /boot/candle_first_run_complete.txt
-rm /boot/candle_original_version.txt
-rm /boot/candle_rw_keep.txt
-rm /boot/candle_rw_once.txt
-rm /boot/tunnel.txt
+rm $BOOT_DIR/candle_log.txt
+rm $BOOT_DIR/candle_issues.txt
+rm $BOOT_DIR/candle_fix.txt
+rm $BOOT_DIR/candle_fix_failed.txt
+rm $BOOT_DIR/debug.txt
+rm $BOOT_DIR/raspinfo.txt
+rm $BOOT_DIR/candle_cutting_edge.txt
+rm $BOOT_DIR/keep_z2m.txt
+rm $BOOT_DIR/keep_bluetooth.txt
+rm $BOOT_DIR/candle_first_run_complete.txt
+rm $BOOT_DIR/candle_original_version.txt
+rm $BOOT_DIR/candle_rw_keep.txt
+rm $BOOT_DIR/candle_rw_once.txt
+rm $BOOT_DIR/tunnel.txt
 rm /etc/asound.conf
 rm /var/log/*
 
@@ -33,8 +39,8 @@ npm cache clean --force # already done in install_candle_controller script
 #rm /home/pi/.npm/anonymous-cli-metrics.json 
 
 if [ -f /home/pi/candle/candle_first_run.sh ]; then
-  rm /boot/candle_first_run.sh
-  cp /home/pi/candle/candle_first_run.sh /boot/candle_first_run.sh
+  rm $BOOT_DIR/candle_first_run.sh
+  cp /home/pi/candle/candle_first_run.sh $BOOT_DIR/candle_first_run.sh
 else
   echo "ERROR, candle_first_run.sh is missing"
   exit 1
