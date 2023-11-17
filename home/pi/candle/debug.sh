@@ -9,6 +9,11 @@ if [ "$EUID" -ne 0 ]; then
   exit
 fi
 
+BOOT_DIR="/boot"
+if lsblk | grep $BOOT_DIR/firmware; then
+    echo "firmware partition is mounted at $BOOT_DIR/firmware"
+    BOOT_DIR="$BOOT_DIR/firmware"
+fi
 
 #WEBTHINGS_HOME="${WEBTHINGS_HOME:=${HOME}/.webthings}"
 #CONTROLLER_NODE_VERSION_FILE_PATH="${WEBTHINGS_HOME}/.node_version"
@@ -28,8 +33,8 @@ echo "Date:          : $(date)"
 echo "Hostname       : $(cat /etc/hostname)"
 echo "IP address     : $(hostname -I)"
 echo "Nameserver     : $(cat /etc/resolv.conf | grep -v resolv | cut -d " " -f2-)"
-echo "Candle version : $(cat /boot/candle_version.txt)"
-echo "Orig. version  : $(cat /boot/candle_original_version.txt)"
+echo "Candle version : $(cat $BOOT_DIR/candle_version.txt)"
+echo "Orig. version  : $(cat $BOOT_DIR/candle_original_version.txt)"
 echo "Node build v.  : $(cat /home/pi/.webthings/.node_version)"
 echo "Python version : $(python3 --version)"
 echo "SQLite version : $(sqlite3 --version | cut -d' ' -f1)"
@@ -57,8 +62,8 @@ fi
 
 
 # These are not "essential" to functioning, so are here instead of in the files_check script
-if [ -f /boot/bootup_actions_failed.sh ]; then
-  echo "/boot/bootup_actions_failed.sh file exists"
+if [ -f $BOOT_DIR/bootup_actions_failed.sh ]; then
+  echo "$BOOT_DIR/bootup_actions_failed.sh file exists"
 fi
 
 
@@ -95,8 +100,8 @@ echo
 echo "--------------------------------------------- warnings"
 echo 
 
-if [ -f /boot/._cmdline.txt ]; then
-  echo "/boot/._cmdline.txt file exists"
+if [ -f $BOOT_DIR/._cmdline.txt ]; then
+  echo "$BOOT_DIR/._cmdline.txt file exists"
 fi
 
 if ! lsblk | grep -q 'mmcblk0p4'; 
@@ -104,19 +109,19 @@ then
   echo "NO FOURTH PARTITION. This must be an older Candle controller."
 fi
 
-if [ -f /boot/bootup_actions.sh ]; then
-  echo "/boot/bootup_actions.sh file exists"
+if [ -f $BOOT_DIR/bootup_actions.sh ]; then
+  echo "$BOOT_DIR/bootup_actions.sh file exists"
 fi
-if [ -f /boot/debug.txt ]; then
-  echo "/boot/debug.txt file exists"
+if [ -f $BOOT_DIR/debug.txt ]; then
+  echo "$BOOT_DIR/debug.txt file exists"
 fi
-if [ -f /boot/candle_rw_keep.txt ]; then
+if [ -f $BOOT_DIR/candle_rw_keep.txt ]; then
   echo "boot/candle_rw_keep.txt file exists"
 fi
-if [ -f /boot/developer.txt ]; then
+if [ -f $BOOT_DIR/developer.txt ]; then
   echo "boot/developer.txt file exists"
 fi
-if [ -f /boot/emergency.txt ]; then
+if [ -f $BOOT_DIR/emergency.txt ]; then
   echo "boot/emergency.txt file exists"
 fi
 
@@ -171,12 +176,12 @@ echo
 echo "--------------------------------------------- config"
 echo
 
-echo "/boot/config.txt:"
-cat /boot/config.txt | grep -v "#" | grep .
+echo "$BOOT_DIR/config.txt:"
+cat $BOOT_DIR/config.txt | grep -v "#" | grep .
 
 echo
-echo "/boot/cmdline.txt:"
-cat /boot/cmdline.txt
+echo "$BOOT_DIR/cmdline.txt:"
+cat $BOOT_DIR/cmdline.txt
 
 echo
 echo "/home/pi/.webthings/.node_version:"
