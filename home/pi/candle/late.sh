@@ -4,28 +4,33 @@ set +e
 #/bin/echo "in late" | sudo tee -a /dev/kmsg
 echo "$(date) - In late" >> /dev/kmsg
 
+BOOT_DIR="/boot"
+if lsblk | grep $BOOT_DIR/firmware; then
+    echo "firmware partition is mounted at $BOOT_DIR/firmware"
+    BOOT_DIR="$BOOT_DIR/firmware"
+fi
 
 # RUN POST BOOTUP SCRIPT IF IT EXISTS
 # These scripts are allowed to run in paralel with the controller, for example so that their output can be shown in the UI
-if [ -f /boot/post_bootup_actions.sh ]
+if [ -f $BOOT_DIR/post_bootup_actions.sh ]
 then
   echo " "
   echo "Candle: late.sh: detected post_bootup_actions.sh file." >> /dev/kmsg
-  echo "Candle: late.sh: detected post_bootup_actions.sh file." >> /boot/candle_log.txt
+  echo "Candle: late.sh: detected post_bootup_actions.sh file." >> $BOOT_DIR/candle_log.txt
 
 
-  if [ -f /boot/post_bootup_actions_failed.sh ]; then
-    rm /boot/post_bootup_actions_failed.sh
+  if [ -f $BOOT_DIR/post_bootup_actions_failed.sh ]; then
+    rm $BOOT_DIR/post_bootup_actions_failed.sh
   fi
   
   # Avoid bootloops
-  mv -f /boot/post_bootup_actions.sh /boot/post_bootup_actions_failed.sh
+  mv -f $BOOT_DIR/post_bootup_actions.sh $BOOT_DIR/post_bootup_actions_failed.sh
 
-  if [ -f /boot/rotate180.txt ]
+  if [ -f $BOOT_DIR/rotate180.txt ]
   then
-    /bin/ply-image /boot/splash_updating180.png
+    /bin/ply-image $BOOT_DIR/splash_updating180.png
   else
-    /bin/ply-image /boot/splash_updating.png
+    /bin/ply-image $BOOT_DIR/splash_updating.png
   fi
 
   # Wait for IP address for at most 30 seconds
@@ -45,27 +50,27 @@ then
   done
 
   # Start SSH if developer mode is active, or if we're handling a cutting edge post_bootup_action, which is more likely to fail
-  if [ -f /boot/developer.txt ] || [ -f /boot/candle_cutting_edge.txt ];
+  if [ -f $BOOT_DIR/developer.txt ] || [ -f $BOOT_DIR/candle_cutting_edge.txt ];
   then
     systemctl start ssh.service
   fi
 
   # Force a synchronisation with a time server to avoid certificate issues
-  if [ -f /boot/candle_hardware_clock.txt ]
+  if [ -f $BOOT_DIR/candle_hardware_clock.txt ]
   then
     echo "Candle: late.sh doing post_bootup_actions: hardware clock detected, forcing sync with NTP server" >> /dev/kmsg
-    rm /boot/candle_hardware_clock.txt
+    rm $BOOT_DIR/candle_hardware_clock.txt
     sudo systemctl start systemd-timesyncd
   fi
   
   echo "Candle: late.sh doing post_bootup_actions: STARTING" >> /dev/kmsg
-  chmod +x /boot/post_bootup_actions_failed.sh
-  /bin/bash /boot/post_bootup_actions_failed.sh
+  chmod +x $BOOT_DIR/post_bootup_actions_failed.sh
+  /bin/bash $BOOT_DIR/post_bootup_actions_failed.sh
   
   echo "Candle: post_bootup_actions.sh file complete" >> /dev/kmsg
-  echo "Candle: post_bootup_actions.sh file complete" >> /boot/candle_log.txt
+  echo "Candle: post_bootup_actions.sh file complete" >> $BOOT_DIR/candle_log.txt
   echo " " >> /dev/kmsg
-  # rm /boot/post_bootup_actions_failed.sh # Scripts should clean themselves up. If the self-cleanup failed, power-settings addon uses that as an indicator the script failed.
+  # rm $BOOT_DIR/post_bootup_actions_failed.sh # Scripts should clean themselves up. If the self-cleanup failed, power-settings addon uses that as an indicator the script failed.
  
   sleep 5
   #exit 0
@@ -74,15 +79,15 @@ fi
 
 
 # Do aditional checks for missing files, and restore them if possible. rc.local does this too.
-if [ -f /boot/restore_boot_backup.txt ] && [ ! -d /ro ]; then
+if [ -f $BOOT_DIR/restore_boot_backup.txt ] && [ ! -d /ro ]; then
     if [ -d /home/pi/candle/configuration-files-backup ]; then
         if rsync --ignore-existing --dry-run --inplace -vri /home/pi/candle/configuration-files-backup/ / | grep -q  +++++; then
             echo "Candle: ERROR, late.sh detected missing files. Attempting to fix" >> /dev/kmsg
-            echo "$(date) - ERROR, late.sh detected missing files. Attempting to fix." >> /boot/candle_log.txt
+            echo "$(date) - ERROR, late.sh detected missing files. Attempting to fix." >> $BOOT_DIR/candle_log.txt
             if [ -d /ro ]; then
                 if [ -d /ro/home/pi/candle/configuration-files-backup ]; then
                     sudo mount -o remount,ro /rw
-                    rsync --ignore-existing --inplace -vri /ro/home/pi/candle/configuration-files-backup/* /ro > /boot/candle_fix.txt
+                    rsync --ignore-existing --inplace -vri /ro/home/pi/candle/configuration-files-backup/* /ro > $BOOT_DIR/candle_fix.txt
                     sudo mount -o remount,ro /ro
                 fi
             else
@@ -92,13 +97,13 @@ if [ -f /boot/restore_boot_backup.txt ] && [ ! -d /ro ]; then
             sleep 2
             if rsync --ignore-existing --inplace --dry-run -vri /home/pi/candle/configuration-files-backup/ / | grep -q  +++++; then
                 echo "Candle: ERROR, late.sh: missing files fix failed" >> /dev/kmsg
-                echo "$(date) - ERROR, late.sh: missing files fix failed. See candle_fix_failed.txt" >> /boot/candle_log.txt
-                rsync --ignore-existing --inplace --dry-run -vri /home/pi/candle/configuration-files-backup/ / > /boot/candle_fix_failed.txt
+                echo "$(date) - ERROR, late.sh: missing files fix failed. See candle_fix_failed.txt" >> $BOOT_DIR/candle_log.txt
+                rsync --ignore-existing --inplace --dry-run -vri /home/pi/candle/configuration-files-backup/ / > $BOOT_DIR/candle_fix_failed.txt
             else
                 echo "Candle: late.sh: missing files fix succeeded" >> /dev/kmsg
-                echo "$(date) - late.sh: missing files fix succeeded" >> /boot/candle_log.txt
-                if [ -f /boot/candle_failed_fix.txt ]; then
-                    rm /boot/candle_failed_fix.txt
+                echo "$(date) - late.sh: missing files fix succeeded" >> $BOOT_DIR/candle_log.txt
+                if [ -f $BOOT_DIR/candle_failed_fix.txt ]; then
+                    rm $BOOT_DIR/candle_failed_fix.txt
                 fi
             fi
         fi
@@ -118,22 +123,22 @@ if [ -f /var/log/syslog ]; then
 fi
 
 # Also make sure the candle_log.txt file isn't getting too big
-if [ -f /boot/candle_log.txt ]; then
-    if [ "$(stat -c%s /boot/candle_log.txt)" -gt 5000000 ]; then
+if [ -f $BOOT_DIR/candle_log.txt ]; then
+    if [ "$(stat -c%s $BOOT_DIR/candle_log.txt)" -gt 5000000 ]; then
         echo "Candle: Warning, deleted large candle_log.txt" >> /dev/kmsg
-        rm /boot/candle_log.txt
+        rm $BOOT_DIR/candle_log.txt
     fi
 fi
 
 # Clean up the journal
-if [ ! -f /boot/developer.txt ]; then
+if [ ! -f $BOOT_DIR/developer.txt ]; then
   journalctl --vacuum-size=10K
 fi
 
 
 # Forget the wifi password
-if [ -f /boot/candle_forget_wifi.txt ]; then
-    rm /boot/candle_forget_wifi.txt
+if [ -f $BOOT_DIR/candle_forget_wifi.txt ]; then
+    rm $BOOT_DIR/candle_forget_wifi.txt
     echo -e 'ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev\nupdate_config=1\ncountry=NL\n' > /home/pi/.webthings/etc/wpa_supplicant/wpa_supplicant.conf
 fi
 
@@ -160,7 +165,7 @@ systemctl stop triggerhappy.service
 
 
 # Stop the serial console once the system is safely up and running
-if [ ! -f /boot/developer.txt ]; then
+if [ ! -f $BOOT_DIR/developer.txt ]; then
     sleep 60
     systemctl stop getty@tty3.service 
 fi
