@@ -1,7 +1,7 @@
 [Unit]
 Description=Candle start swap   
 After=home-pi-.webthings.mount
-ConditionPathExists=/boot/candle_swap_enabled.txt
+ConditionPathExists=/boot/firmware/candle_swap_enabled.txt
 #Before=ssh.service webthings-gateway.service
 
 [Service]
