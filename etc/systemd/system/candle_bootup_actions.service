@@ -5,7 +5,7 @@ Description=Candle bootup actions
 After=network.target candle_early.service
 #PartOf=webthings-gateway.service
 Before=webthings-gateway.service
-ConditionPathExists=/boot/firmware/bootup_actions.sh
+ConditionPathExists=/boot/firmware/firmware/bootup_actions.sh
 
 [Service]
 Type=oneshot
