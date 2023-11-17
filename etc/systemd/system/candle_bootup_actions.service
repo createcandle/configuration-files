@@ -5,16 +5,16 @@ Description=Candle bootup actions
 After=network.target candle_early.service
 #PartOf=webthings-gateway.service
 Before=webthings-gateway.service
-ConditionPathExists=/boot/bootup_actions.sh
+ConditionPathExists=/boot/firmware/bootup_actions.sh
 
 [Service]
 Type=oneshot
 User=root
-ExecStartPre=/bin/chmod +x /boot/bootup_actions.sh
-ExecStart=/bin/bash /boot/bootup_actions.sh
+ExecStartPre=/bin/chmod +x /boot/firmware/bootup_actions.sh
+ExecStart=/bin/bash /boot/firmware/bootup_actions.sh
 ExecStartPost=/bin/sleep 5
-#ExecStartPost=/bin/rm /boot/bootup_actions.sh
-ExecStop=/bin/rm /boot/bootup_actions.sh
+#ExecStartPost=/bin/rm /boot/firmware/bootup_actions.sh
+ExecStop=/bin/rm /boot/firmware/bootup_actions.sh
 
 StandardOutput=journal
 
