@@ -3,14 +3,14 @@ Description=Show Candle logo on reboot
 DefaultDependencies=no
 Before=reboot.service
 After=splashscreen.service
-ConditionPathExists=!/boot/rotate180.txt
+ConditionPathExists=!/boot/firmware/rotate180.txt
 ConditionKernelCommandLine=splash
 
 [Service]
 Type=oneshot
 RemainAfterExit=yes
 ExecStartPre=/usr/bin/sleep 1
-ExecStart=/usr/bin/ply-image /boot/splashalt.png
+ExecStart=/usr/bin/ply-image /boot/firmware/splashalt.png
 
 # Security
 PrivateNetwork=yes
