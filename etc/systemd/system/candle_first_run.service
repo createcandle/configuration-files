@@ -2,16 +2,15 @@
 Description=Candle first run    
 After=home-pi-.webthings.mount
 #ConditionFirstBoot=yes 
-ConditionPathExists=/boot/candle_first_run.sh
-ConditionPathExists=!/boot/candle_first_run_complete.txt
+ConditionPathExists=/boot/firmware/candle_first_run.sh
+ConditionPathExists=!/boot/firmware/candle_first_run_complete.txt
 Before=ssh.service candle_early.service webthings-gateway.service
 
 [Service]
 User=root
 Type=oneshot
-ExecStartPre=/bin/chmod +x /boot/candle_first_run.sh
-ExecStart=/bin/bash /boot/candle_first_run.sh
-#ExecStartPost=/bin/rm /boot/candle_first_run.sh
+ExecStartPre=/bin/chmod +x /boot/firmware/candle_first_run.sh
+ExecStart=/bin/bash /boot/firmware/candle_first_run.sh
 
 [Install]
 WantedBy=multi-user.target
