@@ -32,6 +32,7 @@ echo
 echo "Date:          : $(date)"
 echo "Hostname       : $(cat /etc/hostname)"
 echo "IP address     : $(hostname -I)"
+echo "Model          : $(cat /proc/device-tree/model)"
 echo "Nameserver     : $(cat /etc/resolv.conf | grep -v resolv | cut -d " " -f2-)"
 echo "Candle version : $(cat $BOOT_DIR/candle_version.txt)"
 echo "Orig. version  : $(cat $BOOT_DIR/candle_original_version.txt)"
