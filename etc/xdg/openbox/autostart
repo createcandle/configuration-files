@@ -3,11 +3,16 @@ set +e
 
 export DISPLAY=:0
 
+BOOT_DIR="/boot"
+if lsblk | grep $BOOT_DIR/firmware; then
+    BOOT_DIR="$BOOT_DIR/firmware"
+fi
+
 xset -display :0 s off
 xset -display :0 s noblank
 xset -display :0 -dpms
 
-if [ -f /boot/firmware/rotate180.txt ]
+if [ -f $BOOT_DIR/rotate180.txt ]
 then
   # Rotating 180 degrees
   xrandr --output HDMI-1 --rotate inverted
@@ -20,14 +25,14 @@ else
   xinput --set-prop 'HID 222a:0001' 'Coordinate Transformation Matrix' 1 0 0 0 1 0 0 0 1
 fi
 
-if [ ! -s /boot/firmware/candle_kiosk.txt ]
+if [ ! -s $BOOT_DIR/candle_kiosk.txt ]
 then
-    echo "The candle_kiosk.txt file was empty, so not loading the browser" >> /boot/firmware/candle_log.txt
+    echo "The candle_kiosk.txt file was empty, so not loading the browser" >> $BOOT_DIR/candle_log.txt
     exit 0
 fi
 
 
-if [ ! -f /boot/firmware/keep_browser_session.txt ]
+if [ ! -f $BOOT_DIR/keep_browser_session.txt ]
 then
     rm -rf /home/pi/.webthings/chromium/Default/Sessions/*
 fi
@@ -39,33 +44,33 @@ rm -rf /home/pi/.webthings/chromium/BrowserMetrics/*
 sed -i 's/"exited_cleanly":false/"exited_cleanly":true/' /home/pi/.webthings/chromium/'Local State'
 sed -i 's/"exited_cleanly":false/"exited_cleanly":true/; s/"exit_type":"[^"]\+"/"exit_type":"Normal"/' /home/pi/.webthings/chromium/Default/Preferences
 
-if [ -f /boot/firmware/post_bootup_actions.sh ]; then
-  if [ -f /boot/firmware/rotate180.txt ]; then
-    feh --bg-fill /boot/firmware/splash_updating180.png
+if [ -f $BOOT_DIR/post_bootup_actions.sh ]; then
+  if [ -f $BOOT_DIR/rotate180.txt ]; then
+    feh --bg-fill $BOOT_DIR/splash_updating180.png
   else
-    feh --bg-fill /boot/firmware/splash_updating.png
+    feh --bg-fill $BOOT_DIR/splash_updating.png
   fi
 else
   
-  if [ -f /boot/firmware/splash.mp4 ];
+  if [ -f $BOOT_DIR/splash.mp4 ];
   then
-    cvlc -L -f --no-osd --no-audio --fullscreen --video-on-top /boot/firmware/splash.mp4 &
-    #if [ -f /boot/firmware/rotate180.txt ]
+    cvlc -L -f --no-osd --no-audio --fullscreen --video-on-top $BOOT_DIR/splash.mp4 &
+    #if [ -f $BOOT_DIR/rotate180.txt ]
     #then
-    #  cvlc -L -f --no-osd --no-audio --fullscreen --video-on-top /boot/firmware/splash180.mp4 &    
+    #  cvlc -L -f --no-osd --no-audio --fullscreen --video-on-top $BOOT_DIR/splash180.mp4 &    
     #else
-    #  cvlc -L -f --no-osd --no-audio --fullscreen --video-on-top /boot/firmware/splash.mp4 &
+    #  cvlc -L -f --no-osd --no-audio --fullscreen --video-on-top $BOOT_DIR/splash.mp4 &
     #fi
-    #omxplayer -b --win "0 0 $resolution" --loop /boot/firmware/splash.mp4 &
+    #omxplayer -b --win "0 0 $resolution" --loop $BOOT_DIR/splash.mp4 &
   fi
   sleep 1
-  feh --bg-fill /boot/firmware/splashalt.png
+  feh --bg-fill $BOOT_DIR/splashalt.png
 
 fi
-#feh --bg-fill /boot/firmware/splash.png
+#feh --bg-fill $BOOT_DIR/splash.png
 #windowsize=$(xdpyinfo | awk '/dimensions/{print $2}')
 
-if [ ! -f /boot/firmware/hide_mouse_pointer.txt ]
+if [ ! -f $BOOT_DIR/hide_mouse_pointer.txt ]
 then
     unclutter -idle 0.2 -root -display :0 &
 fi
@@ -83,13 +88,13 @@ fi
 sleep 15
 
 
-file="/boot/firmware/candle_kiosk.txt"
+file="$BOOT_DIR/candle_kiosk.txt"
 url=$(cat "$file")
 wrapper=/home/pi/candle/start.html
 
 if [ ! -n "$url" ]
 then
-    echo "The candle_kiosk.txt file was empty, so not loading the browser" >> /boot/firmware/candle_log.txt
+    echo "The candle_kiosk.txt file was empty, so not loading the browser" >> $BOOT_DIR/candle_log.txt
     exit 0
 else
     cp /home/pi/candle/start_bak.html /home/pi/candle/start.html
@@ -97,7 +102,7 @@ else
 fi
 
 if [ ! -f /home/pi/candle/start.html ]; then
-  echo "Error, start.html was missing" >> /boot/firmware/candle_log.txt
+  echo "Error, start.html was missing" >> $BOOT_DIR/candle_log.txt
   wrapper=http://localhost:8080
 fi
 
