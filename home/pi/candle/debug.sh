@@ -234,13 +234,34 @@ aplay -l
 echo
 arecord -l
 
+
+
+
+
+echo
+echo
+echo "--------------------------------------------- video"
+echo
+
+echo "Attached HMDI devices:"
+cat /sys/class/drm/card0/*HDMI*/status
+
+echo
+xrandr -d :0  
+
+echo
+vcgencmd get_config int
+echo
+vcgencmd get_config str
+
+
+
 echo
 echo
 echo "--------------------------------------------- other hardware"
 echo
 
-echo "Attached HMDI devices:"
-cat /sys/class/drm/card0/*HDMI*/status
+
 
 echo
 echo "Libcamera:"
@@ -370,7 +391,7 @@ echo
 echo "--------------------------------------------- /boot files"
 echo
 
-ls /boot -a -l -h
+ls $BOOT_DIR -a -l -h
 
 echo
 echo
