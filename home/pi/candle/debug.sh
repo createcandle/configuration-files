@@ -250,7 +250,8 @@ echo
 echo fbset
 
 echo
-xrandr -d :0  
+#xrandr -d :0  
+DISPLAY=:0 xrandr --verbose
 
 echo
 vcgencmd get_config int
