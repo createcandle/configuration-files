@@ -302,6 +302,11 @@ echo "Watchdog:"
 wdctl
 grep . /sys/class/watchdog/*/*
 
+
+echo
+echo "Voltages:"
+vcgencmd pmic_read_adc
+
 echo
 echo
 echo "--------------------------------------------- network"
