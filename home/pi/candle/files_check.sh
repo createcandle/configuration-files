@@ -1,7 +1,7 @@
 #!/bin/bash
 
 BOOT_DIR="/boot"
-if lsblk | grep /boot/firmware; then
+if lsblk | grep -q /boot/firmware; then
     BOOT_DIR="/boot/firmware"
 fi
 
