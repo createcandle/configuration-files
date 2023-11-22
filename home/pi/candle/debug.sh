@@ -254,10 +254,14 @@ echo
 DISPLAY=:0 xrandr --verbose
 
 echo
+echo "vcgencmd get_config:"
 vcgencmd get_config int
 echo
 vcgencmd get_config str
-
+echo
+echo
+echo "/var/log/Xorg.0.log:"
+cat /var/log/Xorg.0.log
 
 
 echo
