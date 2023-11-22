@@ -247,6 +247,9 @@ echo "Attached HMDI devices:"
 cat /sys/class/drm/card0/*HDMI*/status
 
 echo
+echo fbset
+
+echo
 xrandr -d :0  
 
 echo
