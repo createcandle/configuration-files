@@ -41,7 +41,7 @@ echo "Python version : $(python3 --version)"
 echo "SQLite version : $(sqlite3 --version | cut -d' ' -f1)"
 echo "Node version   : $(sudo -i -u pi node --version)"
 echo "NPM version    : $(sudo -i -u pi npm --version)"
-echo "Chromium vers. : $(sudo -i -u pi chromium-browser --version | grep -v BlueALSA)"
+echo "Chromium vers. : $(sudo -i -u pi chromium --version | grep -v BlueALSA)"
 #echo "Machine ID     : $(cat /etc/machine-id)"
 
 echo
