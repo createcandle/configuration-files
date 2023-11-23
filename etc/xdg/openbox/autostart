@@ -4,7 +4,7 @@ set +e
 export DISPLAY=:0
 
 BOOT_DIR="/boot"
-if lsblk | grep $BOOT_DIR/firmware; then
+if lsblk | grep -q $BOOT_DIR/firmware; then
     BOOT_DIR="$BOOT_DIR/firmware"
 fi
 
