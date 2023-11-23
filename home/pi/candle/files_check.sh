@@ -128,9 +128,9 @@ fi
 if [ ! -f /home/pi/candle/candle_requirements.txt ]; then
   echo "/home/pi/candle/candle_requirements.txt is missing"
 fi
-if [ ! -f /home/pi/candle/candle_packages.txt ]; then
-  echo "/home/pi/candle/candle_packages.txt is missing"
-fi
+#if [ ! -f /home/pi/candle/candle_packages.txt ]; then
+#  echo "/home/pi/candle/candle_packages.txt is missing"
+#fi
 if [ ! -f /home/pi/candle/early.sh ]; then
   echo "/home/pi/candle/early.sh is missing"
 fi
