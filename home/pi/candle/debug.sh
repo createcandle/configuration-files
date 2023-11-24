@@ -252,6 +252,10 @@ echo "Attached HMDI devices:"
 cat /sys/class/drm/card0/*HDMI*/status
 
 echo
+kmsprint
+
+
+echo
 echo "fbset:"
 fbset -i -v
 
