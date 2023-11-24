@@ -1,0 +1,22 @@
+[Unit]
+Description=Candle Kiosk
+After=network.target systemd-user-sessions.service
+Conflicts=getty@tty3.service
+
+[Service]
+TTYPath=/dev/tty3
+PAMName=systemd-user
+Environment=NODE_ENV=production
+#ExecStart=su -u pi /usr/bin/xinit /usr/bin/chromium http://localhost:8080 -- :0 -quiet -nocursor -nolisten tcp
+#User=pi
+#ExecStartPre=/usr/bin/X -nolisten tcp &
+ExecStartPre=chmod 0660 /dev/tty1
+ExecStartPre=chmod 0660 /dev/tty2
+#ExecStart=/usr/bin/startx -- -nocursor
+ExecStart=su - pi /home/pi/candle/kiosk.sh
+Restart=on-failure
+RestartSec=5
+
+[Install]
+Alias=display-manager.service
+WantedBy=multi-user.target
