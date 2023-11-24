@@ -212,6 +212,8 @@ ls -l /lib/modules/ | awk -F" " '{print $9}'
 
 echo
 export -p
+echo
+systemctl --user show-environment
 
 echo
 echo
