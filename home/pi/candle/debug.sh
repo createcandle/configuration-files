@@ -211,6 +211,9 @@ echo "/lib/modules (kernel)"
 ls -l /lib/modules/ | awk -F" " '{print $9}'
 
 echo
+export -p
+
+echo
 echo
 echo "--------------------------------------------- Apt"
 echo
