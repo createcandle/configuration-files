@@ -1,7 +1,9 @@
 [Unit]
 Description=Candle Kiosk
-After=network.target systemd-user-sessions.service
+After=network.target systemd-user-sessions.service rc-local.service candle_early.service
+ConditionPathExists=/home/pi/candle/kiosk.sh
 Conflicts=getty@tty3.service
+
 
 [Service]
 TTYPath=/dev/tty3
