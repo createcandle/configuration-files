@@ -210,10 +210,19 @@ echo
 echo "/lib/modules (kernel)"
 ls -l /lib/modules/ | awk -F" " '{print $9}'
 
+
+
+echo
+echo
+echo "--------------------------------------------- User"
+echo
+loginctl user-status
+
 echo
 export -p
 echo
 systemctl --user show-environment
+
 
 echo
 echo
