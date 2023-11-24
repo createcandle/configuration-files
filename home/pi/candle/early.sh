@@ -159,6 +159,9 @@ then
   fi
 fi
 
+if [ -d /home/pi/.webthings/chromium/BrowserMetrics ]; then
+    rm -rf /home/pi/.webthings/chromium/BrowserMetrics/*
+fi
 
 # Handle forced restore of Candle Controller backup
 if [ -f $BOOT_DIR/restore_controller_backup.txt ];
