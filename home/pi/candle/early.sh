@@ -46,23 +46,26 @@ if ifconfig | grep -q wlan0: ; then
 else
     echo "Candle: EARLY.SH: WLAN0 is not in ifconfig (yet?)" >> /dev/kmsg
     echo "Candle: Early.sh: error, WLAN0 is not in ifconfig (yet?)" >> $BOOT_DIR/candle_log.txt
-    if cat /etc/systemd/system/dhcpcd.service.d/wait.conf | grep -q /usr/lib/dhcpcd5/dhcpcd ; then
-        echo "$(date) - early.sh had to apply dhcpcd fix to wait.conf" >> $BOOT_DIR/candle_log.txt
-        sudo mount -o remount,rw /ro
-        sed -i 's|/usr/lib/dhcpcd5/dhcpcd|/usr/sbin/dhcpcd|g' /ro/etc/systemd/system/dhcpcd.service.d/wait.conf
-        sudo mount -o remount,ro /ro
-        if [ -f $BOOT_DIR/developer.txt ] || [ -f $BOOT_DIR/candle_cutting_edge.txt ]; then
-            systemctl start ssh.service
-        fi
-        if [ -e "/bin/ply-image" ] && [ -e /dev/fb0 ] && [ -f "$BOOT_DIR/splash_updating.png" ] && [ -f "$BOOT_DIR/splash_updating180.png" ]; then
-            if [ -e "$BOOT_DIR/rotate180.txt" ]; then
-                /bin/ply-image $BOOT_DIR/splash_updating180.png
-            else
-               /bin/ply-image $BOOT_DIR/splash_updating.png
+
+    if [ -f /etc/systemd/system/dhcpcd.service.d/wait.conf ]; then
+        if cat /etc/systemd/system/dhcpcd.service.d/wait.conf | grep -q /usr/lib/dhcpcd5/dhcpcd ; then
+            echo "$(date) - early.sh had to apply dhcpcd fix to wait.conf" >> $BOOT_DIR/candle_log.txt
+            sudo mount -o remount,rw /ro
+            sed -i 's|/usr/lib/dhcpcd5/dhcpcd|/usr/sbin/dhcpcd|g' /ro/etc/systemd/system/dhcpcd.service.d/wait.conf
+            sudo mount -o remount,ro /ro
+            if [ -f $BOOT_DIR/developer.txt ] || [ -f $BOOT_DIR/candle_cutting_edge.txt ]; then
+                systemctl start ssh.service
             fi
+            if [ -e "/bin/ply-image" ] && [ -e /dev/fb0 ] && [ -f "$BOOT_DIR/splash_updating.png" ] && [ -f "$BOOT_DIR/splash_updating180.png" ]; then
+                if [ -e "$BOOT_DIR/rotate180.txt" ]; then
+                    /bin/ply-image $BOOT_DIR/splash_updating180.png
+                else
+                   /bin/ply-image $BOOT_DIR/splash_updating.png
+                fi
+            fi
+            sleep 5
+            reboot
         fi
-        sleep 5
-        reboot
     fi
 fi
 
