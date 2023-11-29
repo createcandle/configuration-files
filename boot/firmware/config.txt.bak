@@ -25,12 +25,14 @@ display_auto_detect=1
 auto_initramfs=1
 
 # Enable DRM VC4 V3D driver
-dtoverlay=vc4-fkms-v3d
+#dtoverlay=vc4-fkms-v3d
+dtoverlay=vc4-kms-v3d
 max_framebuffers=2
+#framebuffer_ignore_alpha=1
 
 # Don't have the firmware create an initial video= setting in cmdline.txt.
 # Use the kernel's default instead.
-disable_fw_kms_setup=1
+#disable_fw_kms_setup=1
 
 # Run in 64-bit mode
 arm_64bit=1
@@ -72,7 +74,10 @@ max_usb_current=1
 
 max_framebuffers=2
 
-hdmi_force_hotplug=1
+#hdmi_force_hotplug=1
+#hdmi_force_hotplug:0=1
+#hdmi_force_hotplug:1=0
+
 hdmi_group=1
 
 # uncomment to force a HDMI mode rather than DVI. This can make audio work in
