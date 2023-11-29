@@ -32,6 +32,7 @@ rm /etc/asound.conf
 rm /var/log/*
 
 rm /etc/NetworkManager/system-connections/*
+rm /home/pi/etc/NetworkManager/system-connections/*
 
 # Clean NPM cache
 export NVM_DIR="/home/pi/.nvm"
