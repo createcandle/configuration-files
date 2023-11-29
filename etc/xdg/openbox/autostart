@@ -85,7 +85,11 @@ fi
 #resolution=$(cat /home/pi/candle/resolution.txt)
 
 
-sleep 15
+if tr -d '\0' < /proc/device-tree/model | grep -q "Raspberry Pi 5"; then
+    sleep 10
+else
+    sleep 15
+fi
 
 
 file="$BOOT_DIR/candle_kiosk.txt"
