@@ -271,7 +271,7 @@ echo "Candle: rc.local: half way" >> /dev/kmsg
 
 
 # Start X server
-if [ -f $BOOT_DIR/candle_kiosk_rc_local.txt ] && [ -f $BOOT_DIR/candle_first_run_complete.txt ]
+if [ -f $BOOT_DIR/candle_kiosk.txt ] && [ -f $BOOT_DIR/candle_first_run_complete.txt ]
 then
   if [ "$totalk" -gt 1500000 ] || [ -f $BOOT_DIR/candle_kiosk_forced.txt ]
   then
