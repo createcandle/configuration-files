@@ -209,8 +209,9 @@ cat /etc/modules
 echo
 echo "/lib/modules (kernel)"
 ls -l /lib/modules/ | awk -F" " '{print $9}'
-
-
+echo
+echo "active kernel modules"
+awk '{ print $1 }' /proc/modules | xargs modinfo | grep filename | awk '{ print $2 }' | sort
 
 echo
 echo
