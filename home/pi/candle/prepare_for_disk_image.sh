@@ -31,6 +31,8 @@ rm $BOOT_DIR/tunnel.txt
 rm /etc/asound.conf
 rm /var/log/*
 
+rm /etc/NetworkManager/system-connections/*
+
 # Clean NPM cache
 export NVM_DIR="/home/pi/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
