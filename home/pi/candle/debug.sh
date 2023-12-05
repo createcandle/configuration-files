@@ -217,7 +217,7 @@ echo
 echo
 echo "--------------------------------------------- User"
 echo
-loginctl user-status
+#loginctl user-status
 
 echo
 export -p
