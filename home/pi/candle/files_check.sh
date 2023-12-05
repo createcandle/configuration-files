@@ -83,6 +83,10 @@ fi
 # Files
 
 # /home/pi files
+
+if [ ! -f /usr/bin/edid-decode ]; then
+  echo "/usr/bin/edid-decode is missing"
+fi
 if [ ! -f /home/pi/.webthings/floorplan.svg ]; then
   echo "/home/pi/.webthings/floorplan.svg is missing"
 fi
