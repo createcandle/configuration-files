@@ -15,9 +15,11 @@ Environment=NODE_ENV=production
 ExecStartPre=chmod 0660 /dev/tty1
 ExecStartPre=chmod 0660 /dev/tty2
 #ExecStart=/usr/bin/startx -- -nocursor
-ExecStart=su - pi /home/pi/candle/kiosk.sh
+ExecStart=/bin/bash /home/pi/candle/kiosk.sh
 Restart=on-failure
 RestartSec=5
+StandardOutput=journal+console
+StandardError=journal+console
 
 [Install]
 Alias=display-manager.service
