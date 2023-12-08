@@ -142,6 +142,12 @@ if [[ $(vcgencmd get_throttled) != "throttled=0x0" ]]; then
 fi
 
 echo
+echo "--------------------------------------------- firmware"
+echo
+vcgencmd bootloader_version
+
+
+echo
 echo
 echo "--------------------------------------------- systemctl"
 echo 
