@@ -145,7 +145,8 @@ echo
 echo "--------------------------------------------- firmware"
 echo
 vcgencmd bootloader_version
-
+echo
+vcgencmd bootloader_config
 
 echo
 echo
