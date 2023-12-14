@@ -147,6 +147,7 @@ if [ ! -f $BOOT_DIR/candle_user_partition_expanded.txt ]; then
         START_SECTOR=${/usr/sbin/fdisk -l | grep mmcblk0p4 | awk '{print $2}' | tr -d '\n'}
         echo -e "d\n4\nn\np\n$START_SECTOR\n\nN\nw\nq" | /usr/sbin/fdisk /dev/mmcblk0
         /usr/sbin/resize2fs /dev/mmcblk0p4
+        touch $BOOT_DIR/candle_user_partition_expanded.txt
     else
         echo "Candle: FIRST_RUN: ERROR, cannot expand user partition: no 4th partition?" >> /dev/kmsg
         echo "FIRST_RUN: ERROR, cannot expand user partition: no 4th partition?" >> $BOOT_DIR/candle_log.txt
