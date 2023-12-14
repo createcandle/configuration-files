@@ -33,6 +33,10 @@ if [ -e "/bin/ply-image" ] && [ -e /dev/fb0 ] && [ -f "$BOOT_DIR/splash_preparin
   sleep 2
 fi
 
+if [ -f $BOOT_DIR/candle_first_run_complete.txt ]; then
+    echo "FIRST_RUN: warning, candle_first_run_complete.txt already exists! Will not automatically reboot once complete." >> boot/candle_log.txt
+fi
+
 
 # Set machine ID
 if [ -s /etc/machine-id ];
@@ -130,15 +134,34 @@ then
     fi
 fi
 
+
 if [ -f /home/pi/controller_backup.tar ]; then
     chown pi:pi /home/pi/controller_backup.tar
+fi
+
+
+if [ ! -f $BOOT_DIR/candle_user_partition_expanded.txt ]; then
+    if fdisk -l | grep -q mmcblk0p4; then
+        echo "Candle: FIRST_RUN: expanding user partition" >> /dev/kmsg
+        echo "FIRST_RUN: expanding user partition" >> $BOOT_DIR/candle_log.txt
+        START_SECTOR=${/usr/sbin/fdisk -l | grep mmcblk0p4 | awk '{print $2}' | tr -d '\n'}
+        echo -e "d\n4\nn\np\n$START_SECTOR\n\nN\nw\nq" | /usr/sbin/fdisk /dev/mmcblk0
+        /usr/sbin/resize2fs /dev/mmcblk0p4
+    else
+        echo "Candle: FIRST_RUN: ERROR, cannot expand user partition: no 4th partition?" >> /dev/kmsg
+        echo "FIRST_RUN: ERROR, cannot expand user partition: no 4th partition?" >> $BOOT_DIR/candle_log.txt
+    fi
+
+else
+    echo "Candle: FIRST_RUN: not expanding user partition: candle_user_partition_expanded.txt already exists" >> /dev/kmsg
+    echo "FIRST_RUN: not expanding user partition: candle_user_partition_expanded.txt already exists" >> $BOOT_DIR/candle_log.txt
 fi
 
 echo "$(date) - first run done" >> $BOOT_DIR/candle_log.txt
 
 # Mark first run as complete and reboot
 if [ ! -f $BOOT_DIR/candle_first_run_complete.txt ]; then
-  touch $BOOT_DIR/candle_first_run_complete.txt
-  reboot
+    touch $BOOT_DIR/candle_first_run_complete.txt
+    reboot
 fi
 
