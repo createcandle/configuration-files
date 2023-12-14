@@ -26,6 +26,9 @@ auto_initramfs=1
 #dtoverlay=vc4-kms-v3d-pi5
 max_framebuffers=2
 
+[pi0]
+dtoverlay=pwm,pin=13
+
 [pi3]
 dtoverlay=vc4-kms-v3d
 
@@ -56,7 +59,6 @@ arm_boost=1
 otg_mode=1
 
 [all]
-
 
 # Read only mode
 initramfs initrd followkernel
