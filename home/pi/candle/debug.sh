@@ -362,7 +362,8 @@ echo
 rfkill list
 echo
 iwconfig
-
+echo
+iw wlan0 get power_save
 echo
 echo
 echo "--------------------------------------------- iptables (firewall)"
