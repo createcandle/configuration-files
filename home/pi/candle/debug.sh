@@ -268,7 +268,7 @@ echo
 echo "Attached HMDI devices:"
 cat /sys/class/drm/card0/*HDMI*/status
 
-echo
+echo "kmsprint:"
 kmsprint
 
 
@@ -293,15 +293,25 @@ cat /var/log/Xorg.0.log
 
 echo
 echo
-echo "--------------------------------------------- other hardware"
+echo "--------------------------------------------- Camera"
 echo
 
 
 
 echo
 echo "Libcamera:"
-libcamera-still --list-cameras
+#libcamera-still --list-cameras
 #libcamera-still 2>&1 | tee output
+echo
+LIBCAMERA_LOG_LEVELS=*:DEBUG cam -l
+echo
+v4l2-ctl --all
+
+
+echo
+echo
+echo "--------------------------------------------- other hardware"
+echo
 
 echo
 echo "Plugged in USB devices:"
