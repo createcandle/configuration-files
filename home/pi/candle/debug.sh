@@ -319,6 +319,8 @@ lsusb
 
 echo
 echo "I2C:"
+ls /dev/i2c*
+echo
 lsmod|grep i2c
 echo
 i2cdetect -y 1
