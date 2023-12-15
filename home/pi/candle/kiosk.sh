@@ -23,9 +23,7 @@ sleep 5
 totalk=$(awk '/^MemTotal:/{print $2}' /proc/meminfo)
 #logger total memory: $totalk
 
-if fbset | grep -q "No such file or directory"; then
-    echo "Candle: no display detected, not starting kiosk mode" >> /dev/kmsg
-else
+if ls -l /dev/fb*; then
     # Start X server
     if [ -f $BOOT_DIR/candle_kiosk.txt ] && [ -f $BOOT_DIR/candle_first_run_complete.txt ]
     then
@@ -55,5 +53,7 @@ else
         fi
       fi
     fi
+else
+    echo "Candle: no display detected, not starting kiosk mode" >> /dev/kmsg
 fi
 
