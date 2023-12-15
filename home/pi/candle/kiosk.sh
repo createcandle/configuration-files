@@ -1,5 +1,7 @@
 #!/bin/bash
 
+echo "Candle: in kiosk.sh" >> /dev/kmsg
+
 BOOT_DIR="/boot"
 if lsblk | grep -q $BOOT_DIR/firmware; then
     BOOT_DIR="$BOOT_DIR/firmware"
