@@ -21,32 +21,37 @@ sleep 5
 totalk=$(awk '/^MemTotal:/{print $2}' /proc/meminfo)
 #logger total memory: $totalk
 
-# Start X server
-if [ -f $BOOT_DIR/candle_kiosk.txt ] && [ -f $BOOT_DIR/candle_first_run_complete.txt ]
-then
-  if [ "$totalk" -gt 1500000 ] || [ -f $BOOT_DIR/candle_kiosk_forced.txt ]
-  then
-    echo "Candle: Enough memory to start X server" >> /dev/kmsg
-    logger Starting X
-    if [ -n "$(ls /dev/input/by-id/usb-ILITEK_ILITEK-TP-mouse 2>/dev/null)" ]
+if fbset | grep -q "No such file or directory"; then
+    echo "Candle: no display detected, not starting kiosk mode" >> /dev/kmsg
+else
+    # Start X server
+    if [ -f $BOOT_DIR/candle_kiosk.txt ] && [ -f $BOOT_DIR/candle_first_run_complete.txt ]
     then
-      # Raspad touchscreen
-      su - pi -c 'startx -- -nocursor &'
-    else
-      # any mouse
-      if [ -n "$(ls /dev/input/by-id/*-mouse 2>/dev/null)" ]
+      if [ "$totalk" -gt 1500000 ] || [ -f $BOOT_DIR/candle_kiosk_forced.txt ]
       then
-        su - pi -c startx &
-        #su - pi -c 'unclutter -idle 10 -root -display :0 &'
-      else
-        if [ ! -f $BOOT_DIR/hide_mouse_pointer.txt ]
+        echo "Candle: Enough memory to start X server" >> /dev/kmsg
+        #logger Starting X
+        if [ -n "$(ls /dev/input/by-id/usb-ILITEK_ILITEK-TP-mouse 2>/dev/null)" ]
         then
-          su - pi    startx &
-        else
+          # Raspad touchscreen
           su - pi -c 'startx -- -nocursor &'
-          #su - pi -c 'unclutter -idle 0 -root -display :0 &'
+        else
+          # any mouse
+          if [ -n "$(ls /dev/input/by-id/*-mouse 2>/dev/null)" ]
+          then
+            su - pi -c startx &
+            #su - pi -c 'unclutter -idle 10 -root -display :0 &'
+          else
+            if [ ! -f $BOOT_DIR/hide_mouse_pointer.txt ]
+            then
+              su - pi    startx &
+            else
+              su - pi -c 'startx -- -nocursor &'
+              #su - pi -c 'unclutter -idle 0 -root -display :0 &'
+            fi
+          fi
         fi
       fi
     fi
-  fi
 fi
+
