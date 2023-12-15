@@ -204,7 +204,7 @@ cat /etc/apt/sources.list.d/raspi.list
 
 echo
 echo
-echo "--------------------------------------------- Linux"
+echo "--------------------------------------------- linux"
 echo
 
 uname -a
@@ -222,7 +222,7 @@ awk '{ print $1 }' /proc/modules | xargs modinfo | grep filename | awk '{ print 
 
 echo
 echo
-echo "--------------------------------------------- User"
+echo "--------------------------------------------- user"
 echo
 loginctl user-status --no-pager
 
@@ -234,7 +234,7 @@ systemctl --user show-environment
 
 echo
 echo
-echo "--------------------------------------------- Apt"
+echo "--------------------------------------------- apt"
 echo
 
 apt policy 
@@ -293,7 +293,7 @@ cat /var/log/Xorg.0.log
 
 echo
 echo
-echo "--------------------------------------------- Camera"
+echo "--------------------------------------------- camera"
 echo
 
 
@@ -477,3 +477,11 @@ echo
 systemctl --no-pager status bluealsa.service 
 echo
 systemctl --no-pager status mosquitto.service 
+
+echo
+echo
+echo "--------------------------------------------- software"
+echo
+
+dpkg -l --no-pager
+
