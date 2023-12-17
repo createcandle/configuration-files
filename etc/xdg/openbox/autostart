@@ -115,8 +115,14 @@ fi
 #--enable-features=WebContentsForceDark
 # WebUIDarkMode
 
+CHROMIUM_BINARY_NAME="chromium"
+if which chromium-browser; then
+    CHROMIUM_BINARY_NAME="chromium-browser"
+fi
+echo "Chromium binary: $CHROMIUM_BINARY_NAME"
+
 #chromium-browser --kiosk $url --load-extension=/home/pi/candle/virtual_keyboard &
-chromium-browser --kiosk $wrapper --load-extension=/home/pi/candle/virtual_keyboard --disable-infobars --noerrdialogs --disable-file-system \
+$CHROMIUM_BINARY_NAME --kiosk $wrapper --load-extension=/home/pi/candle/virtual_keyboard --disable-infobars --noerrdialogs --disable-file-system \
  --block-new-web-contents --disable-remote-fonts --disable-speech-api --no-crash-upload --force-tablet-mode --enable-touchview \
  --disable-translate --enable-top-drag-gesture --pull-to-refresh=2 --progress-bar-animation --no-first-run --deny-permission-prompts \
  --disable-breakpad --enable-auto-reload --unsafely-treat-insecure-origin-as-secure=$url --disable-seccomp-filter-sandbox \
