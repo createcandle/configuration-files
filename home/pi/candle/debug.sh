@@ -306,6 +306,8 @@ echo
 LIBCAMERA_LOG_LEVELS=*:DEBUG cam -l
 echo
 v4l2-ctl --all
+echo
+v4l2-compliance 
 
 
 echo
