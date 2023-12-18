@@ -1,10 +1,18 @@
 <?xml version="1.0" standalone='no'?><!--*-nxml-*-->
 <!DOCTYPE service-group SYSTEM "avahi-service.dtd">
 <service-group>
-  <name replace-wildcards="yes">%h.local (Candle)</name>
+  <name replace-wildcards="yes">%h (Candle)</name>
+  <service>
+    <type>_device-info._tcp</type>
+    <port>0</port>
+    <txt-record>model=RackMac</txt-record>
+  </service>
   <service>
     <type>_http._tcp</type>
     <port>8080</port>
-    <txt-record>Candle - Privacy Protecting Smart Home Controller</txt-record>
+    <txt-record value-format="text">vendor=Candle</txt-record>
+    <txt-record value-format="text">description=Privacy_Protecting_Smart_Home_Controller</txt-record>
+    <txt-record value-format="text">admin_port=8080</txt-record>
+    <txt-record value-format="text">url=http://www.candlesmarthome.com</txt-record>
   </service>
 </service-group>
