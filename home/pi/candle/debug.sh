@@ -312,6 +312,14 @@ v4l2-compliance
 
 echo
 echo
+echo "--------------------------------------------- pgio"
+echo
+
+pinctrl
+
+
+echo
+echo
 echo "--------------------------------------------- other hardware"
 echo
 
