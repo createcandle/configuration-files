@@ -364,7 +364,8 @@ echo
 ifconfig
 
 echo
-nmcli -o
+# NetworkManager has been removed for now
+#nmcli -o
 
 echo
 echo "Wi-Fi:"
