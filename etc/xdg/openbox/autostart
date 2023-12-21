@@ -127,6 +127,10 @@ if which chromium-browser; then
 fi
 echo "Chromium binary: $CHROMIUM_BINARY_NAME"
 
+mkdir -p /home/pi/.config/chromium/Default
+echo {"browser":{"window_placement":{"bottom":$HEIGHT,"left":0,"maximized":true,"right":$WIDTH,"top":0}}} >> /home/pi/.config/chromium/Default/Preferences
+
+
 #chromium-browser --kiosk $url --load-extension=/home/pi/candle/virtual_keyboard &
 
 $CHROMIUM_BINARY_NAME --kiosk $wrapper --load-extension=/home/pi/candle/virtual_keyboard --disable-infobars --noerrdialogs --disable-file-system \
