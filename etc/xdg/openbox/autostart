@@ -1,6 +1,12 @@
 #!/bin/bash
 set +e
 
+if [ ! -s $BOOT_DIR/candle_kiosk.txt ]
+then
+    echo "The candle_kiosk.txt file was empty, so not loading the browser" >> $BOOT_DIR/candle_log.txt
+    exit 0
+fi
+
 export DISPLAY=:0
 
 BOOT_DIR="/boot"
@@ -12,7 +18,7 @@ GEO="$(fbset -s | awk '$1 == "geometry" { print $2":"$3 }')"
 WIDTH=$(echo "$GEO" | cut -d: -f1)
 HEIGHT=$(echo "$GEO" | cut -d: -f2)
 
-echo "Resolution: $WIDTH x $HEIGHT" >> /dev/kmsg
+echo "Resolution: $WIDTH x $HEIGHT"
 
 xset -display :0 s off
 xset -display :0 s noblank
@@ -31,11 +37,7 @@ else
   xinput --set-prop 'HID 222a:0001' 'Coordinate Transformation Matrix' 1 0 0 0 1 0 0 0 1
 fi
 
-if [ ! -s $BOOT_DIR/candle_kiosk.txt ]
-then
-    echo "The candle_kiosk.txt file was empty, so not loading the browser" >> $BOOT_DIR/candle_log.txt
-    exit 0
-fi
+
 
 
 if [ ! -f $BOOT_DIR/keep_browser_session.txt ]
