@@ -8,6 +8,12 @@ if lsblk | grep -q $BOOT_DIR/firmware; then
     BOOT_DIR="$BOOT_DIR/firmware"
 fi
 
+GEO="$(fbset -s | awk '$1 == "geometry" { print $2":"$3 }')"
+WIDTH=$(echo "$GEO" | cut -d: -f1)
+HEIGHT=$(echo "$GEO" | cut -d: -f2)
+
+echo "Resolution: $WIDTH x $HEIGHT" >> /dev/kmsg
+
 xset -display :0 s off
 xset -display :0 s noblank
 xset -display :0 -dpms
@@ -122,6 +128,7 @@ fi
 echo "Chromium binary: $CHROMIUM_BINARY_NAME"
 
 #chromium-browser --kiosk $url --load-extension=/home/pi/candle/virtual_keyboard &
+
 $CHROMIUM_BINARY_NAME --kiosk $wrapper --load-extension=/home/pi/candle/virtual_keyboard --disable-infobars --noerrdialogs --disable-file-system \
  --block-new-web-contents --disable-remote-fonts --disable-speech-api --no-crash-upload --force-tablet-mode --enable-touchview \
  --disable-translate --enable-top-drag-gesture --pull-to-refresh=2 --progress-bar-animation --no-first-run --deny-permission-prompts \
@@ -129,8 +136,11 @@ $CHROMIUM_BINARY_NAME --kiosk $wrapper --load-extension=/home/pi/candle/virtual_
  --disable-fullscreen-tab-detaching --disable-hang-monitor --disable-pinch --overscroll-history-navigation=0 --disk-cache-size=1 \
  --dns-prefetch-disable --enable-profiling=0 --user-data-dir=/home/pi/.webthings/chromium/ --disable-features=Translate,TranslateUI \
  --disable-translate-new-ux --disable-suggestions-ui --disable-sync --enable-features=WebUIDarkMode --force-dark-mode --homepage=$url \
---disable-session-crashed-bubble --fast --fast-start --disk-cache-dir=/dev/null --overscroll-history-navigation=disabled &
+ --disable-session-crashed-bubble --fast --fast-start --disk-cache-dir=/dev/null --overscroll-history-navigation=disabled \
+ --disable-gpu-compositing --window-position=0,0 --window-size=$WIDTH,$HEIGHT --password-store=basic --start-fullscreen --start-maximized &
+
 # --disable-gpu --disable-software-rasterizer &
+
 
 sleep 15
 #pkill omxplayer
