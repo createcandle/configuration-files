@@ -48,7 +48,7 @@ fi
 
 
 
-if [ ! -f $BOOT_DIR/keep_browser_session.txt ]
+if [ -f $BOOT_DIR/candle_kiosk_require_login.txt ]
 then
     echo "clearing old chromium session data"
     rm -rf /home/pi/.webthings/chromium/Default/Sessions/*
