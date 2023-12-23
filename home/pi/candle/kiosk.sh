@@ -47,7 +47,7 @@ if ls -l /dev/fb*; then
 
         pkill vlc
         pkill x
-        sleep 1
+        #sleep 1
 
         if [ -n "$(ls /dev/input/by-id/usb-ILITEK_ILITEK-TP-mouse 2>/dev/null)" ]
         then
