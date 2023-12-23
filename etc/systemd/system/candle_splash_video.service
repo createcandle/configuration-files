@@ -7,6 +7,9 @@ Type=simple
 User=pi
 WorkingDirectory=/home/pi/candle
 ExecStart=/home/pi/candle/flame.sh            
+StandardOutput=journal+console
+StandardError=journal+console
+
 
 [Install]
 WantedBy=multi-user.target
