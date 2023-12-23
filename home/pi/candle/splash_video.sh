@@ -27,7 +27,7 @@ else
     if [ -f $BOOT_DIR/candle_kiosk.txt ] && [ -f $BOOT_DIR/candle_first_run_complete.txt ]; then
       if [ "$totalk" -gt 800000 ] || [ -f $BOOT_DIR/candle_kiosk_forced.txt ]; then
         
-        if [ -f $BOOT_DIR/rotate180.txt ];l then
+        if [ -f $BOOT_DIR/rotate180.txt ]; then
           /usr/bin/vlc -L -f --no-osd --no-audio --fullscreen --no-audio --video-filter='transform{type="180"}' $BOOT_DIR/splash.mp4
           #startx /usr/bin/vlc -I dummy -L -f --no-osd --no-audio --fullscreen --video-on-top --no-audio --video-filter='transform{type="180"}' $BOOT_DIR/splash.mp4 -- &
       	else
