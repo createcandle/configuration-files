@@ -26,7 +26,7 @@ GEO="$(fbset -s | awk '$1 == "geometry" { print $2":"$3 }')"
 WIDTH=$(echo "$GEO" | cut -d: -f1)
 HEIGHT=$(echo "$GEO" | cut -d: -f2)
 
-#echo "Resolution: $WIDTH x $HEIGHT" > /home/pi/reso.txt
+echo "Resolution: $WIDTH x $HEIGHT" > /home/pi/reso.txt
 
 xset -display :0 s off
 xset -display :0 s noblank
@@ -71,7 +71,8 @@ else
   
   if [ -f $BOOT_DIR/splash.mp4 ];
   then
-    cvlc -L -f --no-osd --no-audio --fullscreen --video-on-top $BOOT_DIR/splash.mp4 &
+    echo "zzz"
+#    cvlc -L -f --no-osd --no-audio --fullscreen --video-on-top $BOOT_DIR/splash.mp4 &
     #if [ -f $BOOT_DIR/rotate180.txt ]
     #then
     #  cvlc -L -f --no-osd --no-audio --fullscreen --video-on-top $BOOT_DIR/splash180.mp4 &    
@@ -80,12 +81,14 @@ else
     #fi
     #omxplayer -b --win "0 0 $resolution" --loop $BOOT_DIR/splash.mp4 &
   fi
-  sleep 1
+#  sleep 1
 #  feh --bg-fill $BOOT_DIR/splashalt.png
 
 fi
 #feh --bg-fill $BOOT_DIR/splash.png
 #windowsize=$(xdpyinfo | awk '/dimensions/{print $2}')
+
+#sleep 15
 
 if [ ! -f $BOOT_DIR/hide_mouse_pointer.txt ]
 then
@@ -129,19 +132,31 @@ if [ ! -f /home/pi/candle/start.html ]; then
   wrapper=http://localhost:8080
 fi
 
+#timeout 60 bash -c 'until echo > /dev/tcp/localhost/8080; do sleep 1; done'
+#curl --head -X GET --retry 10 --retry-connrefused --retry-delay 1 $url
+
 export CANDLE_URL=$url
+
 timeout --foreground -s TERM 30s bash -c \
    'while [[ "$(curl -s -o /dev/null -m 3 -L -w ''%{http_code}'' $CANDLE_URL)" != "200" ]];\
    do echo "Waiting for url" && sleep 2;\
    done;\
    echo "Server seems to be up: $CANDLE_URL"'
 
+#wait-for-url $url
+
+#sleep 5
+
 chmod +x /home/pi/candle/unsnap.sh
 python3 /home/pi/candle/unsnap.py >/dev/null 2>&1 &
 
-( sleep 10 ; pkill cvlc; pkill vlc ) &
+#( sleep 10 ; pkill cvlc; pkill vlc ) &
 
-exec chromium --kiosk /home/pi/candle/start.html --load-extension=/home/pi/candle/virtual_keyboard --disable-infobars --noerrdialogs --disable-file-system \
+pkill cvlc
+pkill vlc
+
+#exec chromium --kiosk /home/pi/candle/start.html --load-extension=/home/pi/candle/virtual_keyboard --disable-infobars --noerrdialogs --disable-file-system \
+exec chromium --kiosk $url --load-extension=/home/pi/candle/virtual_keyboard --disable-infobars --noerrdialogs --disable-file-system \
  --block-new-web-contents --disable-remote-fonts --disable-speech-api --no-crash-upload --force-tablet-mode --enable-touchview \
  --disable-translate --enable-top-drag-gesture --pull-to-refresh=2 --progress-bar-animation --no-first-run --deny-permission-prompts \
  --disable-breakpad --enable-auto-reload --unsafely-treat-insecure-origin-as-secure=http://localhost:8080 --disable-seccomp-filter-sandbox \
@@ -149,4 +164,4 @@ exec chromium --kiosk /home/pi/candle/start.html --load-extension=/home/pi/candl
  --dns-prefetch-disable --enable-profiling=0 --user-data-dir=/home/pi/.webthings/chromium/ --disable-features=Translate,TranslateUI \
  --disable-translate-new-ux --disable-suggestions-ui --disable-sync --enable-features=WebUIDarkMode --force-dark-mode --homepage=http://localhost:8080 \
  --disable-session-crashed-bubble --disk-cache-dir=/dev/null --overscroll-history-navigation=disabled \
- --disable-gpu-compositing --window-position=0,0 -window-size=$WIDTH,$HEIGHT --start-maximized 
+ --disable-gpu-compositing --window-position=0,0 -window-size=$WIDTH,$HEIGHT --start-maximized --start-fullscreen
