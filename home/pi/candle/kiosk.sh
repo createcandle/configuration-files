@@ -46,8 +46,8 @@ if ls -l /dev/fb*; then
         #logger Starting X
 
         pkill vlc
-        pkill x
-        #sleep 1
+        #pkill x
+        sleep .2
 
         if [ -n "$(ls /dev/input/by-id/usb-ILITEK_ILITEK-TP-mouse 2>/dev/null)" ]
         then
