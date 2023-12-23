@@ -1,0 +1,12 @@
+[Unit]
+Description=Show Candle video logo during boot
+After=graphical.target
+
+[Service]
+Type=simple
+User=pi
+WorkingDirectory=/home/pi/candle
+ExecStart=/home/pi/candle/flame.sh            
+
+[Install]
+WantedBy=multi-user.target
