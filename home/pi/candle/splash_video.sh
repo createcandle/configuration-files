@@ -17,7 +17,7 @@ if [ -f $BOOT_DIR/bootup_actions.sh ] || [ -f $BOOT_DIR/post_bootup_actions.sh ]
     else
         /bin/ply-image $BOOT_DIR/splash_updating.png
     fi
-    sleep 1
+    #sleep 1
   fi
 
 else
