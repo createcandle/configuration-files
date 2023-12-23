@@ -1,15 +1,24 @@
 [Unit]
 Description=Show Candle video logo during boot
-After=graphical.target
+#After=home-pi-.webthings.mount rc-local.service dev-fb0.device
+#After=graphical.target
+#Requires=sys-devices-platform-gpu-graphics-fb0.device
+#After=sys-devices-platform-gpu-graphics-fb0.device
+#Requires=dev-fb0.device
+#After=dev-fb0.device
+DefaultDependencies=no
+After=local-fs.target home-pi-.webthings.mount
+ConditionPathExists=/dev/fb0
+#ConditionPathExists=!/boot/firmware/rotate180.txt
+ConditionPathExists=!/boot/firmware/bootup_actions.sh
+ConditionKernelCommandLine=splash
 
 [Service]
+StandardInput=tty
+StandardOutput=tty
 Type=simple
 User=pi
-WorkingDirectory=/home/pi/candle
-ExecStart=/home/pi/candle/flame.sh            
-StandardOutput=journal+console
-StandardError=journal+console
-
+ExecStart=/home/pi/candle/splash_video.sh            
 
 [Install]
 WantedBy=multi-user.target
