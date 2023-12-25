@@ -489,6 +489,17 @@ systemctl --no-pager status bluealsa.service
 echo
 systemctl --no-pager status mosquitto.service 
 
+
+
+echo
+echo
+echo "--------------------------------------------- matter"
+echo
+
+sysctl net.ipv6.conf.all.forwarding
+sysctl net.ipv6.conf.wlan0.accept_ra
+sysctl net.ipv6.conf.wlan0.accept_ra_rt_info_max_plen=64
+
 echo
 echo
 echo "--------------------------------------------- software"
