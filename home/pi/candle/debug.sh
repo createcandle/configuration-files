@@ -359,9 +359,12 @@ vcgencmd pmic_read_adc
 echo
 echo
 echo "--------------------------------------------- network"
-echo
 
+echo
 ifconfig
+
+echo
+netstat -i
 
 echo
 # NetworkManager has been removed for now
