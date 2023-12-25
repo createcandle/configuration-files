@@ -385,7 +385,7 @@ echo
 rfkill list
 echo
 iwconfig
-echo
+echo "wifi power save?"
 iw wlan0 get power_save
 echo
 echo
