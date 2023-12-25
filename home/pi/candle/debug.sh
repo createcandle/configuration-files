@@ -151,8 +151,15 @@ vcgencmd bootloader_config
 echo
 echo
 echo "--------------------------------------------- systemctl"
+echo
+echo "systemd enabled"
+systemctl list-unit-files --state=enabled --no-pager
+echo
 echo 
+echo "systemd failed"
 systemctl list-units --failed --no-pager
+
+
 
 echo
 timeout 2s journalctl --boot=0 --priority=0..3 --no-pager
