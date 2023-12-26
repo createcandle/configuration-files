@@ -55,7 +55,7 @@ hide_mouse_pointer.txt 		# Hides the mouse pointer on the HDMI output. Enabled b
 rotate180.txt 			# Rotates the display 180 degrees.
 exhibit_mode.txt		# Disables installing and uninstalling addons, as well as most mayor settings.
 do_not_use_repeaker_hat.txt 	# Will stop ReSpeaker hat drivers from being loaded at boot.
-disable_wifi_power_save.txt 	# If present, wifi power saving feature will be disabled. This might improve some connections.
+candle_wifi_power_save 	# If present, wifi power saving will be enabled. This may cause connection issues.
 candle_cutting_edge.txt 	# If present, any system update will attempt to get the very latest version of everything. Risky, For developers only.
 
 
