@@ -403,6 +403,9 @@ echo
 lsmod
 
 echo
+sysctl -a
+
+echo
 echo
 echo "--------------------------------------------- memory"
 echo
