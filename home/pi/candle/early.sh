@@ -83,9 +83,12 @@ else
 fi
 
 
-# Disable WiFi power save
-if [ -f $BOOT_DIR/disable_wifi_power_save.txt ] || [ -d /home/pi/.webthings/addons/hotspot ];
+# Enable WiFi power save
+if [ -f $BOOT_DIR/candle_wifi_power_save.txt ] && [ ! -d /home/pi/.webthings/addons/hotspot ] ;
 then
+  echo "Candle: early: enabling wifi power saving" >> /dev/kmsg
+  /sbin/iw dev wlan0 set power_save on
+else
   echo "Candle: early: disabling wifi power saving" >> /dev/kmsg
   /sbin/iw dev wlan0 set power_save off
 fi
