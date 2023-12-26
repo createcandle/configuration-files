@@ -48,7 +48,7 @@ emergency.txt 			# Booting is mostly halted, and SSH access is activated.
 candle_emergency_backup.txt 	# If possible, creates an emergency backup which will be placed on the SD card as candle_emergency_backup.tar
 candle_kiosk.txt 		# The URL inside this file will be shown in the browser. If it's empty the kiosk browser will not load.
 candle_kiosk_forced.txt 	# Force the kiosk mode to start on low memory systems (such as the Raspberry Pi 3).
-keep_browser_session.txt 	# Don't delete browser sessions on boot.
+candle_reset_browser_session.txt 	# Delete kiosk's browser sessions on boot. This will force the user to log into the kiosk browser again.
 cloudless.txt 			# Experimental, to launch the controller even if there is no network at all. Use with the Hotspot addon.
 nohotspot.txt 			# Aborts hotspot addon launch. Useful if that feature somehow causes trouble.
 hide_mouse_pointer.txt 		# Hides the mouse pointer on the HDMI output. Enabled by default.
