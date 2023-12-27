@@ -269,7 +269,7 @@ arecord -l
 
 echo
 echo
-echo "--------------------------------------------- video"
+echo "--------------------------------------------- display"
 echo
 
 echo "Attached HMDI devices:"
@@ -296,6 +296,13 @@ echo
 echo
 echo "/var/log/Xorg.0.log:"
 cat /var/log/Xorg.0.log
+
+echo
+echo "Touch screen input:"
+udevadm info -q all -n /dev/input/event4
+
+
+
 
 
 echo
