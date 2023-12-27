@@ -52,6 +52,7 @@ if [ -f $BOOT_DIR/candle_kiosk_require_login.txt ]
 then
     echo "clearing old chromium session data"
     rm -rf /home/pi/.webthings/chromium/Default/Sessions/*
+    #echo '{"AllowFileSelectionDialogs": false, "AudioCaptureAllowed": false, "AutoFillEnabled": false, "PasswordManagerEnabled": false}' > /etc/chromium/policies/managed/candle.json
 fi
 
 rm -rf /home/pi/.config/chromium/*
