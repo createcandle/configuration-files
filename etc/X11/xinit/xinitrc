@@ -26,7 +26,7 @@ GEO="$(fbset -s | awk '$1 == "geometry" { print $2":"$3 }')"
 WIDTH=$(echo "$GEO" | cut -d: -f1)
 HEIGHT=$(echo "$GEO" | cut -d: -f2)
 
-echo "Resolution: $WIDTH x $HEIGHT" > /home/pi/reso.txt
+#echo "Resolution: $WIDTH x $HEIGHT" > /home/pi/reso.txt
 
 xset -display :0 s off
 xset -display :0 s noblank
