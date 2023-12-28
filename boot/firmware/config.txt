@@ -70,3 +70,11 @@ ramfsfile=initrd
 ramfsaddr=-1
 disable_splash=1
 max_usb_current=1
+
+# The parts below are for easy replacement with the Power Settings addon.
+
+
+
+# DO NOT PLACE ANYTHING BELOW POWER_SETTINGS_START LINE, IT MAY BE REMOVED BY THE POWER SETTINGS ADDON
+
+#POWER_SETTINGS_START
