@@ -11,8 +11,8 @@ fi
 echo "in Candle early"
 echo "$(date) - in Candle early. Fixing hostname." >> /dev/kmsg
 
-# Set HDCPCD value
-sysctl -w net.ipv6.neigh.wlan0.retrans_time_ms=1000
+# Set DHCPCD value
+#sysctl -w net.ipv6.neigh.wlan0.retrans_time_ms=1000
 
 # Fix hostname
 /usr/bin/hostname -F /home/pi/.webthings/etc/hostname
