@@ -133,6 +133,18 @@ else
 fi
 
 
+
+# If a hostname.txt file exists, use its contents to set the hostname, then remove the file
+if [ -e $BOOT_DIR/hostname.txt ] && [ -e /home/pi/.webthings/etc/hosts ]; 
+then
+    NEW_HOSTNAME=$(head -1 $BOOT_DIR/hostname.txt)
+    echo "new hostname from hostname.txt: $NEW_HOSTNAME" >> /dev/kmsg
+    sed -i -E -e "s/127\\.0\\.1\\.1[ \\t]+.*/127\\.0\\.1\\.1 \\t$NEW_HOSTNAME/g" /home/pi/.webthings/etc/hosts
+    echo "$NEW_HOSTNAME" > /home/pi/.webthings/etc/hostname
+    rm $BOOT_DIR/hostname.txt
+fi
+
+
 # If it's provided, copy a controller_backup.tar file from the boot partition into the system partition
 if [ -f $BOOT_DIR/controller_backup.tar ]; 
 then
