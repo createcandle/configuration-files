@@ -16,13 +16,23 @@ echo "$(date) - in Candle early. Fixing hostname." >> /dev/kmsg
 
 
 # If a hostname.txt file exists, use its contents to set the hostname, then remove the file
-if [ -s $BOOT_DIR/hostname.txt ] && [ -e /home/pi/.webthings/etc/hosts ]; 
+if [ -s $BOOT_DIR/hostname.txt ] && [ -s /home/pi/.webthings/etc/hosts ]; 
 then
-    NEW_HOSTNAME=$(head -1 $BOOT_DIR/hostname.txt)
-    echo "new hostname from hostname.txt: $NEW_HOSTNAME" >> /dev/kmsg
-    sed -i -E -e "s/127\\.0\\.1\\.1[ \\t]+.*/127\\.0\\.1\\.1 \\t$NEW_HOSTNAME/g" /home/pi/.webthings/etc/hosts
-    echo "$NEW_HOSTNAME" > /home/pi/.webthings/etc/hostname
-    rm $BOOT_DIR/hostname.txt
+
+    if cmp -s "$BOOT_DIR/hostname.txt" "/home/pi/.webthings/etc/hosts"; then
+        echo "hostname.txt is the same as the current hostname file" >> /dev/kmsg
+    else
+        echo "hostname.txt is different from the current hostname file" >> /dev/kmsg
+        NEW_HOSTNAME=$(head -1 $BOOT_DIR/hostname.txt)
+        echo "new hostname from hostname.txt: $NEW_HOSTNAME" >> /dev/kmsg
+        if [ -f $BOOT_DIR/candle_first_run_complete.txt ]; then
+            echo "new hostname from hostname.txt: $NEW_HOSTNAME" >> $BOOT_DIR/candle_log.txt
+        fi
+        sed -i -E -e "s/127\\.0\\.1\\.1[ \\t]+.*/127\\.0\\.1\\.1 \\t$NEW_HOSTNAME/g" /home/pi/.webthings/etc/hosts
+        echo "$NEW_HOSTNAME" > /home/pi/.webthings/etc/hostname
+        #rm $BOOT_DIR/hostname.txt
+    fi
+    
 fi
 
 # Fix hostname
