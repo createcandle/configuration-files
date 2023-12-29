@@ -32,6 +32,7 @@ timeout --foreground -s TERM 30s bash -c \
    echo "Server seems to be up: $CANDLE_URL"'
 
 
+# candle_kiosk_forced.txt
 
 totalk=$(awk '/^MemTotal:/{print $2}' /proc/meminfo)
 #logger total memory: $totalk
@@ -42,33 +43,41 @@ if ls -l /dev/fb*; then
     if [ -f $BOOT_DIR/candle_kiosk.txt ] && [ -f $BOOT_DIR/candle_first_run_complete.txt ]
     then
 
-        echo "Candle: Enough memory to start X server" >> /dev/kmsg
+        echo "Candle: detected a display, will start Xorg kiosk" >> /dev/kmsg
         #logger Starting X
 
         pkill vlc
+        pkill cvlc
         #pkill x
         sleep .2
 
-        if [ -n "$(ls /dev/input/by-id/usb-ILITEK_ILITEK-TP-mouse 2>/dev/null)" ]
-        then
-          # Raspad touchscreen
-          su - pi -c 'startx -- -nocursor &'
-        else
-          # any mouse
-          if [ -n "$(ls /dev/input/by-id/*-mouse 2>/dev/null)" ]
-          then
+        if [ -f $BOOT_DIR/show_mouse_pointer.txt ]; then
             su - pi -c 'startx &'
-            #su - pi -c 'unclutter -idle 10 -root -display :0 &'
-          else
-            if [ ! -f $BOOT_DIR/hide_mouse_pointer.txt ]
-            then
-              su - pi -c 'startx &'
-            else
-              su - pi -c 'startx -- -nocursor &'
-              #su - pi -c 'unclutter -idle 0 -root -display :0 &'
+        
+        elif [ -f $BOOT_DIR/hide_mouse_pointer.txt ]; then
+            su - pi -c 'startx -- -nocursor &'
+
+        # Auto-detect
+        
+        # Raspad touchscreen
+        elif [ -n "$(ls /dev/input/by-id/usb-ILITEK_ILITEK-TP-mouse 2>/dev/null)" ]; then
+          su - pi -c 'startx -- -nocursor &'
+
+        # Generic touch screen
+        elif udevadm info -q all -n /dev/input/event* | grep -q 'ID_INPUT_TOUCHSCREEN=1'; then
+            su - pi -c 'startx -- -nocursor &'
+
+        elif [ -n "$(ls /dev/input/by-id/*-mouse 2>/dev/null)" ]; then
+            su - pi -c 'startx &'
+
+        else
+            if which unclutter; then
+                su - pi -c 'unclutter -idle 5 -root -display :0 &'
             fi
-          fi
+            su - pi -c 'startx &'
         fi
+        
+        
       
     fi
 else
