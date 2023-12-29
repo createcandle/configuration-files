@@ -111,7 +111,7 @@ fi
 
 
 # Create initial tar backup of controller
-if [ ! -f /home/pi/controller_backup.tar ];
+if [ ! -f /home/pi/controller_backup.tar ] && [ -f $BOOT_DIR/candle_make_controller_backup.txt ];
 then
     cd /home/pi
     if [ -f /home/pi/webthings/gateway/build/app.js ] \
