@@ -51,7 +51,8 @@ candle_kiosk_forced.txt 	# Force the kiosk mode to start on low memory systems (
 candle_kiosk_require_login.txt 	# If this file exists it will force the user to log back into the kiosk browser after each reboot.
 cloudless.txt 			# Experimental, to launch the controller even if there is no network at all. Use with the Hotspot addon.
 nohotspot.txt 			# Aborts hotspot addon launch. Useful if that feature somehow causes trouble.
-hide_mouse_pointer.txt 		# Hides the mouse pointer on the HDMI output. Enabled by default.
+show_mouse_pointer.txt 		# Forces showing the mouse pointer on the HDMI output.
+hide_mouse_pointer.txt 		# Forces hiding the mouse pointer on the HDMI output.
 rotate180.txt 			# Rotates the display 180 degrees.
 exhibit_mode.txt		# Disables installing and uninstalling addons, as well as most mayor settings.
 do_not_use_repeaker_hat.txt 	# Will stop ReSpeaker hat drivers from being loaded at boot.
