@@ -34,7 +34,7 @@ timeout --foreground -s TERM 30s bash -c \
 
 # candle_kiosk_forced.txt
 
-totalk=$(awk '/^MemTotal:/{print $2}' /proc/meminfo)
+#totalk=$(awk '/^MemTotal:/{print $2}' /proc/meminfo)
 #logger total memory: $totalk
 
 if ls -l /dev/fb*; then
@@ -76,8 +76,6 @@ if ls -l /dev/fb*; then
             fi
             su - pi -c 'startx &'
         fi
-        
-        
       
     fi
 else
