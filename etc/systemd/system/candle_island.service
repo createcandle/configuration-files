@@ -1,6 +1,7 @@
 [Unit]
 Description=accesspoint with hostapd (interface-specific version)
 Wants=wpa_supplicant@%i.service
+ConditionPathExists=!/boot/firmware/nohotspot.txt 
 ConditionPathExists=/boot/firmware/candle_island.txt                 
 ConditionPathExists=/home/pi/.webthings/etc/hostapd/island.conf
 
