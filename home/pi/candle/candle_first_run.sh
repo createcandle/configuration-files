@@ -67,7 +67,6 @@ then
       cp /home/pi/.webthings/etc/webthings_settings_backup.js /home/pi/.webthings/etc/webthings_settings.js
     fi
     
-    
   fi
   
 fi
@@ -81,7 +80,7 @@ echo "FIRST_RUN: new SSH security keys generated." >> $BOOT_DIR/candle_log.txt
 
 
 # Generate SSL keys
-WEBTHINGS_HOME="${WEBTHINGS_HOME:=${HOME}/.webthings}"
+WEBTHINGS_HOME="${WEBTHINGS_HOME:=/home/pi/.webthings}"
 SSL_DIR="${WEBTHINGS_HOME}/ssl"
 [ ! -d "${SSL_DIR}" ] && mkdir -p "${SSL_DIR}"
 openssl genrsa -out "${SSL_DIR}/privatekey.pem" 2048
