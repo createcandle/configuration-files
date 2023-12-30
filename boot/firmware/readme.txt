@@ -58,7 +58,7 @@ exhibit_mode.txt		# Disables installing and uninstalling addons, as well as most
 do_not_use_repeaker_hat.txt 	# Will stop ReSpeaker hat drivers from being loaded at boot.
 candle_wifi_power_save 	# If present, wifi power saving will be enabled. This may cause connection issues.
 candle_cutting_edge.txt 	# If present, any system update will attempt to get the very latest version of everything. Risky, For developers only.
-hostname.txt 			# If this file exists, then the word inside will become the new hostname. Then the file is deleted.
+hostname.txt 			# The word inside this file will become the hostname. Must be one single word in lower case.
 
 # RECOVERY OPTIONS
 By default starting the recovery partition starts the update process, but this can be overridden:
@@ -75,8 +75,8 @@ restore_controller_backup.txt 	# Will try to restore the Candle Controller softw
 force_controller_rebuild.txt 	# Will download the very latest version of the Candle Controller and build it from scratch. This takes a long time. Deprecated.
 generate_debug.txt 		# Will generate a file called debug.txt which contains details about the state of the system.
 generate_raspinfo.txt 		# Will generate a file called raspinfo.txt which contains details about the operating system.
-candle_forget_wifi.txt		# Will clear the currently stored wifi details (ssid, password) on the next reboot.
-
+candle_forget_wifi.txt		# Will clear the currently stored wifi details (ssid, password) on the next boot.
+candle_forget_users.txt		# Will delete all users on the next boot. Useful if you forgot your password.
 
 # Factory reset related:
 keep_z2m.txt 			# Keep Zigbee2MQTT settings on factory reset.
