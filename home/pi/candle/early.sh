@@ -420,6 +420,12 @@ if [ -f $BOOT_DIR/candle_forget_wifi.txt ]; then
   echo -e 'ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev\nupdate_config=1\ncountry=NL\n' > /home/pi/.webthings/etc/wpa_supplicant/wpa_supplicant.conf
 fi
 
+# Forget all users
+if [ -f $BOOT_DIR/candle_forget_users.txt ]; then
+  rm $BOOT_DIR/candle_forget_users.txt
+  sqlite3 "/home/pi/.webthings/config/db.sqlite3" "DELETE FROM users"
+fi
+
 
 totalk=$(awk '/^MemTotal:/{print $2}' /proc/meminfo)
 #logger total memory: $totalk
