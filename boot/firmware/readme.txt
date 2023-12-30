@@ -61,18 +61,13 @@ candle_cutting_edge.txt 	# If present, any system update will attempt to get the
 hostname.txt 			# The word inside this file will become the hostname. Must be one single word in lower case.
 
 # RECOVERY OPTIONS
-By default starting the recovery partition starts the update process, but this can be overridden:
+By default booting into the recovery partition starts the update process, but this can be overridden:
 
 candle_update.txt		# If it exists, then this file will be renamed to candle_update.sh and run as a script. Also, the normal update process is not run.
 candle_recovery_type.txt        # The contents of this file overrides the recovery type. Set its contents to the word "nothing" to boot into recovery and do nothing.
-candle_stay_in_recovery.txt     #  The recovery system will normally automaticallty reboot after the update is done. With this it stays in recovery so you can inspect things.
+candle_stay_in_recovery.txt     #  The recovery system will normally automaticallty reboot after the update is done. It stays in recovery so you can inspect things.
 
 # TOOLS
-A lot of these 'restore' methods will be phased out. It's recommended to use the recovery partition instead, and simply replace a malfunctioning system partition.
-
-restore_boot_backup.txt 	# Will try to restore some fundamental files to older backed-up versions (if the backups exist). Deprecated.
-restore_controller_backup.txt 	# Will try to restore the Candle Controller software (if the backups exist). Deprecated.
-force_controller_rebuild.txt 	# Will download the very latest version of the Candle Controller and build it from scratch. This takes a long time. Deprecated.
 generate_debug.txt 		# Will generate a file called debug.txt which contains details about the state of the system.
 generate_raspinfo.txt 		# Will generate a file called raspinfo.txt which contains details about the operating system.
 candle_forget_wifi.txt		# Will clear the currently stored wifi details (ssid, password) on the next boot.
