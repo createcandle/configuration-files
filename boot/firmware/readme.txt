@@ -59,6 +59,7 @@ do_not_use_repeaker_hat.txt 	# Will stop ReSpeaker hat drivers from being loaded
 candle_wifi_power_save 	# If present, wifi power saving will be enabled. This may cause connection issues.
 candle_cutting_edge.txt 	# If present, any system update will attempt to get the very latest version of everything. Risky, For developers only.
 hostname.txt 			# The word inside this file will become the hostname. Must be one single word in lower case.
+candle_delete_these_addons.txt	# Will delete all addons listed in this file. These must be the names of the addon directories. E.g. Voco -> voco
 
 # RECOVERY OPTIONS
 By default booting into the recovery partition starts the update process, but this can be overridden:
