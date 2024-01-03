@@ -106,6 +106,7 @@ else
 fi
 
 if [ -f $BOOT_DIR/candle_delete_these_addons.txt ]; then
+    echo "early: spotted candle_delete_these_addons.txt" >> /dev/kmsg
     while read addon; do
       if [ -d "/home/pi/.webthings/addons/$addon" ]; then
           rm -rf "/home/pi/.webthings/addons/$addon"
@@ -115,8 +116,8 @@ if [ -f $BOOT_DIR/candle_delete_these_addons.txt ]; then
           echo "addon not found, cannot delete: $addon" >> /dev/kmsg
           echo "addon not found, cannot delete: $addon" >> $BOOT_DIR/candle_log.txt
       fi
-    done <$BOOT_DIR/candle_remove_these_addons.txt
-    rm $BOOT_DIR/candle_remove_these_addons.txt
+    done <$BOOT_DIR/candle_delete_these_addons.txt
+    rm $BOOT_DIR/candle_delete_these_addons.txt
 fi
 
 
