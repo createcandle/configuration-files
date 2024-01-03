@@ -66,6 +66,8 @@ else
     iptables -I INPUT -m state --state NEW -m tcp -p tcp --dport 4443 -m mark --mark 1 -j ACCEPT
 fi
 
+
+
 # detect potential issues that can happen after an upgrade
 if ifconfig | grep -q wlan0: ; then
     echo "wlan0 exists"
@@ -101,6 +103,20 @@ if lsmod | grep hidp &> /dev/null ; then
 else
   echo "manually loading modprobe hidp" >> /dev/kmsg
   modprobe hidp
+fi
+
+if [ -f $BOOT_DIR/candle_delete_these_addons.txt ]; then
+    while read addon; do
+      if [ -d "/home/pi/.webthings/addons/$addon" ]; then
+          rm -rf "/home/pi/.webthings/addons/$addon"
+          echo "deleting addon: $addon" >> /dev/kmsg
+          echo "deleting addon: $addon" >> $BOOT_DIR/candle_log.txt
+      else
+          echo "addon not found, cannot delete: $addon" >> /dev/kmsg
+          echo "addon not found, cannot delete: $addon" >> $BOOT_DIR/candle_log.txt
+      fi
+    done <$BOOT_DIR/candle_remove_these_addons.txt
+    rm $BOOT_DIR/candle_remove_these_addons.txt
 fi
 
 
@@ -170,27 +186,6 @@ then
 fi
 
 
-# Handle forced restore of early.sh
-if [ -f $BOOT_DIR/restore_boot_backup.txt ];
-then
-  rm $BOOT_DIR/restore_boot_backup.txt
-  echo "Detected $BOOT_DIR/restore_boot_backup.txt"
-  
-  if [ -f $BOOT_DIR/developer.txt ] || [ -f $BOOT_DIR/candle_cutting_edge.txt ]; then
-    systemctl start ssh.service
-  fi
-  
-  if [ -f /etc/early.sh.bak ];
-  then
-    cp /etc/early.sh.bak /etc/early.sh
-    echo "$(date) - forced restored boot backup" >> $BOOT_DIR/candle_log.txt
-    echo "$(date) - forced restored boot backup" >> /dev/kmsg
-
-  else
-    echo "$(date) - forced restoring boot backup: no backup found" >> $BOOT_DIR/candle_log.txt
-    echo "$(date) - forced restoring boot backup: no backup found" >> /dev/kmsg
-  fi
-fi
 
 if [ -d /home/pi/.webthings/chromium/BrowserMetrics ]; then
     rm -rf /home/pi/.webthings/chromium/BrowserMetrics/*
