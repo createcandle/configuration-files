@@ -56,7 +56,7 @@ hide_mouse_pointer.txt 		# Forces hiding the mouse pointer on the HDMI output.
 rotate180.txt 			# Rotates the display 180 degrees.
 exhibit_mode.txt		# Disables installing and uninstalling addons, as well as most mayor settings.
 do_not_use_repeaker_hat.txt 	# Will stop ReSpeaker hat drivers from being loaded at boot.
-candle_wifi_power_save 	  # If present, wifi power saving will be enabled. This may cause connection issues.
+candle_wifi_power_save 	    # If present, wifi power saving will be enabled. This may cause connection issues.
 candle_cutting_edge.txt 	# If present, any system update will attempt to get the very latest version of everything. Risky, For developers only.
 hostname.txt 			# The word inside this file will become the hostname. Must be one single word in lower case.
 candle_delete_these_addons.txt	# Will delete all addons listed in this file. These must be the names of the addon directories. E.g. Voco -> voco
