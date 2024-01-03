@@ -165,9 +165,9 @@ systemctl stop triggerhappy.service
 
 
 # Stop the serial console once the system is safely up and running
-if [ ! -f $BOOT_DIR/developer.txt ]; then
-    sleep 60
-    systemctl stop getty@tty3.service 
-fi
+#if [ ! -f $BOOT_DIR/developer.txt ]; then
+    #sleep 60
+    #systemctl stop getty@tty3.service 
+#fi
 
 echo "$(date) - end of late.sh" >> /dev/kmsg
