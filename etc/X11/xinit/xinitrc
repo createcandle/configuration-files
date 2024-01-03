@@ -164,5 +164,5 @@ exec chromium --kiosk $url --load-extension=/home/pi/candle/virtual_keyboard --d
  --disable-fullscreen-tab-detaching --disable-hang-monitor --disable-pinch --overscroll-history-navigation=0 --disk-cache-size=1 \
  --dns-prefetch-disable --enable-profiling=0 --user-data-dir=/home/pi/.webthings/chromium/ --disable-features=Translate,TranslateUI \
  --disable-translate-new-ux --disable-suggestions-ui --disable-sync --enable-features=WebUIDarkMode --force-dark-mode --homepage=http://localhost:8080 \
- --disable-session-crashed-bubble --disk-cache-dir=/dev/null --overscroll-history-navigation=disabled \
+ --disable-session-crashed-bubble --disk-cache-dir=/dev/null --overscroll-history-navigation=disabled --no-referrers \
  --disable-gpu-compositing --window-position=0,0 -window-size=$WIDTH,$HEIGHT --start-maximized --start-fullscreen
