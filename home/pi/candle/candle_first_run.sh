@@ -164,6 +164,7 @@ echo "$(date) - first run done" >> $BOOT_DIR/candle_log.txt
 # Mark first run as complete and reboot
 if [ ! -f $BOOT_DIR/candle_first_run_complete.txt ]; then
     touch $BOOT_DIR/candle_first_run_complete.txt
+    rm $BOOT_DIR/candle_first_run.sh
     reboot
 fi
 
