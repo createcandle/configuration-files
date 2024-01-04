@@ -205,12 +205,12 @@ fi
 #    echo "/home/pi/controller_backup.tar backup is missing"
 #  fi
 #fi
-if [ ! -f /home/pi/candle/early.sh.bak ]; then
-  echo "/home/pi/candle/early.sh.bak backup is missing"
-fi
-if [ ! -f /etc/rc.local.bak ]; then
-  echo "/etc/rc.local.bak backup is missing"
-fi
+#if [ ! -f /home/pi/candle/early.sh.bak ]; then
+#  echo "/home/pi/candle/early.sh.bak backup is missing"
+#fi
+#if [ ! -f /etc/rc.local.bak ]; then
+#  echo "/etc/rc.local.bak backup is missing"
+#fi
 
 
 # Files that should not exist
