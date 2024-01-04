@@ -6,8 +6,8 @@ if [ "$EUID" -ne 0 ]
 fi
 
 BOOT_DIR="/boot"
-if lsblk | grep $BOOT_DIR/firmware; then
-    echo "firmware partition is mounted at $BOOT_DIR/firmware"
+if lsblk | grep -q $BOOT_DIR/firmware; then
+    #echo "firmware partition is mounted at $BOOT_DIR/firmware"
     BOOT_DIR="$BOOT_DIR/firmware"
 fi
 
@@ -31,8 +31,12 @@ rm $BOOT_DIR/tunnel.txt
 rm /etc/asound.conf
 rm /var/log/*
 
-rm /etc/NetworkManager/system-connections/*
-rm /home/pi/etc/NetworkManager/system-connections/*
+if [ -d /etc/NetworkManager/system-connections ]; then
+  rm -rf /etc/NetworkManager/system-connections/*
+fi
+if [ -d /home/pi/etc/NetworkManager/system-connections ]; then
+  rm -rf /home/pi/etc/NetworkManager/system-connections/*
+fi
 
 # Clean NPM cache
 export NVM_DIR="/home/pi/.nvm"
@@ -48,6 +52,7 @@ else
   echo "ERROR, candle_first_run.sh is missing"
   exit 1
 fi
+
 rm /home/pi/.fehbg
 
 rm /home/pi/.wget-hsts
