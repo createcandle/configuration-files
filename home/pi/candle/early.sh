@@ -135,7 +135,7 @@ if [ -f $BOOT_DIR/candle_install_these_addons.txt ]; then
                     echo "candle: early: modified addon name into git url: $addon_git" >> /dev/kmsg
                 fi
                 
-                addon=${basename "$addon_git" .git) 
+                addon=$(basename "$addon_git" .git)
                 if [ -n "$addon" ]; then
                     if [ -d "/home/pi/.webthings/addons/$addon" ]; then
                         if ! [ -d "/home/pi/.webthings/addons/$addon/.git" ]; then
