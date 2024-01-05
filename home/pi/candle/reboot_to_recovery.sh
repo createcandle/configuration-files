@@ -1,8 +1,8 @@
 #!/bin/bash
 
 BOOT_DIR="/boot"
-if lsblk | grep $BOOT_DIR/firmware; then
-    echo "firmware partition is mounted at $BOOT_DIR/firmware"
+if lsblk | grep -q $BOOT_DIR/firmware; then
+    #echo "firmware partition is mounted at $BOOT_DIR/firmware"
     BOOT_DIR="$BOOT_DIR/firmware"
 fi
 
