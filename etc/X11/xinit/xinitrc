@@ -53,11 +53,12 @@ then
     echo "clearing old chromium session data"
     rm -rf /home/pi/.webthings/chromium/Default/Sessions/*
     #echo '{"AllowFileSelectionDialogs": false, "AudioCaptureAllowed": false, "AutoFillEnabled": false, "PasswordManagerEnabled": false}' > /etc/chromium/policies/managed/candle.json
+
+    rm -rf /home/pi/.config/chromium/*
+    rm -rf /home/pi/.webthings/chromium/Singleton*
+    rm -rf /home/pi/.webthings/chromium/BrowserMetrics/*
 fi
 
-rm -rf /home/pi/.config/chromium/*
-rm -rf /home/pi/.webthings/chromium/Singleton*
-rm -rf /home/pi/.webthings/chromium/BrowserMetrics/*
 
 sed -i 's/"exited_cleanly":false/"exited_cleanly":true/' /home/pi/.webthings/chromium/'Local State'
 sed -i 's/"exited_cleanly":false/"exited_cleanly":true/; s/"exit_type":"[^"]\+"/"exit_type":"Normal"/' /home/pi/.webthings/chromium/Default/Preferences
