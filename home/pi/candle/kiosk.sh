@@ -30,7 +30,7 @@ kiosk_txt_file="$BOOT_DIR/candle_kiosk.txt"
 CANDLE_URL=$(cat "$kiosk_txt_file")
 
 
-if [ ! -n "$CANDLE_URL" ]; then
+if [ -z "$CANDLE_URL" ]; then
     #echo "Candle: kiosk.sh: CANDLE_URL: $CANDLE_URL" >> /dev/kmsg
 
     echo "Candle: kiosk.sh: doing curl until server is up: $CANDLE_URL" >> /dev/kmsg
