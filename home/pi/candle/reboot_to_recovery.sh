@@ -7,8 +7,8 @@ if lsblk | grep -q $BOOT_DIR/firmware; then
 fi
 
 echo "in reboot to recovery"
-echo "reboot to recovery activated by holding ALT key" >> /dev/kmsg
-echo "reboot to recovery activated by holding ALT key" >> $BOOT_DIR/candle_log.txt
+echo "Candle: reboot to recovery activated by holding ALT key" >> /dev/kmsg
+echo "Candle: reboot to recovery activated by holding ALT key" >> $BOOT_DIR/candle_log.txt
 
 # Make sure both command line files exist so we can also switch back once in recovery
 if [ -f $BOOT_DIR/cmdline-update.txt ] && [ -f $BOOT_DIR/cmdline-candle.txt ]; then
@@ -19,6 +19,6 @@ if [ -f $BOOT_DIR/cmdline-update.txt ] && [ -f $BOOT_DIR/cmdline-candle.txt ]; t
   fi
   reboot -f
 else
-  echo "Could not reboot to recovery because cmdline-update.txt or cmdline-candle.txt was missing" >> /dev/kmsg
+  echo "Candle: reboot_to_recovery.sh: Could not reboot to recovery because cmdline-update.txt or cmdline-candle.txt was missing" >> /dev/kmsg
 fi
 
