@@ -21,7 +21,7 @@ then
     OLD_HOSTNAME=$(head -1 /home/pi/.webthings/etc/hosts)
     NEW_HOSTNAME=$(head -1 $BOOT_DIR/hostname.txt)
     
-    if "$OLD_HOSTNAME" == "$NEW_HOSTNAME"; then
+    if [ "$OLD_HOSTNAME" == "$NEW_HOSTNAME" ]; then
         echo "hostname.txt is the same as the current hostname file" >> /dev/kmsg
     else
         echo "new hostname from hostname.txt: $OLD_HOSTNAME to $NEW_HOSTNAME" >> /dev/kmsg
@@ -129,7 +129,7 @@ if [ -f $BOOT_DIR/candle_install_these_addons.txt ]; then
         while read addon_git; do
             cd /home/pi/.webthings/addons
             if [ -n "$addon_git" ]; then
-                if ! [[ ${addon_git} = ${http}* ]]; then
+                if ! [[ ${addon_git} = http* ]]; then
                     addon_git="https://github.com/createcandle/$addon_git.git"
                     # This only works with Candle addons
                     echo "candle: early: modified addon name into git url: $addon_git" >> /dev/kmsg
