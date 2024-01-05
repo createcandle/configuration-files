@@ -129,6 +129,12 @@ if [ -f $BOOT_DIR/candle_install_these_addons.txt ]; then
         while read addon_git; do
             cd /home/pi/.webthings/addons
             if [ -n "$addon_git" ]; then
+                if ! [[ ${addon_git} = ${http}* ]]; then
+                    addon_git="https://github.com/createcandle/$addon_git.git"
+                    # This only works with Candle addons
+                    echo "candle: early: modified addon name into git url: $addon_git" >> /dev/kmsg
+                fi
+                
                 addon=${basename "$addon_git" .git) 
                 if [ -n "$addon" ]; then
                     if [ -d "/home/pi/.webthings/addons/$addon" ]; then
