@@ -119,7 +119,7 @@ wrapper=/home/pi/candle/start.html
 echo "kiosk URL: $url"
 
 
-if [ ! -n "$url" ]
+if [ -z "$url" ]
 then
 #    echo "The candle_kiosk.txt file was empty, so not loading the browser" >> $BOOT_DIR/candle_log.txt
     exit 0
