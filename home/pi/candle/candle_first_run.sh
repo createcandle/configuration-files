@@ -8,21 +8,29 @@ set +e
 
 # Check if script is being run as root
 if [ "$EUID" -ne 0 ]
-  then echo "Please run as root (use sudo)"
+then 
+  echo "Please run as root (use sudo)"
   exit
 fi
 
-
 BOOT_DIR="/boot"
-if lsblk | grep /boot/firmware; then
-    echo "firmware partition is mounted at /boot/firmware"
+if lsblk | grep -q /boot/firmware; then
+    #echo "firmware partition is mounted at /boot/firmware"
     BOOT_DIR="/boot/firmware"
 fi
+
+if [ -d /ro ]
+then 
+  echo "FIRST_RUN: Error, read only mode seems to be active" >> $BOOT_DIR/candle_log.txt
+  exit 1
+fi
+
+
 
 
 echo "in candle_first_run.sh"
 echo "$(date) - Candle: in candle_first_run.sh" >> /dev/kmsg
-echo "$(date) - FIRST_RUN: doing first run" >> boot/candle_log.txt
+echo "$(date) - FIRST_RUN: doing first run" >> $BOOT_DIR/candle_log.txt
 
 if [ -e "/bin/ply-image" ] && [ -e /dev/fb0 ] && [ -f "$BOOT_DIR/splash_preparing.png" ] && [ -f "$BOOT_DIR/splash_preparing180.png" ]; then
   if [ -e "$BOOT_DIR/rotate180.txt" ]; then
@@ -34,7 +42,7 @@ if [ -e "/bin/ply-image" ] && [ -e /dev/fb0 ] && [ -f "$BOOT_DIR/splash_preparin
 fi
 
 if [ -f $BOOT_DIR/candle_first_run_complete.txt ]; then
-    echo "FIRST_RUN: warning, candle_first_run_complete.txt already exists! Will not automatically reboot once complete." >> boot/candle_log.txt
+    echo "FIRST_RUN: warning, candle_first_run_complete.txt already exists! Will not automatically reboot once complete." >> $BOOT_DIR/candle_log.txt
 fi
 
 
@@ -63,7 +71,7 @@ then
       sqlite3 /home/pi/.webthings/config/db.sqlite3 "DELETE FROM settings WHERE key='notunnel'"
       rm -rf /home/pi/.webthings/ssl/
       echo "FIRST_RUN: - You have enabled the secret tunnel option. Please use this only for development reasons." >> $BOOT_DIR/candle_log.txt
-    else
+    elif [ -f /home/pi/.webthings/etc/webthings_settings.js ]; then
       cp /home/pi/.webthings/etc/webthings_settings_backup.js /home/pi/.webthings/etc/webthings_settings.js
     fi
     
@@ -88,7 +96,7 @@ openssl req -new -sha256 -key "${SSL_DIR}/privatekey.pem" -out "${SSL_DIR}/csr.p
 openssl x509 -req -in "${SSL_DIR}/csr.pem" -signkey "${SSL_DIR}/privatekey.pem" -out "${SSL_DIR}/certificate.pem"
 chown -R pi:pi "${SSL_DIR}"
 
-# If the disk image was created on Windows or Mac, it may leaves behind cruft
+# If the disk image was created on Windows or Mac, it may leave behind cruft
 rm -rf $BOOT_DIR/'System Volume Information'
 rm -rf $BOOT_DIR/.Spotlight*
 rm -rf $BOOT_DIR/.Trashes
