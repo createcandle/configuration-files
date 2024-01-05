@@ -99,14 +99,15 @@ fi
 
 # For bluetooth keyboard
 if lsmod | grep hidp &> /dev/null ; then
-  echo "hidp already loaded" >> /dev/kmsg
+  echo "candle early: hidp already loaded" >> /dev/kmsg
 else
-  echo "manually loading modprobe hidp" >> /dev/kmsg
+  echo "candle early: manually loading modprobe hidp" >> /dev/kmsg
   modprobe hidp
 fi
 
+# Delete addons
 if [ -f $BOOT_DIR/candle_delete_these_addons.txt ]; then
-    echo "early: spotted candle_delete_these_addons.txt" >> /dev/kmsg
+    echo "candle early: spotted candle_delete_these_addons.txt" >> /dev/kmsg
     while read addon; do
       if [ -d "/home/pi/.webthings/addons/$addon" ]; then
           rm -rf "/home/pi/.webthings/addons/$addon"
@@ -119,6 +120,39 @@ if [ -f $BOOT_DIR/candle_delete_these_addons.txt ]; then
     done <$BOOT_DIR/candle_delete_these_addons.txt
     rm $BOOT_DIR/candle_delete_these_addons.txt
 fi
+
+# Install and manage Github addons
+if [ -f $BOOT_DIR/candle_install_these_addons.txt ]; then
+    echo "candle early: spotted candle_install_these_addons.txt" >> /dev/kmsg
+    if [ -d /home/pi/.webthings/addons ]; then
+        
+        while read addon_git; do
+            cd /home/pi/.webthings/addons
+            if [ -n "$addon_git" ]; then
+                addon=${basename "$addon_git" .git) 
+                if [ -n "$addon" ]; then
+                    if [ -d "/home/pi/.webthings/addons/$addon" ]; then
+                        if ! [ -d "/home/pi/.webthings/addons/$addon/.git" ]; then
+                            echo "deleting old non-git addon folder first: $addon" >> /dev/kmsg
+                            rm -rf "/home/pi/.webthings/addons/$addon"
+                            git clone "$addon_git"
+                        else
+                            cd "/home/pi/.webthings/addons/$addon"
+                            git pull
+                        fi
+                    else
+                        echo "candle: early: addon not found, installing via git clone: $addon_git" >> /dev/kmsg
+                        echo "candle: early: addon not found, installing via git clone: $addon_git" >> $BOOT_DIR/candle_log.txt
+                        git clone "$addon_git"
+                    fi
+                fi
+            fi
+        done <$BOOT_DIR/candle_install_these_addons.txt
+    else
+        echo "Error, the entire addons folder could not be found" >> $BOOT_DIR/candle_log.txt
+    fi
+fi
+
 
 
 # Enable WiFi power save
@@ -187,10 +221,10 @@ then
 fi
 
 
-
-if [ -d /home/pi/.webthings/chromium/BrowserMetrics ]; then
-    rm -rf /home/pi/.webthings/chromium/BrowserMetrics/*
-fi
+# TODO: temporarily disabled to test if cookies can remain for login
+#if [ -d /home/pi/.webthings/chromium/BrowserMetrics ]; then
+#    rm -rf /home/pi/.webthings/chromium/BrowserMetrics/*
+#fi
 
 # Handle forced restore of Candle Controller backup
 if [ -f $BOOT_DIR/restore_controller_backup.txt ];
@@ -399,7 +433,7 @@ fi
 # Automatically generates a file that lists which files on the controller are missing.
 if [ -f /home/pi/candle/files_check.sh ]; then
   if [ -n "$(/home/pi/candle/files_check.sh)" ]; then
-    /home/pi/candle/files_check.sh > $BOOT_DIR/candle_issues.txt
+    /home/pi/candle/files_check.sh > $BOOT_DIR/candle_missing_files.txt
   elif [ -f $BOOT_DIR/candle_issues.txt ]; then
     rm $BOOT_DIR/candle_issues.txt
   fi
