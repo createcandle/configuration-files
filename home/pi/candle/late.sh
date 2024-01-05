@@ -147,7 +147,7 @@ fi
 if cat /home/pi/.webthings/etc/wpa_supplicant/wpa_supplicant.conf | grep -q psk=; then
     current_ssid="$(cat /home/pi/.webthings/etc/wpa_supplicant/wpa_supplicant.conf | grep 'ssid=' | cut -d'"' -f 2 )"
     current_pass="$(cat /home/pi/.webthings/etc/wpa_supplicant/wpa_supplicant.conf | grep 'psk=' | cut -d'"' -f 2 )"
-    if [ "$(echo -n $current_pass | wc -c)" -lt 64 ]; then
+    if [ $(echo -n "$current_pass" | wc -c) -lt 64 ]; then
         echo "Candle: late.sh: upgrading wifi password security" >> /dev/kmsg
         echo "$current_pass" | wpa_passphrase "$current_ssid" > ./temporary
         phrase=$(cat ./temporary | grep -v '#psk=' | grep 'psk=' | cut -d'=' -f 2)
