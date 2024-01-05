@@ -25,11 +25,15 @@ fi
 #  fi
 #fi
 
+echo "candle: kiosk.sh: doing curl until candle server is up" >> /dev/kmsg
+CURL_TEST="$(curl -s -o /dev/null -m 3 -L -w ''%{http_code}'' $CANDLE_URL)"
+echo "CURL_TEST: 200?: $CURL_TEST"
+
 timeout --foreground -s TERM 30s bash -c \
    'while [[ "$(curl -s -o /dev/null -m 3 -L -w ''%{http_code}'' $CANDLE_URL)" != "200" ]];\
-   do echo "Waiting for url" && sleep 2;\
+   do echo "Candle: kiosk: waiting for url" >> /dev/kmsg && sleep 2;\
    done;\
-   echo "Server seems to be up: $CANDLE_URL"'
+   echo "Candle: kiosk: server seems to be up: $CANDLE_URL"'
 
 
 # candle_kiosk_forced.txt
