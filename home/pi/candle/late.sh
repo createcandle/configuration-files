@@ -174,11 +174,11 @@ if cat /home/pi/.webthings/etc/wpa_supplicant/wpa_supplicant.conf | grep -q psk=
     fi
 fi
 
-# Forget the wifi password
-if [ -f $BOOT_DIR/candle_forget_wifi.txt ]; then
-    rm $BOOT_DIR/candle_forget_wifi.txt
-    echo -e 'ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev\nupdate_config=1\ncountry=NL\n' > /home/pi/.webthings/etc/wpa_supplicant/wpa_supplicant.conf
-fi
+# Forget the wifi password. Already handled in early.sh
+#if [ -f $BOOT_DIR/candle_forget_wifi.txt ]; then
+#    rm $BOOT_DIR/candle_forget_wifi.txt
+#    echo -e 'ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev\nupdate_config=1\ncountry=NL\n' > /home/pi/.webthings/etc/wpa_supplicant/wpa_supplicant.conf
+#fi
 
 # After booting it's not longer necessary to keep triggerhappy running
 systemctl stop triggerhappy.socket
