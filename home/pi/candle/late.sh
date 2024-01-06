@@ -10,15 +10,6 @@ if lsblk | grep -q $BOOT_DIR/firmware; then
     BOOT_DIR="$BOOT_DIR/firmware"
 fi
 
-if [ -f $BOOT_DIR/candle_island.txt ] && [ -f /home/pi.webthings/addons/hotspot/island.sh ]
-then
-    chmod +x /home/pi.webthings/addons/hotspot/island.sh
-    /home/pi.webthings/addons/hotspot/island.sh &
-    #sleep 60
-    #systemctl stop getty@tty3.service 
-fi
-
-
 # Wait for IP address for at most 30 seconds
 echo "Candle: late: waiting for IP address"
 for i in {1..30}
