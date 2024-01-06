@@ -14,6 +14,16 @@ echo "$(date) - in Candle early. Fixing hostname." >> /dev/kmsg
 # Set DHCPCD value
 #sysctl -w net.ipv6.neigh.wlan0.retrans_time_ms=1000
 
+if [ -f $BOOT_DIR/candle_island.txt ] && [ -f /home/pi.webthings/addons/hotspot/island.sh ]
+then
+    echo "Candle: early: starting Island mode" >> /dev/kmsg
+	chmod +x /home/pi.webthings/addons/hotspot/island.sh
+    /home/pi.webthings/addons/hotspot/island.sh &
+    #sleep 60
+    #systemctl stop getty@tty3.service 
+fi
+
+
 
 # If a hostname.txt file exists, use its contents to set the hostname, then remove the file
 if [ -s $BOOT_DIR/hostname.txt ] && [ -s /home/pi/.webthings/etc/hostname ] && [ -s /home/pi/.webthings/etc/hosts ]; 
