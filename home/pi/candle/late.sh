@@ -2,13 +2,48 @@
 set +e
 
 #/bin/echo "in late" | sudo tee -a /dev/kmsg
-echo "$(date) - In late" >> /dev/kmsg
+echo "$(date) - Candle: in late" >> /dev/kmsg
 
 BOOT_DIR="/boot"
 if lsblk | grep -q $BOOT_DIR/firmware; then
     #echo "firmware partition is mounted at $BOOT_DIR/firmware"
     BOOT_DIR="$BOOT_DIR/firmware"
 fi
+
+if [ -f $BOOT_DIR/candle_island.txt ] && [ -f /home/pi.webthings/addons/hotspot/island.sh ]
+then
+    chmod +x /home/pi.webthings/addons/hotspot/island.sh
+    /home/pi.webthings/addons/hotspot/island.sh &
+    #sleep 60
+    #systemctl stop getty@tty3.service 
+fi
+
+
+# Wait for IP address for at most 30 seconds
+echo "Candle: late: waiting for IP address"
+for i in {1..30}
+do
+    #echo "current hostname: $(hostname -I)"
+    if [ "$(hostname -I)" = "" ]
+    then
+		echo "Candle: late.sh: no network yet $i" >> /dev/kmsg
+	    echo "no network yet $i"
+		sleep 1    
+    else
+		echo "Candle: late.sh: IP address detected: $(hostname -I)" >> /dev/kmsg
+		break
+    fi
+done
+
+if [ -f $BOOT_DIR/candle_island.txt ] && [ -f /home/pi.webthings/addons/hotspot/island.sh ]
+then
+    echo "Candle: late.sh: not doing backup resolvconf -u because island mode is enabled" >> /dev/kmsg
+else:
+	echo "Candle: late.sh: doing backup resolvconf -u" >> /dev/kmsg
+	resolvconf -u
+fi
+
+
 
 # RUN POST BOOTUP SCRIPT IF IT EXISTS
 # These scripts are allowed to run in paralel with the controller, for example so that their output can be shown in the UI
@@ -33,22 +68,6 @@ then
     /bin/ply-image $BOOT_DIR/splash_updating.png
   fi
 
-  # Wait for IP address for at most 30 seconds
-  echo "waiting for IP address"
-  for i in {1..30}
-  do
-    #echo "current hostname: $(hostname -I)"
-    if [ "$(hostname -I)" = "" ]
-    then
-      echo "Candle: late.sh doing post_bootup_actions: no network yet $i" >> /dev/kmsg
-      echo "no network yet $i"
-      sleep 1    
-    else
-      echo "Candle: late.sh doing post_bootup_actions: IP address detected: $(hostname -I)" >> /dev/kmsg
-      break
-    fi
-  done
-
   # Start SSH if developer mode is active, or if we're handling a cutting edge post_bootup_action, which is more likely to fail
   if [ -f $BOOT_DIR/developer.txt ] || [ -f $BOOT_DIR/candle_cutting_edge.txt ];
   then
@@ -67,8 +86,8 @@ then
   chmod +x $BOOT_DIR/post_bootup_actions_failed.sh
   /bin/bash $BOOT_DIR/post_bootup_actions_failed.sh
   
-  echo "Candle: post_bootup_actions.sh file complete" >> /dev/kmsg
-  echo "Candle: post_bootup_actions.sh file complete" >> $BOOT_DIR/candle_log.txt
+  echo "Candle: late: post_bootup_actions.sh file complete" >> /dev/kmsg
+  echo "Candle: late: post_bootup_actions.sh file complete" >> $BOOT_DIR/candle_log.txt
   echo " " >> /dev/kmsg
   # rm $BOOT_DIR/post_bootup_actions_failed.sh # Scripts should clean themselves up. If the self-cleanup failed, power-settings addon uses that as an indicator the script failed.
  
@@ -132,15 +151,11 @@ fi
 
 # Clean up the journal
 if [ ! -f $BOOT_DIR/developer.txt ]; then
-  journalctl --vacuum-size=10K
+  journalctl --vacuum-size=20K
 fi
 
 
-# Forget the wifi password
-if [ -f $BOOT_DIR/candle_forget_wifi.txt ]; then
-    rm $BOOT_DIR/candle_forget_wifi.txt
-    echo -e 'ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev\nupdate_config=1\ncountry=NL\n' > /home/pi/.webthings/etc/wpa_supplicant/wpa_supplicant.conf
-fi
+
 
 
 # Try to upgrade security of the wifi password
@@ -159,6 +174,12 @@ if cat /home/pi/.webthings/etc/wpa_supplicant/wpa_supplicant.conf | grep -q psk=
     fi
 fi
 
+# Forget the wifi password
+if [ -f $BOOT_DIR/candle_forget_wifi.txt ]; then
+    rm $BOOT_DIR/candle_forget_wifi.txt
+    echo -e 'ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev\nupdate_config=1\ncountry=NL\n' > /home/pi/.webthings/etc/wpa_supplicant/wpa_supplicant.conf
+fi
+
 # After booting it's not longer necessary to keep triggerhappy running
 systemctl stop triggerhappy.socket
 systemctl stop triggerhappy.service
@@ -170,12 +191,5 @@ systemctl stop triggerhappy.service
     #systemctl stop getty@tty3.service 
 #fi
 
-if [ -f $BOOT_DIR/candle_island.txt ] && [ -f /home/pi.webthings/addons/hotspot/island.sh ]
-then
-    chmod +x /home/pi.webthings/addons/hotspot/island.sh
-    /home/pi.webthings/addons/hotspot/island.sh &
-    #sleep 60
-    #systemctl stop getty@tty3.service 
-fi
 
 echo "$(date) - end of late.sh" >> /dev/kmsg
