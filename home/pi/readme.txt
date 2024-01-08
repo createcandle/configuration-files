@@ -30,7 +30,8 @@ curl -sSL www.candlesmarthome.com/tools/samba.txt | sudo bash
 Lots and lots of details about the system can be found through:
 ~/candle/debug.sh
 
-If you want to modify an addon, make sure to add a .git directory to its base folder. Then the integrity security checks will be disabled.
+If you want to modify an addon, make sure to add a .git directory to its base folder. Then the integrity security checks will be disabled for that addon. E.g.
+mkdir -p ~/.webthings/addons/candleappstore/.git
 
 Learn more at:
 
