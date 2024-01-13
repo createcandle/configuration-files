@@ -23,7 +23,7 @@ if [ -f $BOOT_DIR/bootup_actions.sh ] || [ -f $BOOT_DIR/post_bootup_actions.sh ]
 else
 
   # show logo video
-  if ls -l /dev/fb* && [ -f $BOOT_DIR/splash.mp4 ] && [ -f /usr/bin/vlc ] && [ ! -f $BOOT_DIR/post_bootup_actions.sh ]; then
+  if ls -l /dev/fb* && [ -f $BOOT_DIR/splash.mp4 ] && [ -f /usr/bin/cvlc ] && [ ! -f $BOOT_DIR/post_bootup_actions.sh ]; then
     if [ -f $BOOT_DIR/candle_kiosk.txt ] && [ -f $BOOT_DIR/candle_first_run_complete.txt ]; then
       if [ "$totalk" -gt 800000 ] || [ -f $BOOT_DIR/candle_kiosk_forced.txt ]; then
 
