@@ -28,7 +28,7 @@ fi
 # If a hostname.txt file exists, use its contents to set the hostname, then remove the file
 if [ -s $BOOT_DIR/hostname.txt ] && [ -s /home/pi/.webthings/etc/hostname ] && [ -s /home/pi/.webthings/etc/hosts ]; 
 then
-    OLD_HOSTNAME=$(head -1 /home/pi/.webthings/etc/hosts)
+    OLD_HOSTNAME=$(head -1 /home/pi/.webthings/etc/hostname)
     NEW_HOSTNAME=$(head -1 $BOOT_DIR/hostname.txt)
     
     if [ "$OLD_HOSTNAME" == "$NEW_HOSTNAME" ]; then
