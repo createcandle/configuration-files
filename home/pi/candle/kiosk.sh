@@ -55,7 +55,7 @@ if ls -l /dev/fb*; then
     if [ -f $BOOT_DIR/candle_kiosk.txt ] && [ -f $BOOT_DIR/candle_first_run_complete.txt ]
     then
 
-        echo "Candle: detected a display, will start Xorg kiosk" >> /dev/kmsg
+        echo "Candle: kiosk.sh: detected a display, will start Xorg" >> /dev/kmsg
         #logger Starting X
 
         pkill vlc
