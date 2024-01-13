@@ -30,10 +30,10 @@ else
 		echo "Candle: splash_video.sh: starting video" >> /dev/kmsg
   
         if [ -f $BOOT_DIR/rotate180.txt ]; then
-          /usr/bin/vlc -L -f --no-osd --no-audio --fullscreen --no-audio --video-filter='transform{type="180"}' --crop=4:3  $BOOT_DIR/splash.mp4
+          /usr/bin/cvlc -L -f --no-osd --no-audio --fullscreen --no-audio --video-filter='transform{type="180"}' --crop=4:3  $BOOT_DIR/splash.mp4
           #startx /usr/bin/vlc -I dummy -L -f --no-osd --no-audio --fullscreen --video-on-top --no-audio --video-filter='transform{type="180"}' $BOOT_DIR/splash.mp4 -- &
       	else
-          /usr/bin/vlc -L -f --no-osd --no-audio --fullscreen --no-audio --crop=4:3  $BOOT_DIR/splash.mp4
+          /usr/bin/cvlc -L -f --no-osd --no-audio --fullscreen --no-audio --crop=4:3  $BOOT_DIR/splash.mp4
       	fi
 
 	  else
