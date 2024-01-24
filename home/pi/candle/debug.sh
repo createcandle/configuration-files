@@ -427,6 +427,9 @@ if [ -f /home/pi/.webthings/swap ]; then
   echo "/home/pi/.webthings/swap detected"
   ls -l /home/pi/.webthings/swap
 fi
+echo
+echo "ulimit -a pi"
+ulimit -a pi
 
 echo
 echo "NOTE:"
