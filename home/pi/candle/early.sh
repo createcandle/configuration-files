@@ -49,7 +49,10 @@ fi
 /usr/bin/hostname -F /home/pi/.webthings/etc/hostname
 systemctl restart avahi-daemon.service
 
-
+if [ -e /usr/sbin/resolvconf ]; then
+    echo "Candle: early: manually calling resolvconf -u" >> /dev/kmsg
+	/usr/sbin/resolvconf -u
+fi
 
 # Do not show blinking cursor
 echo 0 > /sys/class/graphics/fbcon/cursor_blink
