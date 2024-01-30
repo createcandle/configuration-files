@@ -1,7 +1,7 @@
-defaults.bluealsa.interface "hci0"
-defaults.bluealsa.device "00:00:00:00:00:00"
-defaults.bluealsa.profile "a2dp"
+#defaults.bluealsa.interface "hci0"
+#defaults.bluealsa.device "00:00:00:00:00:00"
+#defaults.bluealsa.profile "a2dp"
 
-defaults.pcm.card 1
-defaults.ctl.card 1
-defaults.pcm.rate_converter "samplerate"
+#defaults.pcm.card 1
+#defaults.ctl.card 1
+#defaults.pcm.rate_converter "samplerate"
