@@ -27,22 +27,22 @@ else
     if [ -f $BOOT_DIR/candle_kiosk.txt ] && [ -f $BOOT_DIR/candle_first_run_complete.txt ]; then
       if [ "$totalk" -gt 800000 ] || [ -f $BOOT_DIR/candle_kiosk_forced.txt ]; then
 
-		echo "Candle: splash_video.sh: starting video" >> /dev/kmsg
+		echo "Candle: splash_video.sh: starting video"
   
         if [ -f $BOOT_DIR/rotate180.txt ]; then
-          /usr/bin/cvlc -L -f --no-osd --no-audio --fullscreen --no-audio --video-filter='transform{type="180"}' --crop=4:3  $BOOT_DIR/splash.mp4
+          /usr/bin/cvlc --loop -f --no-osd --no-audio --fullscreen --no-audio --video-filter='transform{type="180"}' --crop=4:3  $BOOT_DIR/splash.mp4
           #startx /usr/bin/vlc -I dummy -L -f --no-osd --no-audio --fullscreen --video-on-top --no-audio --video-filter='transform{type="180"}' $BOOT_DIR/splash.mp4 -- &
       	else
-          /usr/bin/cvlc -L -f --no-osd --no-audio --fullscreen --no-audio --crop=4:3  $BOOT_DIR/splash.mp4
+          /usr/bin/cvlc --loop -f --no-osd --no-audio --fullscreen --no-audio --crop=4:3  $BOOT_DIR/splash.mp4
       	fi
 
 	  else
-   		echo "Candle: splash_video.sh: not starting video (low memory)" >> /dev/kmsg
+   		echo "Candle: splash_video.sh: not starting video (low memory)"
       fi
 	  
     fi
   else
-  	echo "Candle: splash_video.sh: not starting video (likely no /dev/fb*)" >> /dev/kmsg
+  	echo "Candle: splash_video.sh: not starting video (likely no /dev/fb*)"
   fi
   
 fi
