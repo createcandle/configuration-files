@@ -162,6 +162,7 @@ exec chromium --kiosk $url --load-extension=/home/pi/candle/virtual_keyboard --d
  --block-new-web-contents --disable-remote-fonts --disable-speech-api --no-crash-upload --force-tablet-mode --enable-touchview \
  --disable-translate --enable-top-drag-gesture --pull-to-refresh=2 --progress-bar-animation --no-first-run --deny-permission-prompts \
  --disable-breakpad --enable-auto-reload --unsafely-treat-insecure-origin-as-secure=http://localhost:8080 --disable-seccomp-filter-sandbox \
+ --policy {"AllowFileSelectionDialogs": false, "AudioCaptureAllowed": false, "AutoFillEnabled": false, "PasswordManagerEnabled": false, "deleteDataPostSession":false} \
  --disable-fullscreen-tab-detaching --disable-hang-monitor --disable-pinch --overscroll-history-navigation=0 --disk-cache-size=1 \
  --dns-prefetch-disable --enable-profiling=0 --user-data-dir=/home/pi/.webthings/chromium/ --disable-features=Translate,TranslateUI \
  --disable-translate-new-ux --disable-suggestions-ui --disable-sync --enable-features=WebUIDarkMode --force-dark-mode --homepage=http://localhost:8080 \
