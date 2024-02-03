@@ -299,7 +299,7 @@ cat /var/log/Xorg.0.log
 
 echo
 echo "Touch screen input:"
-udevadm info -q all -n /dev/input/event4
+udevadm info -q all -n /dev/input/event4 | grep ''
 
 
 
