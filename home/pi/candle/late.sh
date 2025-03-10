@@ -29,7 +29,7 @@ done
 if [ -f $BOOT_DIR/candle_island.txt ] && [ -f /home/pi.webthings/addons/hotspot/island.sh ]
 then
     echo "Candle: late.sh: not doing backup resolvconf -u because island mode is enabled" >> /dev/kmsg
-else:
+else
 	echo "Candle: late.sh: doing backup resolvconf -u" >> /dev/kmsg
 	resolvconf -u
 fi
