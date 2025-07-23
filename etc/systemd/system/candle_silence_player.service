@@ -1,0 +1,19 @@
+[Unit]
+Description=Play silence on a loop if on a Raspberry Pi 5 with pipewire to fix HDMI audio lag
+After=network.target sound.target webthings-gateway.service
+Wants=sound.target
+ConditionPathExists=/home/pi/candle/silence.mp3
+ConditionPathExists=/usr/bin/pipewire
+
+[Service]
+Type=simple
+User=pi    
+Group=admin
+ExecStart=cvlc --loop /home/pi/candle/silence.mp3
+TimeoutStartSec=0
+RemainAfterExit=yes
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=default.target
