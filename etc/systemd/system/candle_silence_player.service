@@ -11,7 +11,6 @@ User=pi
 Environment="XDG_RUNTIME_DIR=/run/user/1000"
 ExecStart=/usr/bin/pw-play --volume=0.1 /home/pi/candle/silence.mp3
 TimeoutStartSec=5
-#RemainAfterExit=yes
 Restart=always
 RestartSec=5
 
