@@ -7,8 +7,7 @@ ConditionPathExists=/usr/bin/pipewire
 
 [Service]
 Type=simple
-User=pi    
-Group=admin
+User=pi
 ExecStart=cvlc --loop /home/pi/candle/silence.mp3
 TimeoutStartSec=0
 RemainAfterExit=yes
