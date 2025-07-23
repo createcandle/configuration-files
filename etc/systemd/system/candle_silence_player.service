@@ -6,12 +6,13 @@ ConditionPathExists=/home/pi/candle/silence.mp3
 ConditionPathExists=/usr/bin/pipewire
 
 [Service]
-Type=simple
+Type=idle
 User=pi
-ExecStart=cvlc --loop /home/pi/candle/silence.mp3
-TimeoutStartSec=0
-RemainAfterExit=yes
-Restart=on-failure
+Environment="XDG_RUNTIME_DIR=/run/user/1000"
+ExecStart=/usr/bin/pw-play --volume=0.1 /home/pi/candle/silence.mp3
+TimeoutStartSec=5
+#RemainAfterExit=yes
+Restart=always
 RestartSec=5
 
 [Install]
