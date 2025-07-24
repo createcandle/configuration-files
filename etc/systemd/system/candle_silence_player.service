@@ -10,9 +10,9 @@ Type=idle
 User=pi
 Environment="XDG_RUNTIME_DIR=/run/user/1000"
 ExecStart=/usr/bin/pw-play --volume=0.1 /home/pi/candle/silence.mp3
-TimeoutStartSec=5
+TimeoutStartSec=2
 Restart=always
-RestartSec=5
+RestartSec=0
 
 [Install]
 WantedBy=default.target
