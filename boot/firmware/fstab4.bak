@@ -1,5 +1,5 @@
 proc                  /proc           proc    defaults          0       0
-LABEL=candle_boot     /boot/firmware  vfat    defaults          0       2
+LABEL=bootfs     /boot/firmware  vfat    defaults          0       2
 LABEL=candle_system   /               ext4    defaults,noatime  0       1
 LABEL=candle_user     /home/pi/.webthings  ext4    defaults,rw  1       2
 
