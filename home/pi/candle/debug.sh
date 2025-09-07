@@ -395,6 +395,11 @@ iwconfig
 echo "wifi power save?"
 iw wlan0 get power_save
 echo
+echo "WiFi regulatory country settings:"
+iw reg get
+echo
+
+echo
 echo
 echo "--------------------------------------------- iptables (firewall)"
 echo
