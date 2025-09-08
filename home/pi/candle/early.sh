@@ -54,6 +54,11 @@ if [ -e /usr/sbin/resolvconf ]; then
 	/usr/sbin/resolvconf -u
 fi
 
+# remove Chromium singleton lock if it exists
+if [ -e /home/pi/.webthings/chromium/SingletonLock ]; then
+	rm /home/pi/.webthings/chromium/SingletonLock
+fi
+
 # Do not show blinking cursor
 echo 0 > /sys/class/graphics/fbcon/cursor_blink
 
