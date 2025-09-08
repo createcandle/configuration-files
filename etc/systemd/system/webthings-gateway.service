@@ -1,6 +1,6 @@
 [Unit]
 Description=Candle Controller Client
-After=network.target candle_early.service 
+After=network.target candle_early.service dbus.service
 Requires=dbus-setenv.service
 #OnFailure=webthings-gateway.update-rollback.service
 #ConditionPathExists=!/boot/bootup_actions.sh
