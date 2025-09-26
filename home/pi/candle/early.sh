@@ -503,6 +503,15 @@ else
   fi
 fi
 
+if ip link show | grep -q "mlan0:" ; then
+	if ! ip link show | grep -q "wlan0:" ; then
+		echo "Candle: adding wifi wlan0 alias for mlan0" >> /dev/kmsg
+		ip link property add dev mlan0 altname wlan0
+	fi
+fi
+
+
+
 # RUN BOOTUP SCRIPT IF IT EXISTS
 if [ -f $BOOT_DIR/bootup_actions.sh ]
 then
