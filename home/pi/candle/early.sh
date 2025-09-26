@@ -11,6 +11,17 @@ fi
 echo "in Candle early"
 echo "$(date) - in Candle early. Fixing hostname." >> /dev/kmsg
 
+# Create an alias for 'mlan0' wifi to 'wlan0' if needed
+if ip link show | grep -q "mlan0:" ; then
+	if ! ip link show | grep -q "wlan0:" ; then
+		echo "Candle: adding wifi wlan0 alias for mlan0" >> /dev/kmsg
+		ip link property add dev mlan0 altname wlan0
+	fi
+fi
+
+
+
+
 # Set DHCPCD value
 #sysctl -w net.ipv6.neigh.wlan0.retrans_time_ms=1000
 
@@ -503,12 +514,7 @@ else
   fi
 fi
 
-if ip link show | grep -q "mlan0:" ; then
-	if ! ip link show | grep -q "wlan0:" ; then
-		echo "Candle: adding wifi wlan0 alias for mlan0" >> /dev/kmsg
-		ip link property add dev mlan0 altname wlan0
-	fi
-fi
+
 
 
 
