@@ -495,7 +495,7 @@ echo
 echo
 echo "--------------------------------------------- startup"
 echo
-systemd-analyze critical-chain
+systemd-analyze --no-pager critical-chain
 
 echo
 echo "NOTE:"
