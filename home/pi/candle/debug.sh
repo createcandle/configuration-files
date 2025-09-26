@@ -259,6 +259,9 @@ echo
 echo "--------------------------------------------- audio"
 echo
 
+echo
+lsof /dev/snd/*
+echo
 aplay -l
 echo
 arecord -l
