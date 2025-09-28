@@ -1,2 +1,0 @@
-[service]
-ExecStartPre=/usr/bin/chvt 7
