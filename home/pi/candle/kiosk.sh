@@ -52,7 +52,7 @@ fi
 if ls -l /dev/fb*; then
 
 	# if DMlight exists, then this is probably a Raspberry Pi disk image with a desktop environment. So no need to start Openbox first.
-    if [ -f /usr/sbin/dmlight ]; then
+    if [ -f /usr/sbin/lightdm ]; then
         echo "Candle: kiosk.sh: detected dmlight, so no need to start own window manager" >> /dev/kmsg
         pkill vlc
         pkill cvlc
