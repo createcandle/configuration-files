@@ -53,11 +53,11 @@ if ls -l /dev/fb*; then
 
 	# if DMlight exists, then this is probably a Raspberry Pi disk image with a desktop environment. So no need to start Openbox first.
     if [ -f /usr/sbin/dmlight ]; then
-	echo "Candle: kiosk.sh: detected dmlight, so no need to start own window manager" >> /dev/kmsg
-	pkill vlc
+        echo "Candle: kiosk.sh: detected dmlight, so no need to start own window manager" >> /dev/kmsg
+        pkill vlc
         pkill cvlc
         sleep 1
-	bash /etc/X11/xinit/xinitrc 
+        /bin/bash /etc/X11/xinit/xinitrc &
 
 
 
