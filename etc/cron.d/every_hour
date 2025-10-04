@@ -1,0 +1,1 @@
+0 * * * * root /home/pi/candle/every_hour.sh
