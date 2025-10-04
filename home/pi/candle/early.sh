@@ -11,6 +11,8 @@ fi
 echo "in Candle early"
 echo "$(date) - in Candle early. Fixing hostname." >> /dev/kmsg
 
+
+
 # Create an alias for 'mlan0' wifi to 'wlan0' if needed
 if ip link show | grep -q "mlan0:" ; then
 	if ! ip link show | grep -q "wlan0:" ; then
@@ -89,6 +91,7 @@ fi
 if [ -f /usr/sbin/iptables ] ; then
 	if iptables --list | grep 4443; then
 	    echo "IPTABLES ALREADY ADDED"
+		echo "Candle early: iptables seem already added" >> /dev/kmsg
 	else
 	    echo "Candle early: adding iptable rules" >> /dev/kmsg
 	    iptables -t mangle -A PREROUTING -p tcp --dport 80 -j MARK --set-mark 1
@@ -136,7 +139,7 @@ fi
 
 # For bluetooth keyboard
 if lsmod | grep hidp &> /dev/null ; then
-  echo "candle early: hidp already loaded" >> /dev/kmsg
+  echo "candle early: hidp kernel module already loaded" >> /dev/kmsg
 else
   echo "candle early: manually loading modprobe hidp" >> /dev/kmsg
   modprobe hidp
@@ -201,11 +204,21 @@ fi
 # Enable WiFi power save
 if [ -f $BOOT_DIR/candle_wifi_power_save.txt ] && [ ! -d /home/pi/.webthings/addons/hotspot ] ;
 then
-  echo "Candle: early: enabling wifi power saving" >> /dev/kmsg
-  /sbin/iw dev wlan0 set power_save on
+  if [ -f /sbin/iw ]; then
+  	echo "Candle: early: enabling wifi power saving" >> /dev/kmsg
+  	/sbin/iw dev wlan0 set power_save on
+  fi
 else
-  echo "Candle: early: disabling wifi power saving" >> /dev/kmsg
-  /sbin/iw dev wlan0 set power_save off
+  if [ -f /sbin/iw ]; then
+    echo "Candle: early: disabling wifi power saving" >> /dev/kmsg
+
+    if ip link show | grep -q "mlan0:" ; then
+      /sbin/iw dev mlan0 set power_save off
+    fi
+    if ip link show | grep -q "wlan0:" ; then
+      /sbin/iw dev wlan0 set power_save off
+    fi
+  
 fi
 
 
