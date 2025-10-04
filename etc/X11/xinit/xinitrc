@@ -158,6 +158,10 @@ python3 /home/pi/candle/unsnap.py >/dev/null 2>&1 &
 pkill cvlc
 pkill vlc
 
+if [ -f /home/pi/.webthings/chromium/SingletonLock ]; then
+  rm /home/pi/.webthings/chromium/SingletonLock
+fi
+
 #exec chromium --kiosk /home/pi/candle/start.html --load-extension=/home/pi/candle/virtual_keyboard --disable-infobars --noerrdialogs --disable-file-system \
 exec chromium --kiosk $url --load-extension=/home/pi/candle/virtual_keyboard --disable-infobars --noerrdialogs --disable-file-system \
  --block-new-web-contents --disable-remote-fonts --disable-speech-api --no-crash-upload --force-tablet-mode --enable-touchview \
