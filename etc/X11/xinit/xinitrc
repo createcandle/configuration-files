@@ -164,8 +164,8 @@ if [ -f /home/pi/.webthings/chromium/SingletonLock ]; then
   rm /home/pi/.webthings/chromium/SingletonLock
 fi
 
-#exec chromium --kiosk /home/pi/candle/start.html --load-extension=/home/pi/candle/virtual_keyboard --disable-infobars --noerrdialogs --disable-file-system \
-exec chromium --kiosk $url --load-extension=/home/pi/candle/virtual_keyboard --disable-infobars --noerrdialogs --disable-file-system \
+#exec /usr/bin/chromium --kiosk /home/pi/candle/start.html --load-extension=/home/pi/candle/virtual_keyboard --disable-infobars --noerrdialogs --disable-file-system \
+exec /usr/bin/chromium --kiosk $url --load-extension=/home/pi/candle/virtual_keyboard --disable-infobars --noerrdialogs --disable-file-system \
  --block-new-web-contents --disable-remote-fonts --disable-speech-api --no-crash-upload --force-tablet-mode --enable-touchview \
  --disable-translate --enable-top-drag-gesture --pull-to-refresh=2 --progress-bar-animation --no-first-run --deny-permission-prompts \
  --disable-breakpad --enable-auto-reload --unsafely-treat-insecure-origin-as-secure=http://localhost:8080 --disable-seccomp-filter-sandbox \
