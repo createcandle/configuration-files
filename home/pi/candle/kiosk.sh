@@ -8,14 +8,14 @@ if lsblk | grep -q $BOOT_DIR/firmware; then
 fi
 
 
-if [ -e "/bin/ply-image" ] && [ -e /dev/fb0 ] && [ -f "$BOOT_DIR/splash.png" ] && [ -f "$BOOT_DIR/splash180.png" ]; then
-    if [ -e "$BOOT_DIR/rotate180.txt" ]; then
-        /bin/ply-image $BOOT_DIR/splash180.png
-    else
-        /bin/ply-image $BOOT_DIR/splash.png
-    fi
+#if [ -e "/bin/ply-image" ] && [ -e /dev/fb0 ] && [ -f "$BOOT_DIR/splash.png" ] && [ -f "$BOOT_DIR/splash180.png" ]; then
+#    if [ -e "$BOOT_DIR/rotate180.txt" ]; then
+#        /bin/ply-image $BOOT_DIR/splash180.png
+#    else
+#        /bin/ply-image $BOOT_DIR/splash.png
+#    fi
     #sleep 1
-fi
+#fi
 
 #if [ -f $BOOT_DIR/post_bootup_actions.sh ]; then
 #  if [ -f $BOOT_DIR/rotate180.txt ]; then
