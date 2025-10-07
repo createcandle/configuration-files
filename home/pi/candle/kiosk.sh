@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "Candle: in kiosk.sh" >> /dev/kmsg
+#echo "Candle: in kiosk.sh" >> /dev/kmsg
 
 BOOT_DIR="/boot"
 if lsblk | grep -q $BOOT_DIR/firmware; then
@@ -33,7 +33,7 @@ CANDLE_URL=$(cat "$kiosk_txt_file")
 if [ -z "$CANDLE_URL" ]; then
     #echo "Candle: kiosk.sh: CANDLE_URL: $CANDLE_URL" >> /dev/kmsg
 
-    echo "Candle: kiosk.sh: doing curl until server is up: $CANDLE_URL" >> /dev/kmsg
+    #echo "Candle: kiosk.sh: doing curl until server is up: $CANDLE_URL" >> /dev/kmsg
     #CURL_TEST="$(curl -s -o /dev/null -m 3 -L -w ''%{http_code}'' $CANDLE_URL)"
     #echo "CURL_TEST: 200?: $CURL_TEST"
     
@@ -53,7 +53,7 @@ if ls -l /dev/fb*; then
 
 	# if DMlight exists, then this is probably a Raspberry Pi disk image with a desktop environment. So no need to start Openbox first.
     if [ -f /usr/sbin/lightdm ]; then
-        echo "Candle: kiosk.sh: detected dmlight, so no need to start own window manager" >> /dev/kmsg
+        #echo "Candle: kiosk.sh: detected dmlight, so no need to start own window manager" >> /dev/kmsg
         pkill vlc
         pkill cvlc
         sleep 1
@@ -65,7 +65,7 @@ if ls -l /dev/fb*; then
     elif [ -f $BOOT_DIR/candle_kiosk.txt ] && [ -f $BOOT_DIR/candle_first_run_complete.txt ]
     then
 
-        echo "Candle: kiosk.sh: detected a display, will start Xorg" >> /dev/kmsg
+        #echo "Candle: kiosk.sh: detected a display, will start Xorg" >> /dev/kmsg
         #logger Starting X
 
         pkill vlc
@@ -75,38 +75,38 @@ if ls -l /dev/fb*; then
 
         if [ -f $BOOT_DIR/show_mouse_pointer.txt ]; then
             echo "Candle: kiosk.sh:  spotted show_mouse_pointer.txt,  starting X and showing mouse pointer"
-            su - pi -c 'startx &'
+            startx &
         
         elif [ -f $BOOT_DIR/hide_mouse_pointer.txt ]; then
             echo "Candle: kiosk.sh:  spotted hide_mouse_pointer.txt,  starting X and hiding mouse pointer"
-            su - pi -c 'startx -- -nocursor &'
+            startx -- -nocursor &
 
         # Auto-detect
         
         # Raspad touchscreen
         elif [ -n "$(ls /dev/input/by-id/usb-ILITEK_ILITEK-TP-mouse 2>/dev/null)" ]; then
           echo "Candle: kiosk.sh:  detected Raspad touchscreen, starting X and hiding mouse pointer"
-          su - pi -c 'startx -- -nocursor &'
+          startx -- -nocursor &
 
         # Generic touch screen
-        elif udevadm info -q all -n /dev/input/event* | grep -q 'ID_INPUT_TOUCHSCREEN=1'; then
+        elif udevadm info -q all -n /dev/input/event* | grep -q "ID_INPUT_TOUCHSCREEN=1"; then
             echo "Candle: kiosk.sh:  detected a touchscreen, starting X and hiding mouse pointer"
-            su - pi -c 'startx -- -nocursor &'
+            startx -- -nocursor &
 
         elif [ -n "$(ls /dev/input/by-id/*-mouse 2>/dev/null)" ]; then
             echo "Candle: kiosk.sh:  detected mouse, starting X and allowing mouse pointer to be shown"
-            su - pi -c 'startx &'
+            startx &
 
         else
             if which unclutter; then
-                su - pi -c 'unclutter -idle 5 -root -display :0 &'
+                unclutter -idle 5 -root -display :0 &
             fi
             echo "Candle: kiosk.sh:l starting X and allowing mouse pointer to be shown"
-            su - pi -c 'startx &'
+            startx &
         fi
       
     fi
 else
     echo "Candle: kiosk.sh: no display detected, not starting kiosk mode" 
-    echo "Candle: kiosk.sh: no display detected, not starting kiosk mode" >> /dev/kmsg
+    #echo "Candle: kiosk.sh: no display detected, not starting kiosk mode" >> /dev/kmsg
 fi
