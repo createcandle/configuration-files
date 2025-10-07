@@ -144,7 +144,7 @@ export CANDLE_URL=$url
 
 timeout --foreground -s TERM 30s bash -c \
    'while [[ "$(curl -s -o /dev/null -m 3 -L -w ''%{http_code}'' $CANDLE_URL)" != "200" ]];\
-   do echo "Waiting for url" && sleep 2;\
+   do echo "Waiting for controller webserver to be up" && sleep 2;\
    done;\
    echo "Server seems to be up: $CANDLE_URL"'
 
