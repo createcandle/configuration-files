@@ -215,10 +215,11 @@ else
     if ip link show | grep -q "mlan0:" ; then
       /sbin/iw dev mlan0 set power_save off
     fi
+    
     if ip link show | grep -q "wlan0:" ; then
       /sbin/iw dev wlan0 set power_save off
     fi
-  
+  fi
 fi
 
 
@@ -611,4 +612,3 @@ fi
 echo "$(date) - End of Candle early." >> /dev/kmsg
 
 exit 0
-
