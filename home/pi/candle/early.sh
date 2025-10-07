@@ -255,7 +255,7 @@ then
   rm $BOOT_DIR/candle_ssh_once.txt
 else
   # Just enable SSH
-  if [ -e $BOOT_DIR/candle_ssh.txt ]; 
+  if [ -e $BOOT_DIR/candle_ssh.txt ] || [ -e $BOOT_DIR/candle_ssh_keep.txt ]; 
   then
     systemctl start ssh.service
   fi
