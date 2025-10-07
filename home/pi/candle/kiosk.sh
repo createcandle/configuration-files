@@ -74,32 +74,39 @@ if ls -l /dev/fb*; then
         sleep .2
 
         if [ -f $BOOT_DIR/show_mouse_pointer.txt ]; then
+            echo "Candle: kiosk.sh:  spotted show_mouse_pointer.txt,  starting X and showing mouse pointer"
             su - pi -c 'startx &'
         
         elif [ -f $BOOT_DIR/hide_mouse_pointer.txt ]; then
+            echo "Candle: kiosk.sh:  spotted hide_mouse_pointer.txt,  starting X and hiding mouse pointer"
             su - pi -c 'startx -- -nocursor &'
 
         # Auto-detect
         
         # Raspad touchscreen
         elif [ -n "$(ls /dev/input/by-id/usb-ILITEK_ILITEK-TP-mouse 2>/dev/null)" ]; then
+          echo "Candle: kiosk.sh:  detected Raspad touchscreen, starting X and hiding mouse pointer"
           su - pi -c 'startx -- -nocursor &'
 
         # Generic touch screen
         elif udevadm info -q all -n /dev/input/event* | grep -q 'ID_INPUT_TOUCHSCREEN=1'; then
+            echo "Candle: kiosk.sh:  detected a touchscreen, starting X and hiding mouse pointer"
             su - pi -c 'startx -- -nocursor &'
 
         elif [ -n "$(ls /dev/input/by-id/*-mouse 2>/dev/null)" ]; then
+            echo "Candle: kiosk.sh:  detected mouse, starting X and allowing mouse pointer to be shown"
             su - pi -c 'startx &'
 
         else
             if which unclutter; then
                 su - pi -c 'unclutter -idle 5 -root -display :0 &'
             fi
+            echo "Candle: kiosk.sh:l starting X and allowing mouse pointer to be shown"
             su - pi -c 'startx &'
         fi
       
     fi
 else
-    echo "Candle: no display detected, not starting kiosk mode" >> /dev/kmsg
+    echo "Candle: kiosk.sh: no display detected, not starting kiosk mode" 
+    echo "Candle: kiosk.sh: no display detected, not starting kiosk mode" >> /dev/kmsg
 fi
