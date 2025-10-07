@@ -1,7 +1,8 @@
 [Unit]
 Description=Candle Controller Client
 After=network.target candle_early.service dbus.service
-Requires=dbus-setenv.service
+#Requires=dbus-setenv.service
+Requires=dbus.service
 #OnFailure=webthings-gateway.update-rollback.service
 #ConditionPathExists=!/boot/bootup_actions.sh
 
@@ -9,10 +10,7 @@ Requires=dbus-setenv.service
 Type=simple
 StandardOutput=journal
 StandardError=journal
-# Edit this line, if needed, to specify what user to run Vaani as
-# If you delete this line, it will run as root
 User=pi
-# Edit this line, if needed, to specify where you installed the server
 WorkingDirectory=/home/pi/webthings/gateway
 # Edit this line, if needed, to set the correct path to node
 ExecStart=/home/pi/webthings/gateway/run-app.sh
