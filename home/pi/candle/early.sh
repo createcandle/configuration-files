@@ -609,6 +609,12 @@ then
   
 fi
 
+# make tty accessible for startx
+chown pi /dev/tty0
+#chown pi /dev/tty1
+chown pi /dev/tty2
+chown pi /dev/tty3
+
 echo "$(date) - End of Candle early." >> /dev/kmsg
 
 exit 0
