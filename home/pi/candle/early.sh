@@ -610,10 +610,23 @@ then
 fi
 
 # make tty accessible for startx
-chown pi /dev/tty0
+#chown pi /dev/tty0
 #chown pi /dev/tty1
-chown pi /dev/tty2
-chown pi /dev/tty3
+#chown pi /dev/tty2
+#chown pi /dev/tty3
+
+
+loginctl enable-linger pi
+
+#chown pi /dev/tty0
+#chown pi /dev/tty1
+#chown pi /dev/tty2
+#chown pi /dev/tty3
+
+chmod 0660 /dev/tty0
+#chmod 0660 /dev/tty1
+chmod 0660 /dev/tty2
+chmod 0660 /dev/tty3
 
 echo "$(date) - End of Candle early." >> /dev/kmsg
 
