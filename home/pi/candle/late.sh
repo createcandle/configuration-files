@@ -30,8 +30,10 @@ if [ -f $BOOT_DIR/candle_island.txt ] && [ -f /home/pi.webthings/addons/hotspot/
 then
     echo "Candle: late.sh: not doing backup resolvconf -u because island mode is enabled" >> /dev/kmsg
 else
-	echo "Candle: late.sh: doing backup resolvconf -u" >> /dev/kmsg
-	resolvconf -u
+	if [ -f /usr/sbin/resolvconf ]; then
+		echo "Candle: late.sh: doing backup resolvconf -u" >> /dev/kmsg
+		resolvconf -u
+	fi
 fi
 
 
@@ -172,9 +174,10 @@ fi
 #fi
 
 # After booting it's not longer necessary to keep triggerhappy running
-systemctl stop triggerhappy.socket
-systemctl stop triggerhappy.service
-
+if [ -f /usr/sbin/thd ]; then
+	systemctl stop triggerhappy.socket
+	systemctl stop triggerhappy.service
+fi
 
 # Stop the serial console once the system is safely up and running
 #if [ ! -f $BOOT_DIR/developer.txt ]; then
@@ -188,8 +191,10 @@ if [ -f $BOOT_DIR/candle_island.txt ] && [ -f /home/pi.webthings/addons/hotspot/
 then
     echo "Candle: late.sh: not doing backup resolvconf -u because island mode is enabled" >> /dev/kmsg
 else
-	echo "Candle: late.sh: doing backup resolvconf -u" >> /dev/kmsg
-	resolvconf -u
+	if [ -f /usr/sbin/resolvconf ]; then
+		echo "Candle: late.sh: doing backup resolvconf -u" >> /dev/kmsg
+		resolvconf -u
+	fi
 fi
 
 echo "$(date) - end of late.sh" >> /dev/kmsg
