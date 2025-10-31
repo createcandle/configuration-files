@@ -147,9 +147,7 @@ fi
 if [ ! -f /bin/sqlite3 ]; then
   echo "/bin/sqlite3 is missing"
 fi
-if [ -z "$(which libcamera-still)" ]; then
-  echo "libcamera-still is missing / not on path"
-fi
+
 
 
 #/boot files
@@ -166,9 +164,9 @@ fi
 if [ ! -f /etc/X11/xinit/xinitrc ]; then
   echo "/etc/X11/xinit/xinitrc is missing"
 fi
-if [ ! -f /etc/alsa/conf.d/20-bluealsa.conf ]; then
-  echo "/etc/alsa/conf.d/20-bluealsa.conf is missing"
-fi
+#if [ ! -f /etc/alsa/conf.d/20-bluealsa.conf ]; then
+#  echo "/etc/alsa/conf.d/20-bluealsa.conf is missing"
+#fi
 if [ ! -f /etc/avahi/services/candle.service ]; then
   echo "/etc/avahi/services/candle.service is missing"
 fi
@@ -190,10 +188,9 @@ fi
 if [ ! -f /usr/bin/pip3 ]; then
   echo "/usr/bin/pip3 is missing"
 fi
-if [ ! -f /usr/bin/bluealsa ]; then
-  echo "/usr/bin/bluealsa is missing"
-fi
-
+#if [ ! -f /usr/bin/bluealsa ]; then
+#  echo "/usr/bin/bluealsa is missing"
+#fi
 if [ ! -d /var/run/mosquitto ]; then
   echo "/var/run/mosquitto dir is missing"
 fi
