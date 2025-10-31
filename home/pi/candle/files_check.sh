@@ -33,9 +33,9 @@ fi
 if [ ! -d /etc/mosquitto ]; then
   echo "/etc/mosquitto dir is missing"
 fi
-if [ ! -d /etc/voicecard ]; then
-  echo "/etc/voicecard dir is missing"
-fi
+#if [ ! -d /etc/voicecard ]; then
+#  echo "/etc/voicecard dir is missing"
+#fi
 if [ ! -d /etc/chromium/policies/managed/ ]; then
   echo "/etc/chromium/policies/managed/ dir is missing"
 fi
