@@ -111,9 +111,9 @@ fi
 if [ ! -f /home/pi/webthings/gateway/static/images/floorplan.svg ]; then
   echo "/home/pi/webthings/gateway/static/images/floorplan.svg is missing"
 fi
-if [ ! -f /home/pi/candle/installed_respeaker_version.txt ]; then
-  echo "/home/pi/candle/installed_respeaker_version.txt is missing"
-fi
+#if [ ! -f /home/pi/candle/installed_respeaker_version.txt ]; then
+#  echo "/home/pi/candle/installed_respeaker_version.txt is missing"
+#fi
 if [ ! -f /home/pi/candle/creation_date.txt ]; then
   echo "/home/pi/candle/creation_date.txt is missing"
 fi
