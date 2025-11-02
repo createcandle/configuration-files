@@ -81,11 +81,9 @@ echo "hostname -I" >> /home/pi/.bash_history
 echo "tail -f -n10 ~/.webthings/log/run-app.log" >> /home/pi/.bash_history
 
 if [ -f /home/pi/.webthings/addons/power-settings/factory_reset.sh ] ; then
-  touch $BOOT_DIR/developer.txt # will cause the real factory_reset script to also write zeroes to empty space
+  touch $BOOT_DIR/developer.txt # will cause the real factory_reset script to also write zeroes to empty space. That script also calls SHUTDOWN, so nothing can be done after this.
   chmod +x /home/pi/.webthings/addons/power-settings/factory_reset.sh
   /home/pi/.webthings/addons/power-settings/factory_reset.sh
 fi
 
-echo "Deleting all NetworkManager connections"
-nmcli -f name connection show | sed -e 's/[[:space:]]*$//' | tr '\n' '\0' | xargs -0 -n1 nmcli connection delete
-echo "prepare_for_disk_image: DONE"
+
