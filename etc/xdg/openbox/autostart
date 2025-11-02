@@ -1,17 +1,19 @@
 #!/bin/bash
 set +e
 
-if [ ! -s $BOOT_DIR/candle_kiosk.txt ]
-then
-    echo "The candle_kiosk.txt file was empty, so not loading the browser" >> $BOOT_DIR/candle_log.txt
-    exit 0
-fi
+
 
 export DISPLAY=:0
 
 BOOT_DIR="/boot"
 if lsblk | grep -q $BOOT_DIR/firmware; then
     BOOT_DIR="$BOOT_DIR/firmware"
+fi
+
+if [ ! -s $BOOT_DIR/candle_kiosk.txt ]
+then
+    echo "The candle_kiosk.txt file was empty, so not loading the browser" >> $BOOT_DIR/candle_log.txt
+    exit 0
 fi
 
 GEO="$(fbset -s | awk '$1 == "geometry" { print $2":"$3 }')"
