@@ -24,17 +24,7 @@ fi
 
 
 
-# Set DHCPCD value
-#sysctl -w net.ipv6.neigh.wlan0.retrans_time_ms=1000
 
-if [ -f $BOOT_DIR/candle_island.txt ] && [ -f /home/pi.webthings/addons/hotspot/island.sh ]
-then
-    echo "Candle: early: starting Island mode" >> /dev/kmsg
-	chmod +x /home/pi.webthings/addons/hotspot/island.sh
-    /home/pi.webthings/addons/hotspot/island.sh &
-    #sleep 60
-    #systemctl stop getty@tty3.service 
-fi
 
 
 
@@ -73,6 +63,9 @@ if [ -e /home/pi/.webthings/chromium/SingletonLock ]; then
 	rm /home/pi/.webthings/chromium/Singleton*
 fi
 
+
+
+
 # Do not show blinking cursor
 echo 0 > /sys/class/graphics/fbcon/cursor_blink
 
@@ -107,35 +100,16 @@ else
 fi
 
 
+# Set DHCPCD value
+#sysctl -w net.ipv6.neigh.wlan0.retrans_time_ms=1000
 
-
-# detect potential issues that can happen after an upgrade
-if ifconfig | grep -q wlan0: ; then
-    echo "wlan0 exists"
-else
-    echo "Candle: EARLY.SH: WLAN0 is not in ifconfig (yet?)" >> /dev/kmsg
-    echo "Candle: Early.sh: error, WLAN0 is not in ifconfig (yet?)" >> $BOOT_DIR/candle_log.txt
-
-    if [ -f /etc/systemd/system/dhcpcd.service.d/wait.conf ]; then
-        if cat /etc/systemd/system/dhcpcd.service.d/wait.conf | grep -q /usr/lib/dhcpcd5/dhcpcd ; then
-            echo "$(date) - early.sh had to apply dhcpcd fix to wait.conf" >> $BOOT_DIR/candle_log.txt
-            sudo mount -o remount,rw /ro
-            sed -i 's|/usr/lib/dhcpcd5/dhcpcd|/usr/sbin/dhcpcd|g' /ro/etc/systemd/system/dhcpcd.service.d/wait.conf
-            sudo mount -o remount,ro /ro
-            if [ -f $BOOT_DIR/developer.txt ] || [ -f $BOOT_DIR/candle_cutting_edge.txt ]; then
-                systemctl start ssh.service
-            fi
-            if [ -e "/bin/ply-image" ] && [ -e /dev/fb0 ] && [ -f "$BOOT_DIR/splash_updating.png" ] && [ -f "$BOOT_DIR/splash_updating180.png" ]; then
-                if [ -e "$BOOT_DIR/rotate180.txt" ]; then
-                    /bin/ply-image $BOOT_DIR/splash_updating180.png
-                else
-                   /bin/ply-image $BOOT_DIR/splash_updating.png
-                fi
-            fi
-            sleep 5
-            reboot
-        fi
-    fi
+if [ -f $BOOT_DIR/candle_island.txt ] && [ -f /home/pi.webthings/addons/hotspot/island.sh ]
+then
+    echo "Candle: early: starting Island mode" >> /dev/kmsg
+	chmod +x /home/pi.webthings/addons/hotspot/island.sh
+    /home/pi.webthings/addons/hotspot/island.sh &
+    #sleep 60
+    #systemctl stop getty@tty3.service 
 fi
 
 # For bluetooth keyboard
@@ -161,6 +135,7 @@ if [ -f $BOOT_DIR/candle_delete_these_addons.txt ]; then
     done <$BOOT_DIR/candle_delete_these_addons.txt
     rm $BOOT_DIR/candle_delete_these_addons.txt
 fi
+
 
 # Install and manage Github addons
 if [ -f $BOOT_DIR/candle_install_these_addons.txt ]; then
@@ -220,6 +195,7 @@ else
     if ip link show | grep -q "wlan0:" ; then
       /sbin/iw dev wlan0 set power_save off
     fi
+	
   fi
 fi
 
