@@ -63,5 +63,11 @@ find /tmp -type f -atime +10 -delete
 
 echo "Well hello there" > /home/pi/.bash_history
 
-chmod +x /home/pi/.webthings/addons/power-settings/factory_reset.sh
-/home/pi/.webthings/addons/power-settings/factory_reset.sh
+if [ -f /home/pi/.webthings/addons/power-settings/factory_reset.sh ] ; then
+  chmod +x /home/pi/.webthings/addons/power-settings/factory_reset.sh
+  /home/pi/.webthings/addons/power-settings/factory_reset.sh
+fi
+
+echo "Deleting all NetworkManager connections"
+nmcli -f name connection show | sed -e 's/[[:space:]]*$//' | tr '\n' '\0' | xargs -0 -n1 nmcli connection delete
+echo "prepare_for_disk_image: DONE"
