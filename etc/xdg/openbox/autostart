@@ -45,12 +45,24 @@ then
     rm -rf /home/pi/.webthings/chromium/Default/Sessions/*
 fi
 
-rm -rf /home/pi/.config/chromium/*
-rm -rf /home/pi/.webthings/chromium/Singleton*
-rm -rf /home/pi/.webthings/chromium/BrowserMetrics/*
+if [ -d /home/pi/.config/chromium/ ]; then
+  rm -rf /home/pi/.config/chromium/*
+fi
 
-sed -i 's/"exited_cleanly":false/"exited_cleanly":true/' /home/pi/.webthings/chromium/'Local State'
-sed -i 's/"exited_cleanly":false/"exited_cleanly":true/; s/"exit_type":"[^"]\+"/"exit_type":"Normal"/' /home/pi/.webthings/chromium/Default/Preferences
+mkdir -p /home/pi/.webthings/chromium/
+rm -rf /home/pi/.webthings/chromium/Singleton*
+
+
+if [ -d /home/pi/.webthings/chromium/BrowserMetrics/ ]; then
+  rm -rf /home/pi/.webthings/chromium/BrowserMetrics/*
+fi
+
+if [ -f /home/pi/.webthings/chromium/'Local State' ]; then
+  sed -i 's/"exited_cleanly":false/"exited_cleanly":true/' /home/pi/.webthings/chromium/'Local State'
+fi
+if [ -f /home/pi/.webthings/chromium/Default/Preferences ]; then
+  sed -i 's/"exited_cleanly":false/"exited_cleanly":true/; s/"exit_type":"[^"]\+"/"exit_type":"Normal"/' /home/pi/.webthings/chromium/Default/Preferences
+fi
 
 if [ -f $BOOT_DIR/post_bootup_actions.sh ]; then
   if [ -f $BOOT_DIR/rotate180.txt ]; then
@@ -62,7 +74,15 @@ else
   
   if [ -f $BOOT_DIR/splash.mp4 ];
   then
-    cvlc -L -f --no-osd --no-audio --fullscreen --video-on-top $BOOT_DIR/splash.mp4 &
+    #cvlc -L -f --no-osd --no-audio --fullscreen --video-on-top $BOOT_DIR/splash.mp4 &
+    if [ -f $BOOT_DIR/rotate180.txt ]; then
+ 		/usr/bin/cvlc --loop -f --no-osd --no-audio --fullscreen --no-audio --video-filter='transform{type="180"}' --crop=4:3  $BOOT_DIR/splash.mp4 &
+		#startx /usr/bin/vlc -I dummy -L -f --no-osd --no-audio --fullscreen --video-on-top --no-audio --video-filter='transform{type="180"}' $BOOT_DIR/splash.mp4 -- &
+    else
+		/usr/bin/cvlc --loop -f --no-osd --no-audio --fullscreen --no-audio --crop=4:3  $BOOT_DIR/splash.mp4 &
+    fi
+
+
     #if [ -f $BOOT_DIR/rotate180.txt ]
     #then
     #  cvlc -L -f --no-osd --no-audio --fullscreen --video-on-top $BOOT_DIR/splash180.mp4 &    
@@ -149,12 +169,13 @@ $CHROMIUM_BINARY_NAME --kiosk $wrapper --load-extension=/home/pi/candle/virtual_
 
 
 sleep 15
-#pkill omxplayer
 pkill cvlc
 pkill vlc
 
 # Heal "aw snap" warnings in the browser
 # https://github.com/dubnom/awsnap
-chmod +x /home/pi/candle/unsnap.sh
-python3 /home/pi/candle/unsnap.py >/dev/null 2>&1 &
+if [ -f /home/pi/candle/unsnap.sh ]; then
+  chmod +x /home/pi/candle/unsnap.sh
+  python3 /home/pi/candle/unsnap.py >/dev/null 2>&1 &
+fi
 
