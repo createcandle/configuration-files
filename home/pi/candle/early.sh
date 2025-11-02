@@ -59,6 +59,7 @@ fi
 
 # remove Chromium singleton lock if it exists
 if [ -e /home/pi/.webthings/chromium/SingletonLock ]; then
+    echo "Candle: early: removing Chromium singletonLock"
     echo "Candle: early: removing Chromium singletonLock" >> /dev/kmsg
 	rm /home/pi/.webthings/chromium/Singleton*
 fi
