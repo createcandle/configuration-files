@@ -494,19 +494,25 @@ fi
 totalk=$(awk '/^MemTotal:/{print $2}' /proc/meminfo)
 #logger total memory: $totalk
 
+
 if [ "$totalk" -lt 600000 ]
 then
   echo "Candle: low memory, so enabling swap: $totalk" >> /dev/kmsg
-  touch $BOOT_DIR/candle_swap_enabled.txt
-  /usr/sbin/dphys-swapfile setup
-  /usr/sbin/dphys-swapfile swapon
+  
+  if [ -f /usr/sbin/dphys-swapfile ]; then
+    touch $BOOT_DIR/candle_swap_enabled.txt
+    /usr/sbin/dphys-swapfile setup
+    /usr/sbin/dphys-swapfile swapon
+  fi
 else
   echo "Candle: early: enough memory, no need to enable swap: $totalk" >> /dev/kmsg
   if [ -e $BOOT_DIR/candle_swap_enabled.txt ] 
   then
     rm $BOOT_DIR/candle_swap_enabled.txt
   fi
-  /usr/sbin/dphys-swapfile swapoff
+  if [ -f /usr/sbin/dphys-swapfile ]; then
+  	/usr/sbin/dphys-swapfile swapoff
+  fi
   if [ -e /home/pi/.webthings/swap ] 
   then
     rm /home/pi/.webthings/swap
@@ -605,6 +611,7 @@ chmod 0660 /dev/tty0
 chmod 0660 /dev/tty2
 chmod 0660 /dev/tty3
 
+echo "End of Candle early"
 echo "$(date) - End of Candle early." >> /dev/kmsg
 
 exit 0
