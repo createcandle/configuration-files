@@ -51,8 +51,15 @@ fi
 
 if ls -l /dev/fb*; then
 
+	if [ -f /usr/bin/labwc ] && [ -f /home/pi/candle/wayland_kiosk.sh ]; then 
+		while true; do
+    		XDG_RUNTIME_DIR=/run/user/1000 labwc -s '/home/pi/candle/wayland_kiosk.sh'
+		done
+   		
+   
+
 	# if DMlight exists, then this is probably a Raspberry Pi disk image with a desktop environment. So no need to start Openbox first.
-    if [ -f /usr/sbin/lightdm ]; then
+	elif [ -f /usr/sbin/lightdm ]; then
         #echo "Candle: kiosk.sh: detected dmlight, so no need to start own window manager" >> /dev/kmsg
         pkill vlc
         pkill cvlc
@@ -73,7 +80,7 @@ if ls -l /dev/fb*; then
         #pkill x
         sleep .2
 
-	dbus-launch
+	    dbus-launch
 
         if [ -f $BOOT_DIR/show_mouse_pointer.txt ]; then
             echo "Candle: kiosk.sh:  spotted show_mouse_pointer.txt,  starting X and showing mouse pointer"
