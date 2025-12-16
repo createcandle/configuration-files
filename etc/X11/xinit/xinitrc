@@ -76,7 +76,7 @@ else
   if [ -f $BOOT_DIR/splash.mp4 ];
   then
     echo "zzz"
-#    cvlc -L -f --no-osd --no-audio --fullscreen --video-on-top $BOOT_DIR/splash.mp4 &
+    cvlc -L -f --no-osd --no-audio --fullscreen --video-on-top $BOOT_DIR/splash.mp4 &
     #if [ -f $BOOT_DIR/rotate180.txt ]
     #then
     #  cvlc -L -f --no-osd --no-audio --fullscreen --video-on-top $BOOT_DIR/splash180.mp4 &    
