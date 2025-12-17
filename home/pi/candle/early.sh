@@ -19,6 +19,17 @@ if ip link show | grep -q "mlan0:" ; then
 		echo "Candle: adding wifi wlan0 alias for mlan0" >> /dev/kmsg
 		ip link property add dev mlan0 altname wlan0
 	fi
+
+	if ! ip link show | grep -q "uap0:" ; then
+		/sbin/iw phy phy0 interface add uap0 type __ap
+		/sbin/iw dev uap0 set power_save off
+	fi
+	
+elif ip link show | grep -q "wlan0:" ; then
+	if ! ip link show | grep -q "uap0:" ; then
+		/sbin/iw phy phy0 interface add uap0 type __ap
+		/sbin/iw dev uap0 set power_save off
+	fi
 fi
 
 
