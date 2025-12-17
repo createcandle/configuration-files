@@ -13,30 +13,44 @@ echo "$(date) - in Candle early. Fixing hostname." >> /dev/kmsg
 
 
 
+PHY="PHY1"
+
+if iw list | grep -q phy0; then
+    PHY="PHY0"
+fi
+
+echo "PHY: $PHY"
+
+
 # Create an alias for 'mlan0' wifi to 'wlan0' if needed
 if ip link show | grep -q "mlan0:" ; then
-	if ! ip link show | grep -q "wlan0:" ; then
-		echo "Candle: adding wifi wlan0 alias for mlan0" >> /dev/kmsg
-		ip link property add dev mlan0 altname wlan0
-	fi
+        echo "whoa, spotted mlan0"
+        if ! ip link show | grep -q "wlan0:" ; then
+                echo "Candle: adding wifi wlan0 alias for mlan0" >> /dev/kmsg
+                ip link property add dev mlan0 altname wlan0
+        fi
 
-	if ! ip link show | grep -q "uap0:" ; then
-		/sbin/iw phy phy0 interface add uap0 type __ap
-		/sbin/iw dev uap0 set power_save off
-	fi
-	
+        if ! ip link show | grep -q "uap0:" ; then
+                /sbin/iw phy $PHY interface add uap0 type __ap
+                /sbin/iw dev uap0 set power_save off
+        fi
+        
 elif ip link show | grep -q "wlan0:" ; then
-	if ! ip link show | grep -q "uap0:" ; then
-		/sbin/iw phy phy0 interface add uap0 type __ap
-		/sbin/iw dev uap0 set power_save off
-	fi
+echo "wlan0 exists"
+        if ! ip link show | grep -q "uap0:" ; then
+                echo "uap0 does not exist, creating it now"
+                /sbin/iw phy $PHY interface add uap0 type __ap
+                /sbin/iw dev uap0 set power_save off
+        fi
 fi
 
 if ip link show | grep -q "uap0:" ; then
 MAC=$(nmcli device show wlan0 | grep HWADDR | awk '{print $2}')
 MAC=${MAC%?}0
 ifconfig uap0 hw ether $MAC
+echo "early: set uap0 mac to: $MAC"
 fi
+
 
 
 
