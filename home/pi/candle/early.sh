@@ -32,8 +32,11 @@ elif ip link show | grep -q "wlan0:" ; then
 	fi
 fi
 
-
-
+if ip link show | grep -q "uap0:" ; then
+MAC=$(nmcli device show wlan0 | grep HWADDR | awk '{print $2}')
+MAC=${MAC%?}0
+ifconfig uap0 hw ether $MAC
+fi
 
 
 
