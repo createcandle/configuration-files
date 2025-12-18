@@ -15,8 +15,8 @@ echo "$(date) - in Candle early. Fixing hostname." >> /dev/kmsg
 sysctl -w net.ipv4.ip_forward=1
 sysctl -w net.ipv6.ip_forward=1
 
-if [ -f /home/pi/.webthings/dnsmasq_log.txt ]; then
-	rm /home/pi/.webthings/dnsmasq_log.txt
+if [ -f /home/pi/dnsmasq_log.txt ]; then
+	rm /home/pi/dnsmasq_log.txt
 fi
 
 
