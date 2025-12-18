@@ -12,6 +12,9 @@ echo "in Candle early"
 echo "$(date) - in Candle early. Fixing hostname." >> /dev/kmsg
 
 
+sysctl -w net.ipv4.ip_forward=1
+sysctl -w net.ipv6.ip_forward=1
+
 
 PHY="PHY1"
 
@@ -50,6 +53,7 @@ MAC=${MAC%?}0
 ifconfig uap0 hw ether $MAC
 echo "early: set uap0 mac to: $MAC"
 fi
+
 
 
 
