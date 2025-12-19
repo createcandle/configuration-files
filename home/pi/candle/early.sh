@@ -36,21 +36,27 @@ if ip link show | grep -q "mlan0:" ; then
 			echo "Candle: adding wifi wlan0 alias for mlan0" >> /dev/kmsg
 			ip link property add dev mlan0 altname wlan0
 	fi
+        if ! ip link show | grep -q "uap0:" ; then
+                echo "uap0 does not exist yet"
+                /sbin/iw dev mlan0 interface add uap0 type __ap
+        fi
+
         
 elif ip link show | grep -q "wlan0:" ; then
 	echo "wlan0 exists"
-	if ! ip link show | grep -q "br0:" ; then
-		echo "br0 does not exist yet"
-		#/sbin/iw dev wlan0 interface add uap0 type __ap
+	if ! ip link show | grep -q "uap0:" ; then
+		echo "uap0 does not exist yet"
+		/sbin/iw dev wlan0 interface add uap0 type __ap
 	fi
 fi
 
-if ip link show | grep -q "br0:" ; then
+if ip link show | grep -q "uap0:" ; then
 MAC=$(nmcli device show wlan0 | grep HWADDR | awk '{print $2}')
 MAC=${MAC%?}0
 #ifconfig br0 hw ether $MAC
 echo "early: mac ending with zero: $MAC"
 fi
+
 
 
 
