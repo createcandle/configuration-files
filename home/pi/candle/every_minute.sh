@@ -31,6 +31,7 @@ if cat /home/pi/.webthings/etc/wpa_supplicant/wpa_supplicant.conf | grep -q psk=
     fi
 fi
 
+# limit the size of the dnsmasq log
 if [ -f /home/pi/dnsmasq_log.txt ]; then
 	tail -n 1000 /home/pi/dnsmasq_log.txt > tmp.txt && mv tmp.txt /home/pi/dnsmasq_log.txt
 fi
