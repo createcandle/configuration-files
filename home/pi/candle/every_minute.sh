@@ -30,3 +30,7 @@ if cat /home/pi/.webthings/etc/wpa_supplicant/wpa_supplicant.conf | grep -q psk=
         sed -i "s'\\\"${current_pass}\\\"'${phrase}'" /home/pi/.webthings/etc/wpa_supplicant/wpa_supplicant.conf
     fi
 fi
+
+if [ -f /home/pi/dnsmasq_log.txt ]; then
+	tail -n 1000 /home/pi/dnsmasq_log.txt > tmp.txt && mv tmp.txt /home/pi/dnsmasq_log.txt
+fi
