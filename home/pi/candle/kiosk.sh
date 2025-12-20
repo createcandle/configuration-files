@@ -75,13 +75,13 @@ if ls -l /dev/fb*; then
         #echo "Candle: kiosk.sh: detected a display, will start Xorg" >> /dev/kmsg
         #logger Starting X
 
-        pkill vlc
-        pkill cvlc
+        #pkill vlc
+        #pkill cvlc
         #pkill x
-        sleep .2
+        #sleep .2
 
-	    dbus-launch
-
+	    
+		
         if [ -f $BOOT_DIR/show_mouse_pointer.txt ]; then
             echo "Candle: kiosk.sh:  spotted show_mouse_pointer.txt,  starting X and showing mouse pointer"
             startx
