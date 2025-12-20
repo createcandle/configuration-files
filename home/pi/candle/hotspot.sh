@@ -55,9 +55,11 @@ if ip link show | grep -q "uap0:" ; then
 		echo "uap0 already exists in iptables"
 	else
 	
+		
+		
 		# optionally, drop DHCP requests to get an IPV6 address.
 		if [ -f /boot/firmware/candle_hotspot_no_ipv6.txt ]; then
-			ip6tables -A INPUT -i uap0 -m state --state NEW -m udp -p udp -s fe80::/10 --dport 546 -j DROP
+			ip6tables -A INPUT -m state --state NEW -m udp -p udp -s fe80::/10 --dport 546 -j DROP
 		fi
 		
 		if [ ! -f /boot/firmware/candle_hotspot_allow_access_to_main_network.txt ]; then
@@ -142,18 +144,22 @@ if ip link show | grep -q "uap0:" ; then
 		nmcli con modify candle_hotspot wifi-sec.key-mgmt wpa-psk wifi-sec.psk "$PASSWORD"
 	else
 		echo "password in candle_hotspot.txt was too short"
-		echo "password in candle_hotspot.txt was too short" >> /dev/kmsg
 	fi
 
 	if [ -f /home/pi/.webthings/etc/NetworkManager/dnsmasq.d/local-DNS.conf ]; then
-		echo "Candle: hotspot.sh: bringing up hotspot and starting dnsmasq"
-		echo "Candle: hotspot.sh: bringing up hotspot and starting dnsmasq" >> /dev/kmsg
+		
 		if [ -f /boot/firmware/candle_hotspot.txt ]; then
+			echo "Candle: hotspot.sh: bringing up hotspot and starting dnsmasq"
+			echo "Candle: hotspot.sh: bringing up hotspot and starting dnsmasq" >> /dev/kmsg
 			nmcli connection up candle_hotspot
 			dnsmasq -k -d --no-daemon --conf-file=/home/pi/.webthings/etc/NetworkManager/dnsmasq.d/local-DNS.conf
+		else
+			echo "Candle: hotspot.sh: not bringing up hotspot"
+			nmcli connection down candle_hotspot
+			sleep 5
 		fi
 	else
-		echo "Candle: hotspot.sh: error, cannot start dnsmasq" >> /dev/kmsg
+		echo "Candle: hotspot.sh: missing dnsmasq config file" >> /dev/kmsg
 		sleep 30
 	fi
 
