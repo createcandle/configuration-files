@@ -591,10 +591,6 @@ then
   
 fi
 
-
-
-dbus-launch
-
 # make tty accessible for startx
 #chown pi /dev/tty0
 #chown pi /dev/tty1
