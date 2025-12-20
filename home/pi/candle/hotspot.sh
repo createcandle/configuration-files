@@ -2,6 +2,7 @@
 
 if [ ! -f /boot/firmware/candle_hotspot.txt ]; then
 	echo "candle: hotspot.sh: not starting hotspot"
+	echo "Candle: hotspot.sh: not starting hotspot" >> /dev/kmsg
 	exit 0
 fi
 
