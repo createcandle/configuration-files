@@ -56,6 +56,7 @@ candle_kiosk.txt 		# The URL inside this file will be shown in the browser. If i
 candle_kiosk_forced.txt 	# Force the kiosk mode to start on low memory systems (Pi Zero).
 candle_kiosk_require_login.txt 	# If this file exists it will force the user to log back into the kiosk browser after each reboot.
 cloudless.txt 			# Experimental, to launch the controller even if there is no network at all. Use with the Hotspot addon.
+candle_hotspot.txt 			# If present, Candle will start a guest WiFi network. You can change its password by writing it into this file.
 nohotspot.txt 			# Aborts hotspot addon launch. Useful if that feature somehow causes trouble.
 show_mouse_pointer.txt 		# Forces showing the mouse pointer on the HDMI output.
 hide_mouse_pointer.txt 		# Forces hiding the mouse pointer on the HDMI output.
