@@ -54,6 +54,7 @@ if ls -l /dev/fb*; then
 	if [ -f /usr/bin/labwc ] && [ -f /home/pi/candle/wayland_kiosk.sh ]; then 
 		while true; do
     		XDG_RUNTIME_DIR=/run/user/1000 labwc -s '/home/pi/candle/wayland_kiosk.sh'
+			sleep 1
 		done
    		
    
@@ -80,7 +81,8 @@ if ls -l /dev/fb*; then
         #pkill x
         #sleep .2
 
-	    
+	    dbus-launch
+		sleep .2
 		
         if [ -f $BOOT_DIR/show_mouse_pointer.txt ]; then
             echo "Candle: kiosk.sh:  spotted show_mouse_pointer.txt,  starting X and showing mouse pointer"
