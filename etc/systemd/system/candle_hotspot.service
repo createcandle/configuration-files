@@ -4,7 +4,7 @@ After=network.target candle_early.service dbus.service home-pi-.webthings.mount
 #Requires=dbus-setenv.service
 Requires=dbus.service home-pi-.webthings.mount
 #OnFailure=webthings-gateway.update-rollback.service
-ConditionPathExists=/boot/firmware/candle_hotspot.txt
+#ConditionPathExists=/boot/firmware/candle_hotspot.txt
 
 [Service]
 User=root
@@ -14,7 +14,7 @@ StandardError=journal
 WorkingDirectory=/home/pi/
 ExecStartPre=/bin/chmod +x /home/pi/candle/hotspot.sh
 #ExecStart=/bin/bash /home/pi/candle/hotspot.sh
-ExecStart=/home/pi/candle/hotspot.sh
+ExecStart=/home/pi/candle/hotspot.sh                           
 Restart=always
 RestartSec=10s
 
