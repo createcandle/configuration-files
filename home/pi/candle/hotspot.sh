@@ -9,8 +9,13 @@ fi
 sysctl -w net.ipv4.ip_forward=1
 sysctl -w net.ipv6.ip_forward=1
 
-PASSWORD=$(cat /boot/firmware/candle_hotspot.txt)
-
+PASSWORD=""
+if [ -f /boot/firmware/candle_hotspot.txt ]; then
+	PASSWORD=$(cat /boot/firmware/candle_hotspot.txt)
+	echo "Up
+	d hotspot password" >> candle_log.txt 
+fi
+echo "" > /boot/firmware/candle_hotspot.txt
 
 PHY="PHY1"
 
@@ -39,14 +44,18 @@ fi
 
 if ip link show | grep -q "uap0:" ; then
 	MAC=$(nmcli device show wlan0 | grep HWADDR | awk '{print $2}')
-	SHORTMAC=${MAC: -4}
+	SHORTMAC=${MAC: -5}
+	SHORTMAC="${SHORTMAC//:/}"
 	ZEROMAC=${MAC%?}0
 	#ifconfig br0 hw ether $MAC
 	echo "hotspot.sh: short mac address: $SHORTMAC"
 
 	IP4=$(hostname -I | awk '{print $1}')
 	
-	if [ ! iptables -t nat -L -v | grep -q 'uap0' ]; then
+	if iptables -t nat -L -v | grep -q "uap0"; then
+		echo "uap0 already exists in iptables"
+	else
+	
 		
 		
 		# optionally, drop DHCP requests to get an IPV6 address.
@@ -55,6 +64,7 @@ if ip link show | grep -q "uap0:" ; then
 		fi
 		
 		if [ ! -f /boot/firmware/candle_hotspot_allow_access_to_main_network.txt ]; then
+			echo "blocking access of hotspot network to main network"
 			#iptables -A FORWARD -d 192.168.2.2 -m iprange --src-range 192.168.12.2-192.168.12.255 -j DROP
 			#iptables -I INPUT -i uap0 -d <main_network_IP> -j DROP
 			
@@ -65,8 +75,8 @@ if ip link show | grep -q "uap0:" ; then
 		
 		
 		echo "candle: hotspot.sh: adding port redirect rules on hotspot side"
-		iptables -t nat -I PREROUTING -p tcp -d 192.168.0.1/32 --dport 80 -j REDIRECT --to-port 8080
-		iptables -t nat -I PREROUTING -p tcp -d 192.168.0.1/32 --dport 443 -j REDIRECT --to-port 4443
+		iptables -t nat -I PREROUTING -p tcp -d 192.168.12.1/32 --dport 80 -j REDIRECT --to-port 8080
+		iptables -t nat -I PREROUTING -p tcp -d 192.168.12.1/32 --dport 443 -j REDIRECT --to-port 4443
 		
 		# Force all DNS traffic on the hotspot network to go to/through the Candle Controller
 		iptables -t nat -A PREROUTING -i uap0 -p udp --dport 53 -j DNAT --to-destination 192.168.12.1:53
@@ -86,30 +96,37 @@ if ip link show | grep -q "uap0:" ; then
 
 		
 	fi
-	
-	iptables -t nat -L -v
-
 
 	if [ -f /boot/firmware/candle_no_time_server.txt ]; then
 		echo "candle: hotspot.sh: not starting time server"
 	elif [ -f /home/pi/candle/time_server.py ]; then
-		if[ ! ps aux | grep -q 'python3 /home/pi/candle/time_server.py 192.168.12.1 123']; then
-			iptables -t nat -A PREROUTING -i uap0 -p udp --dport 123 -j DNAT --to-destination 192.168.12.1:123
+		
+		if ps aux | grep -q 'python3 /home/pi/candle/time_server.py 192.168.12.1 123'; then
+			echo "timeserver is already running"
+		else
+			echo "starting NTP server"
+			
+			if iptables -t nat -L -v | grep -q "192.168.12.1:123"; then
+				echo "NTP server iptables rule seems to already exist"
+			else
+				iptables -t nat -A PREROUTING -i uap0 -p udp --dport 123 -j DNAT --to-destination 192.168.12.1:123
+			fi
 			python3 /home/pi/candle/time_server.py 192.168.12.1 123 &
 		fi
 	fi
+	
+	iptables -t nat -L -v
 
 	
-	if [ nmcli c show | grep 'uap0' | grep -q 'hotspot' ]; then
-		echo "NetworkManager hotspot seems to already exist"
+	if nmcli c show | grep -q 'candle_hotspot'; then
+		echo "NetworkManager candle_hotspot seems to already exist"
 	else
+		#nmcli c del candle_hotspot
+		#sleep 1
 		
 		nmcli connection add con-name 'candle_hotspot' ifname uap0 type wifi wifi.mode ap wifi.ssid "Candle $SHORTMAC"
 		
-		nmcli connection modify candle_hotspot ipv4.method manual 
-		nmcli connection modify candle_hotspot ipv4.addresses "192.168.12.1/24"
-		nmcli connection modify candle_hotspot ipv4.gateway "192.168.12.1"
-		nmcli connection modify candle_hotspot ipv4.dns "192.168.12.1"
+		nmcli connection modify candle_hotspot ipv4.addresses "192.168.12.1/24" ipv4.method manual ipv4.gateway "192.168.12.1" ipv4.dns "192.168.12.1"
 		
 		# this was necessary for hostapd to keep the connection stable. Is it needed for NetworkManager too?
 		#nmcli con modify candle_hotspot wifi.cloned-mac-address $ZEROMAC
@@ -121,9 +138,12 @@ if ip link show | grep -q "uap0:" ; then
 	#nmcli con modify hotspot wifi-sec.pmf disable
 
 
-	if [ $PASSWORD -ge 8 ]; then
+	#if [ "$PASSWORD" -ge 8 ]; then
+	if [[ $PASSWORD =~ ^........+ ]]; then
 		echo "adding/updating password for hotspot"
-		nmcli con modify HotSpot wifi-sec.key-mgmt wpa-psk wifi-sec.psk "$PASSWORD"
+		nmcli con modify candle_hotspot wifi-sec.key-mgmt wpa-psk wifi-sec.psk "$PASSWORD"
+	else
+		echo "password in candle_hotspot.txt was too short"
 	fi
 
 	if [ -f /home/pi/.webthings/etc/NetworkManager/dnsmasq.d/local-DNS.conf ]; then
