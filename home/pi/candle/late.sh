@@ -50,10 +50,10 @@ if [ -f /usr/sbin/iptables ] ; then
 	else
 		echo "Candle late: Adding IP tables for Candle Controller port redirect for IP4: $IP4"
 	    echo "Candle late: adding iptables port 80 and 433 redirect rules for IP4: $IP4" >> /dev/kmsg
-	    iptables -t mangle -A PREROUTING -p tcp -d $IP4 --dport 80 -j MARK --set-mark 1
-	    iptables -t mangle -A PREROUTING -p tcp -d $IP4 --dport 443 -j MARK --set-mark 1
-	    iptables -t nat -A PREROUTING -p tcp -d $IP4 --dport 80 -j REDIRECT --to-port 8080
-	    iptables -t nat -A PREROUTING -p tcp -d $IP4 --dport 443 -j REDIRECT --to-port 4443
+	    iptables -t mangle -I PREROUTING -p tcp -d $IP4 --dport 80 -j MARK --set-mark 1
+	    iptables -t mangle -I PREROUTING -p tcp -d $IP4 --dport 443 -j MARK --set-mark 1
+	    iptables -t nat -I PREROUTING -p tcp -d $IP4 --dport 80 -j REDIRECT --to-port 8080
+	    iptables -t nat -I PREROUTING -p tcp -d $IP4 --dport 443 -j REDIRECT --to-port 4443
 	    iptables -I INPUT -m state --state NEW -m tcp -p tcp -d $IP4 --dport 8080 -m mark --mark 1 -j ACCEPT
 	    iptables -I INPUT -m state --state NEW -m tcp -p tcp -d $IP4 --dport 4443 -m mark --mark 1 -j ACCEPT
 	fi
