@@ -36,6 +36,29 @@ else
 	fi
 fi
 
+IP4=$(hostname -I | awk '{print $1}')
+
+if [ -d /boot/firmware/ ]; then
+	echo $IP4 > /boot/firmware/candle_last_known_ip_address.txt
+fi
+
+# Add firewall rules
+if [ -f /usr/sbin/iptables ] ; then
+	if iptables --list | grep 4443; then
+	    echo "IPTABLES ALREADY ADDED"
+		echo "Candle early: iptables seem already added" >> /dev/kmsg
+	else
+	    echo "Candle early: adding iptable rules" >> /dev/kmsg
+	    iptables -t mangle -A PREROUTING -p tcp -d $IP4 --dport 80 -j MARK --set-mark 1
+	    iptables -t mangle -A PREROUTING -p tcp -d $IP4 --dport 443 -j MARK --set-mark 1
+	    iptables -t nat -A PREROUTING -p tcp -d $IP4 --dport 80 -j REDIRECT --to-port 8080
+	    iptables -t nat -A PREROUTING -p tcp -d $IP4 --dport 443 -j REDIRECT --to-port 4443
+	    iptables -I INPUT -m state --state NEW -m tcp -p tcp -d $IP4 --dport 8080 -m mark --mark 1 -j ACCEPT
+	    iptables -I INPUT -m state --state NEW -m tcp -p tcp -d $IP4 --dport 4443 -m mark --mark 1 -j ACCEPT
+	fi
+else
+	echo "Candle early: iptables not installed?" >> /dev/kmsg
+fi
 
 
 # RUN POST BOOTUP SCRIPT IF IT EXISTS
