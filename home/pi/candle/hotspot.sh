@@ -10,8 +10,8 @@ sysctl -w net.ipv4.ip_forward=1
 sysctl -w net.ipv6.conf.all.forwarding=1
 
 PASSWORD=""
-if [ -f /boot/firmware/candle_hotspot.txt ]; then
-	PASSWORD=$(cat /boot/firmware/candle_hotspot.txt)
+if [ -f /boot/firmware/candle_hotspot_password.txt ]; then
+	PASSWORD=$(cat /boot/firmware/candle_hotspot_password.txt)
 	#echo "Updating hotspot password" >> candle_log.txt 
 fi
 #echo "" > /boot/firmware/candle_hotspot.txt
