@@ -23,15 +23,6 @@ if [ -f /home/pi/dnsmasq_log.txt ]; then
 fi
 
 
-PHY="PHY1"
-
-if iw list | grep -q phy0; then
-    PHY="PHY0"
-fi
-
-echo "PHY: $PHY"
-
-
 # Create an alias for 'mlan0' wifi to 'wlan0' if needed
 if ip link show | grep -q "mlan0:" ; then
 	echo "Candle: early.sh: spotted mlan0"
@@ -232,9 +223,7 @@ if [ -e $BOOT_DIR/candle_ssh_once.txt ];
 then
   systemctl start ssh.service
   rm $BOOT_DIR/candle_ssh_once.txt
-else
-  # Just enable SSH
-  if [ -e $BOOT_DIR/candle_ssh.txt ] || [ -e $BOOT_DIR/candle_ssh_keep.txt ]; 
+elif [ -e $BOOT_DIR/candle_ssh.txt ] || [ -e $BOOT_DIR/candle_ssh_keep.txt ]; 
   then
     systemctl start ssh.service
   fi
