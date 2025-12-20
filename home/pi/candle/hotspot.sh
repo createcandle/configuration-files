@@ -151,6 +151,9 @@ if ip link show | grep -q "uap0:" ; then
 		echo "Candle: hotspot.sh: bringing up hotspot and starting dnsmasq" >> /dev/kmsg
 		nmcli connection up candle_hotspot
 		dnsmasq -k -d --no-daemon --conf-file=/home/pi/.webthings/etc/NetworkManager/dnsmasq.d/local-DNS.conf
+	else
+		echo "Candle: hotspot.sh: error, cannot start dnsmasq" >> /dev/kmsg
+		sleep 30
 	fi
 
 fi
