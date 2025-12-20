@@ -7,13 +7,12 @@ if [ ! -f /boot/firmware/candle_hotspot.txt ]; then
 fi
 
 sysctl -w net.ipv4.ip_forward=1
-sysctl -w net.ipv6.ip_forward=1
+sysctl -w net.ipv6.conf.all.forwarding=1
 
 PASSWORD=""
 if [ -f /boot/firmware/candle_hotspot.txt ]; then
 	PASSWORD=$(cat /boot/firmware/candle_hotspot.txt)
-	echo "Up
-	d hotspot password" >> candle_log.txt 
+	echo "Updating hotspot password" >> candle_log.txt 
 fi
 echo "" > /boot/firmware/candle_hotspot.txt
 
@@ -109,6 +108,7 @@ if ip link show | grep -q "uap0:" ; then
 			if iptables -t nat -L -v | grep -q "192.168.12.1:123"; then
 				echo "NTP server iptables rule seems to already exist"
 			else
+				echo "adding NTP server iptables rule"
 				iptables -t nat -A PREROUTING -i uap0 -p udp --dport 123 -j DNAT --to-destination 192.168.12.1:123
 			fi
 			python3 /home/pi/candle/time_server.py 192.168.12.1 123 &
