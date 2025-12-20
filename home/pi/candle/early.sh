@@ -31,36 +31,12 @@ echo "PHY: $PHY"
 
 # Create an alias for 'mlan0' wifi to 'wlan0' if needed
 if ip link show | grep -q "mlan0:" ; then
-	echo "whoa, spotted mlan0"
+	echo "Candle: early.sh: spotted mlan0"
 	if ! ip link show | grep -q "wlan0:" ; then
-			echo "Candle: adding wifi wlan0 alias for mlan0" >> /dev/kmsg
+			echo "Candle: early.sh: adding wifi wlan0 alias for mlan0" >> /dev/kmsg
 			ip link property add dev mlan0 altname wlan0
 	fi
-        if ! ip link show | grep -q "uap0:" ; then
-                echo "uap0 does not exist yet"
-                /sbin/iw dev mlan0 interface add uap0 type __ap
-        fi
-
-        
-elif ip link show | grep -q "wlan0:" ; then
-	echo "wlan0 exists"
-	if ! ip link show | grep -q "uap0:" ; then
-		echo "uap0 does not exist yet"
-		/sbin/iw dev wlan0 interface add uap0 type __ap
-	fi
 fi
-
-if ip link show | grep -q "uap0:" ; then
-MAC=$(nmcli device show wlan0 | grep HWADDR | awk '{print $2}')
-MAC=${MAC%?}0
-#ifconfig br0 hw ether $MAC
-echo "early: mac ending with zero: $MAC"
-fi
-
-
-
-
-
 
 
 
@@ -122,36 +98,18 @@ if [ -e "/bin/ply-image" ] && [ -e /dev/fb0 ] && [ -f "$BOOT_DIR/splash.png" ] &
 	fi
 fi
 
-# Add firewall rules
-if [ -f /usr/sbin/iptables ] ; then
-	if iptables --list | grep 4443; then
-	    echo "IPTABLES ALREADY ADDED"
-		echo "Candle early: iptables seem already added" >> /dev/kmsg
-	else
-	    echo "Candle early: adding iptable rules" >> /dev/kmsg
-	    iptables -t mangle -A PREROUTING -p tcp --dport 80 -j MARK --set-mark 1
-	    iptables -t mangle -A PREROUTING -p tcp --dport 443 -j MARK --set-mark 1
-	    iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-port 8080
-	    iptables -t nat -A PREROUTING -p tcp --dport 443 -j REDIRECT --to-port 4443
-	    iptables -I INPUT -m state --state NEW -m tcp -p tcp --dport 8080 -m mark --mark 1 -j ACCEPT
-	    iptables -I INPUT -m state --state NEW -m tcp -p tcp --dport 4443 -m mark --mark 1 -j ACCEPT
-	fi
-else
-	echo "Candle early: iptables not installed?" >> /dev/kmsg
-fi
+
 
 
 # Set DHCPCD value
 #sysctl -w net.ipv6.neigh.wlan0.retrans_time_ms=1000
 
-if [ -f $BOOT_DIR/candle_island.txt ] && [ -f /home/pi.webthings/addons/hotspot/island.sh ]
-then
-    echo "Candle: early: starting Island mode" >> /dev/kmsg
-	chmod +x /home/pi.webthings/addons/hotspot/island.sh
-    /home/pi.webthings/addons/hotspot/island.sh &
-    #sleep 60
-    #systemctl stop getty@tty3.service 
-fi
+#if [ -f $BOOT_DIR/candle_island.txt ] && [ -f /home/pi.webthings/addons/hotspot/island.sh ]
+#then
+#    echo "Candle: early: starting Island mode" >> /dev/kmsg
+#	chmod +x /home/pi.webthings/addons/hotspot/island.sh
+#    /home/pi.webthings/addons/hotspot/island.sh &
+#fi
 
 # For bluetooth keyboard
 if lsmod | grep hidp &> /dev/null ; then
