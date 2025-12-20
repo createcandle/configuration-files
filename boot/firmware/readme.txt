@@ -4,7 +4,11 @@ This is the disk of a Candle Controller. Learn more at www.candlesmarthome.com
 If you are having trouble, visit: 
 www.candlesmarthome.com/troubleshooting
 
-- Output to HDMI is normally only enabled for systems with more than 1Gb of memory, but this can be changes. See below.
+To attempt to create an emergency backup, place a textfile called "candle_make_emergency_backup.txt" on the SD card. Then boot the Candle Controller again with the SD card, and after a minute or two, turn it off again. You should now hopefully find a backup file on the SD card.
+
+- Output to HDMI is normally only enabled for systems with more than 1Gb of memory, but this can be forced. See below.
+
+
 
 The information below is for advanced users.
 
@@ -70,6 +74,7 @@ candle_recovery_type.txt        # The contents of this file overrides the recove
 candle_stay_in_recovery.txt     #  The recovery system will normally automaticallty reboot after the update is done. It stays in recovery so you can inspect things.
 
 # TOOLS
+candle_make_emergency_backup.txt $ Make an emergency backup, which will be placed on the boot partition of the SD card.
 generate_debug.txt 		# Will generate a file called debug.txt which contains details about the state of the system.
 generate_raspinfo.txt 		# Will generate a file called raspinfo.txt which contains details about the operating system.
 candle_forget_wifi.txt		# Will clear the currently stored wifi details (ssid, password) on the next boot.
