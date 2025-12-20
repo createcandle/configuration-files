@@ -1,6 +1,7 @@
 #exec chromium
 #exec openbox-session
 
+dbus-launch
 
 set -x #echo on
 
