@@ -219,16 +219,13 @@ fi
 
 
 # Enable SSH once
-if [ -e $BOOT_DIR/candle_ssh_once.txt ]; 
-then
-  systemctl start ssh.service
-  rm $BOOT_DIR/candle_ssh_once.txt
+if [ -e $BOOT_DIR/candle_ssh_once.txt ]; then
+	systemctl start ssh.service
+	rm $BOOT_DIR/candle_ssh_once.txt
 fi
 
-if [ -e $BOOT_DIR/candle_ssh.txt ] || [ -e $BOOT_DIR/candle_ssh_keep.txt ]; 
-  then
+if [ -e $BOOT_DIR/candle_ssh.txt ] || [ -e $BOOT_DIR/candle_ssh_keep.txt ]; then
     systemctl start ssh.service
-  fi
 fi
 
 
