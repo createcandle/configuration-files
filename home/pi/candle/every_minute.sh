@@ -30,14 +30,3 @@ if cat /home/pi/.webthings/etc/wpa_supplicant/wpa_supplicant.conf | grep -q psk=
         sed -i "s'\\\"${current_pass}\\\"'${phrase}'" /home/pi/.webthings/etc/wpa_supplicant/wpa_supplicant.conf
     fi
 fi
-
-# limit the size of the dnsmasq log
-# limit the size of the dnsmasq log
-if [ -f /home/pi/dnsmasq_log.txt ]; then
-	cp /home/pi/dnsmasq_log.txt /home/pi/dnsmasq_now.txt
-	chown pi:pi /home/pi/dnsmasq_now.txt
-fi
-echo "" > /home/pi/dnsmasq_log.txt
-if ps aux | grep -q 'dnsmasq -k -d'; then
-	kill -USR2 `pidof dnsmasq`
-fi
