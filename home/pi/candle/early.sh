@@ -211,7 +211,7 @@ fi
 if [ -e $BOOT_DIR/emergency.txt ]; 
 then
   systemctl start ssh.service
-  chvt 1
+  chvt 3
   echo "Emergency file detected. Stopping (120 minutes sleep)" >> /dev/kmsg
   sleep 7200
   exit 0
