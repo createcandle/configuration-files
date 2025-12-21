@@ -74,26 +74,21 @@ if ip link show | grep -q "uap0:" ; then
 		
 		
 		echo "candle: hotspot.sh: adding port redirect rules on hotspot side"
-		iptables -t nat -I PREROUTING -p tcp -d 192.168.12.1/32 --dport 80 -j REDIRECT --to-port 8080
-		iptables -t nat -I PREROUTING -p tcp -d 192.168.12.1/32 --dport 443 -j REDIRECT --to-port 4443
+		#iptables -t nat -I PREROUTING -p -i uap0 tcp -d 192.168.12.1/32 --dport 80 -j REDIRECT --to-port 8080
+		#iptables -t nat -I PREROUTING -p -i uap0 tcp -d 192.168.12.1/32 --dport 443 -j REDIRECT --to-port 4443
 		
 		# Force all DNS traffic on the hotspot network to go to/through the Candle Controller
 		iptables -t nat -A PREROUTING -i uap0 -p udp --dport 53 -j DNAT --to-destination 192.168.12.1:53
 		
 		echo "candle: hotspot.sh: adding iptables forwarding rules"
-		iptables -A FORWARD -i uap0 -o eth0 -j ACCEPT
-		#iptables -A FORWARD -i eth0 -o uap0 -j ACCEPT
+		iptables -A FORWARD -i uap0 -j ACCEPT
+		iptables -A FORWARD -o uap0 -m state --state ESTABLISHED,RELATED -j ACCEPT
 		
-		iptables -A FORWARD -i uap0 -o wlan0 -j ACCEPT
-		#iptables -A FORWARD -i wlan0 -o uap0 -j ACCEPT
-		
-		iptables -A FORWARD -d 192.168.12.0/24 -o uap0 -j ACCEPT
-		ip6tables -A FORWARD -d ff02::1 -o uap0 -j ACCEPT
+		ip6tables -A FORWARD -d ff02::1 -o uap0 -m state --state ESTABLISHED,RELATED -j ACCEPT
 		
 		iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
 		iptables -t nat -A POSTROUTING -o wlan0 -j MASQUERADE
 
-		
 	fi
 
 	if [ -f /boot/firmware/candle_no_time_server.txt ]; then
