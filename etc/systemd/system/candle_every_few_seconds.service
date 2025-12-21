@@ -1,0 +1,14 @@
+[Unit]
+Description=Candle every few seconds service
+After=candle_early.service
+ConditionPathExists=/home/pi/candle/every_few_seconds.sh
+
+[Service]
+Type=simple
+User=root
+ExecStartPre=/bin/chmod +x /home/pi/candle/every_few_seconds.sh
+ExecStart=/bin/bash /home/pi/candle/every_few_seconds.sh
+StandardOutput=journal
+
+[Install]
+WantedBy=multi-user.target
