@@ -73,12 +73,10 @@ if ip link show | grep -q "uap0:" ; then
 		
 		
 		
-		echo "candle: hotspot.sh: adding port redirect rules on hotspot side"
-		iptables -t nat -I PREROUTING -p -i uap0 tcp -d 192.168.12.1/32 --dport 80 -j REDIRECT --to-port 8080
-		iptables -t nat -I PREROUTING -p -i uap0 tcp -d 192.168.12.1/32 --dport 443 -j REDIRECT --to-port 4443
+		
 		
 		# Force all DNS traffic on the hotspot network to go to/through the Candle Controller
-		iptables -t nat -A PREROUTING -i uap0 -p udp --dport 53 -j DNAT --to-destination 192.168.12.1:53
+		iptables -t nat -A PREROUTING -i uap0 -s 192.168.12.0/24 -p udp --dport 53 -j DNAT --to-destination 192.168.12.1:53
 		
 		echo "candle: hotspot.sh: adding iptables forwarding rules"
 		iptables -A FORWARD -i uap0 -j ACCEPT
@@ -90,7 +88,10 @@ if ip link show | grep -q "uap0:" ; then
 		iptables -t nat -A POSTROUTING -s 192.168.12.0/24 ! -d 192.168.12.0/24  -j MASQUERADE
 		ip6tables -t nat -A POSTROUTING -s ff02::1 ! -d ff02::1  -j MASQUERADE
 
-		
+
+		echo "candle: hotspot.sh: adding port redirect rules on hotspot side"
+		iptables -I PREROUTING -p tcp -i uap0 -s 192.168.12.0/24 -d 192.168.12.1/32 --dport 80 -j REDIRECT --to-port 8080
+		iptables -I PREROUTING -p tcp -i uap0 -s 192.168.12.0/24 -d 192.168.12.1/32 --dport 443 -j REDIRECT --to-port 4443
 		
 		
 
