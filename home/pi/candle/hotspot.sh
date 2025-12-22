@@ -127,7 +127,7 @@ if ip link show | grep -q "uap0:" ; then
 		
 		nmcli connection add con-name 'candle_hotspot' ifname uap0 type wifi wifi.mode ap wifi.ssid "Candle $SHORTMAC"
 		
-		nmcli connection modify candle_hotspot ipv4.addresses "192.168.12.1/24" ipv4.method manual ipv4.gateway "192.168.12.1" ipv4.dns "192.168.12.1" ipv4.dns-priority 1000
+		nmcli connection modify candle_hotspot ipv4.addresses "192.168.12.1/24" ipv4.method manual ipv4.gateway "192.168.12.1" ipv4.dns "192.168.12.1" ipv4.dns-priority 1000 ipv6.dns-priority 1000
 		
 		# this was necessary for hostapd to keep the connection stable. Is it needed for NetworkManager too?
 		#nmcli con modify candle_hotspot wifi.cloned-mac-address $ZEROMAC
