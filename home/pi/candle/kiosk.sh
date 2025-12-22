@@ -84,11 +84,14 @@ if ls -l /dev/fb*; then
 	    dbus-launch
 		sleep .2
 		
-        if [ -f $BOOT_DIR/show_mouse_pointer.txt ]; then
+        if [ ! -f $BOOT_DIR/hide_mouse_pointer.txt ]; then
             echo "Candle: kiosk.sh:  spotted show_mouse_pointer.txt,  starting X and showing mouse pointer"
+			if which unclutter; then
+                unclutter -idle 5 -root -display :0
+            fi
             startx
 
-        elif [ -f $BOOT_DIR/hide_mouse_pointer.txt ]; then
+        elif [ -f $BOOT_DIR/candle_hide_mouse_pointer.txt ]; then
             echo "Candle: kiosk.sh:  spotted hide_mouse_pointer.txt,  starting X and hiding mouse pointer"
             startx -- -nocursor
 
