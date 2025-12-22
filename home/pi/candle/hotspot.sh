@@ -74,8 +74,8 @@ if ip link show | grep -q "uap0:" ; then
 		
 		
 		echo "candle: hotspot.sh: adding port redirect rules on hotspot side"
-		#iptables -t nat -I PREROUTING -p -i uap0 tcp -d 192.168.12.1/32 --dport 80 -j REDIRECT --to-port 8080
-		#iptables -t nat -I PREROUTING -p -i uap0 tcp -d 192.168.12.1/32 --dport 443 -j REDIRECT --to-port 4443
+		iptables -t nat -I PREROUTING -p -i uap0 tcp -d 192.168.12.1/32 --dport 80 -j REDIRECT --to-port 8080
+		iptables -t nat -I PREROUTING -p -i uap0 tcp -d 192.168.12.1/32 --dport 443 -j REDIRECT --to-port 4443
 		
 		# Force all DNS traffic on the hotspot network to go to/through the Candle Controller
 		iptables -t nat -A PREROUTING -i uap0 -p udp --dport 53 -j DNAT --to-destination 192.168.12.1:53
@@ -126,7 +126,7 @@ if ip link show | grep -q "uap0:" ; then
 		
 		nmcli connection add con-name 'candle_hotspot' ifname uap0 type wifi wifi.mode ap wifi.ssid "Candle $SHORTMAC"
 		
-		nmcli connection modify candle_hotspot ipv4.addresses "192.168.12.1/24" ipv4.method manual ipv4.gateway "192.168.12.1" ipv4.dns "192.168.12.1"
+		nmcli connection modify candle_hotspot ipv4.addresses "192.168.12.1/24" ipv4.method manual ipv4.gateway "192.168.12.1" ipv4.dns "192.168.12.1" ipv4.dns-priority 1000
 		
 		# this was necessary for hostapd to keep the connection stable. Is it needed for NetworkManager too?
 		#nmcli con modify candle_hotspot wifi.cloned-mac-address $ZEROMAC
