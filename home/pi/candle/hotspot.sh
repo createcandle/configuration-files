@@ -83,11 +83,16 @@ if ip link show | grep -q "uap0:" ; then
 		echo "candle: hotspot.sh: adding iptables forwarding rules"
 		iptables -A FORWARD -i uap0 -j ACCEPT
 		iptables -A FORWARD -o uap0 -m state --state ESTABLISHED,RELATED -j ACCEPT
-		
 		ip6tables -A FORWARD -d ff02::1 -o uap0 -m state --state ESTABLISHED,RELATED -j ACCEPT
+		#iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+		#iptables -t nat -A POSTROUTING -o wlan0 -j MASQUERADE
+
+		iptables -t nat -A POSTROUTING -s 192.168.12.0/24 ! -d 192.168.12.0/24  -j MASQUERADE
+		ip6tables -t nat -A POSTROUTING -s ff02::1 ! -d ff02::1  -j MASQUERADE
+
 		
-		iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
-		iptables -t nat -A POSTROUTING -o wlan0 -j MASQUERADE
+		
+		
 
 	fi
 
