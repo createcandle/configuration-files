@@ -44,10 +44,10 @@ fi
 
 # Add firewall rules
 if [ -f /usr/sbin/iptables ] ; then
-	if iptables --list | grep 4443; then
-	    echo "Candle late: IPTABLES ALREADY ADDED"
-		echo "Candle late: iptables seem already added" >> /dev/kmsg
-	else
+	#if iptables --list | grep 4443; then
+	#    echo "Candle late: IPTABLES ALREADY ADDED"
+	#	echo "Candle late: iptables seem already added" >> /dev/kmsg
+	#else
 		echo "Candle late: Adding IP tables for Candle Controller port redirect for IP4: $IP4"
 	    echo "Candle late: adding iptables port 80 and 433 redirect rules for IP4: $IP4" >> /dev/kmsg
 	    iptables -t mangle -I PREROUTING -s $IP4/24 -p tcp -d $IP4 --dport 80 -j MARK --set-mark 1
@@ -57,7 +57,7 @@ if [ -f /usr/sbin/iptables ] ; then
 		iptables -I INPUT -s $IP4/24 -m state --state NEW -m tcp -p tcp -d $IP4 --dport 8080 -m mark --mark 1 -j ACCEPT
 		iptables -I INPUT -s $IP4/24 -m state --state NEW -m tcp -p tcp -d $IP4 --dport 4443 -m mark --mark 1 -j ACCEPT
 
-	fi
+	#fi
 else
 	echo "Candle later: error: iptables not installed?" >> /dev/kmsg
 fi
