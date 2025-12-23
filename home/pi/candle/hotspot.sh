@@ -142,6 +142,12 @@ if ip link show | grep -q "uap0:" ; then
 		nmcli connection modify candle_hotspot wifi.powersave 2
 	fi
 
+	if [ -f /boot/firmware/candle_wifi_power_save.txt ]; then
+		#nmcli connection modify candle_hotspot wifi.powersave 1
+		nmcli radio wifi powersave on
+	fi
+	
+
 	# FOR TROUBLESHOOTING
 	#nmcli con modify hotspot wifi-sec.pmf disable
 
