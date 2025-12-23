@@ -1,6 +1,10 @@
 #!/bin/bash
 set +e
 
+if [ -f /boot/firmware/emergency.txt ]; then
+	exit 0
+fi
+
 #/bin/echo "in late" | sudo tee -a /dev/kmsg
 echo "$(date) - Candle: in late" >> /dev/kmsg
 
