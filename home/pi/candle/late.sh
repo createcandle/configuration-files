@@ -25,7 +25,7 @@ echo "Candle: late: waiting for IP address"
 for i in {1..30}
 do
     #echo "current hostname: $(hostname -I)"
-	IPS=$(hostname -I | sed -En "s/(.*) 192.168.12.1/\1/p")
+	IPS=$(hostname -I | sed -En "s/(.*) 192.168.12.1/\1/p" | xargs)
     if [ "$IPS" = "" ]
     then
 		echo "Candle: late.sh: no network yet $i" >> /dev/kmsg
@@ -48,7 +48,7 @@ else
 fi
 
 #IP4=$(hostname -I | awk '{print $1}')
-IP4=$(hostname -I | sed -En "s/(.*) 192.168.12.1/\1/p") | xargs
+IP4=$(hostname -I | sed -En "s/(.*) 192.168.12.1/\1/p" | xargs)
 
 if [ -n "$IP4" ]; then
 
@@ -58,7 +58,7 @@ if [ -n "$IP4" ]; then
 
 	# Add firewall rules
 	if [ -f /usr/sbin/iptables ] ; then
-		echo "Candle late: Adding IP tables for Candle Controller port redirect for IP4: ->$IP4<-"
+		echo "Candle late: Adding IP tables for Candle Controller port redirect for IP4: -->$IP4<--"
 	    echo "Candle late: adding iptables port 80 and 433 redirect rules for IP4: $IP4" >> /dev/kmsg
 	    
 		iptables -t mangle -I PREROUTING -s $IP4/24 -p tcp -d $IP4 --dport 80 -j MARK --set-mark 1
