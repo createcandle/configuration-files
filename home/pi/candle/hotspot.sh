@@ -76,8 +76,7 @@ if ip link show | grep -q "uap0:" ; then
 			#iptables -A FORWARD -i uap0 -m iprange --src-range 192.168.12.2-192.168.12.255 -o wlan0 -d 192.168.0.0/16 -j DROP
 		fi
 		
-		
-		
+
 		
 		
 		# Force all DNS traffic on the hotspot network to go to/through the Candle Controller
@@ -104,7 +103,15 @@ if ip link show | grep -q "uap0:" ; then
 			iptables -I FORWARD -d 172.16.0.0/12 -m iprange --src-range 192.168.12.2-192.168.12.255 -j DROP
 			iptables -I FORWARD -d 10.0.0.0/8 -m iprange --src-range 192.168.12.2-192.168.12.255 -j DROP
 		fi
-		
+
+
+		# Redirect Candle UI ports
+		iptables -t mangle -I PREROUTING -s 192.168.12.0/24 -p tcp -d 192.168.12.1 --dport 80 -j MARK --set-mark 1
+		iptables -t mangle -I PREROUTING -s 192.168.12.0/24 -p tcp -d 192.168.12.1 --dport 443 -j MARK --set-mark 1
+		iptables -t nat -I PREROUTING -s 192.168.12.0/24 -p tcp -d 192.168.12.1 --dport 80 -j REDIRECT --to-port 8080
+		iptables -t nat -I PREROUTING -s 192.168.12.0/24 -p tcp -d 192.168.12.1 --dport 443 -j REDIRECT --to-port 4443
+		iptables -I INPUT -s 192.168.12.0/24 -m state --state NEW -m tcp -p tcp -d 192.168.12.1 --dport 8080 -m mark --mark 1 -j ACCEPT
+		iptables -I INPUT -s 192.168.12.0/24 -m state --state NEW -m tcp -p tcp -d 192.168.12.1 --dport 4443 -m mark --mark 1 -j ACCEPT
 
 	fi
 
