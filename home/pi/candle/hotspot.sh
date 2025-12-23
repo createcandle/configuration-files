@@ -47,9 +47,15 @@ fi
 
 if ip link show | grep -q "uap0:" ; then
 	MAC=$(nmcli device show wlan0 | grep HWADDR | awk '{print $2}')
-	SHORTMAC=${MAC: -5}
-	SHORTMAC="${SHORTMAC//:/}"
 	ZEROMAC=${MAC%?}0
+	
+	SHORTMAC=${MAC: -2}
+	#SHORTMAC="${SHORTMAC//:/}"
+	RANDOMCHARS=$(tr -dc A-Z0-9 </dev/urandom | head -c 2; echo '')
+	SHORTMAC=$(echo "$SHORTMAC$RANDOMCHARS")
+	RANDOMCHARS=$(tr -dc 'A-Z0-9' < /dev/urandom | head -c 2); 
+	SHORTMAC=$(echo "$SHORTMAC$RANDOMCHARS");
+	
 	#ifconfig br0 hw ether $MAC
 	echo "hotspot.sh: short mac address: $SHORTMAC"
 
