@@ -25,7 +25,8 @@ echo "Candle: late: waiting for IP address"
 for i in {1..30}
 do
     #echo "current hostname: $(hostname -I)"
-    if [ "$(hostname -I)" = "" ]
+	IPS=$(hostname -I | sed -En "s/(.*) 192.168.12.1/\1/p")
+    if [ "$IPS" = "" ]
     then
 		echo "Candle: late.sh: no network yet $i" >> /dev/kmsg
 	    echo "no network yet $i"
@@ -46,38 +47,39 @@ else
 	fi
 fi
 
-IP4=$(hostname -I | awk '{print $1}')
+#IP4=$(hostname -I | awk '{print $1}')
+IP4=$(hostname -I | sed -En "s/(.*) 192.168.12.1/\1/p") | xargs
 
-if [ -d /boot/firmware/ ]; then
-	echo $IP4 > /boot/firmware/candle_last_known_ip_address.txt
-fi
+if [ -n "$IP4" ]; then
 
-# Add firewall rules
-if [ -f /usr/sbin/iptables ] ; then
-	#if iptables --list | grep 4443; then
-	#    echo "Candle late: IPTABLES ALREADY ADDED"
-	#	echo "Candle late: iptables seem already added" >> /dev/kmsg
-	#else
-		echo "Candle late: Adding IP tables for Candle Controller port redirect for IP4: $IP4"
+	if [ -d /boot/firmware/ ]; then
+		echo $IP4 > /boot/firmware/candle_last_known_ip_address.txt
+	fi
+
+	# Add firewall rules
+	if [ -f /usr/sbin/iptables ] ; then
+		echo "Candle late: Adding IP tables for Candle Controller port redirect for IP4: ->$IP4<-"
 	    echo "Candle late: adding iptables port 80 and 433 redirect rules for IP4: $IP4" >> /dev/kmsg
-	    iptables -t mangle -I PREROUTING -s $IP4/24 -p tcp -d $IP4 --dport 80 -j MARK --set-mark 1
+	    
+		iptables -t mangle -I PREROUTING -s $IP4/24 -p tcp -d $IP4 --dport 80 -j MARK --set-mark 1
 		iptables -t mangle -I PREROUTING -s $IP4/24 -p tcp -d $IP4 --dport 443 -j MARK --set-mark 1
 		iptables -t nat -I PREROUTING -s $IP4/24 -p tcp -d $IP4 --dport 80 -j REDIRECT --to-port 8080
 		iptables -t nat -I PREROUTING -s $IP4/24 -p tcp -d $IP4 --dport 443 -j REDIRECT --to-port 4443
 		iptables -I INPUT -s $IP4/24 -m state --state NEW -m tcp -p tcp -d $IP4 --dport 8080 -m mark --mark 1 -j ACCEPT
 		iptables -I INPUT -s $IP4/24 -m state --state NEW -m tcp -p tcp -d $IP4 --dport 4443 -m mark --mark 1 -j ACCEPT
+	else
+		echo "Candle later: error: iptables not installed?" >> /dev/kmsg
+	fi
 
-	#fi
-else
-	echo "Candle later: error: iptables not installed?" >> /dev/kmsg
 fi
+
 
 
 # RUN POST BOOTUP SCRIPT IF IT EXISTS
 # These scripts are allowed to run in paralel with the controller, for example so that their output can be shown in the UI
 if [ -f $BOOT_DIR/post_bootup_actions.sh ]
 then
-  echo " "
+  echo
   echo "Candle: late.sh: detected post_bootup_actions.sh file." >> /dev/kmsg
   echo "Candle: late.sh: detected post_bootup_actions.sh file." >> $BOOT_DIR/candle_log.txt
 
