@@ -5,14 +5,20 @@ if [ -f /boot/firmware/emergency.txt ]; then
 	exit 0
 fi
 
-#/bin/echo "in late" | sudo tee -a /dev/kmsg
-echo "$(date) - Candle: in late" >> /dev/kmsg
 
 BOOT_DIR="/boot"
 if lsblk | grep -q $BOOT_DIR/firmware; then
     #echo "firmware partition is mounted at $BOOT_DIR/firmware"
     BOOT_DIR="$BOOT_DIR/firmware"
 fi
+
+if [ -f $BOOT_DIR/emergency.txt ]; then
+	exit 0
+fi
+
+#/bin/echo "in late" | sudo tee -a /dev/kmsg
+echo "$(date) - Candle: in late" >> /dev/kmsg
+
 
 # Wait for IP address for at most 30 seconds
 echo "Candle: late: waiting for IP address"
