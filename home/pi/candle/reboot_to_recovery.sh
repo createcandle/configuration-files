@@ -6,6 +6,10 @@ if lsblk | grep -q $BOOT_DIR/firmware; then
     BOOT_DIR="$BOOT_DIR/firmware"
 fi
 
+if [ -f $BOOT_DIR/emergency.txt ]; then
+	exit 0
+fi
+
 echo "in reboot to recovery"
 echo "Candle: reboot to recovery activated by holding ALT key" >> /dev/kmsg
 echo "Candle: reboot to recovery activated by holding ALT key" >> $BOOT_DIR/candle_log.txt
