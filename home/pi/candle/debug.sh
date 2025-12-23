@@ -152,7 +152,11 @@ echo
 echo
 echo "--------------------------------------------- systemctl"
 echo
-echo "systemd enabled"
+echo "systemd timers"
+systemctl list-timers
+echo
+echo
+echo "systemd enabled services"
 systemctl list-unit-files --state=enabled --no-pager
 echo
 echo 
