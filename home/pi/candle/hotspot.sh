@@ -93,11 +93,12 @@ if ip link show | grep -q "uap0:" ; then
 		iptables -I PREROUTING -p tcp -i uap0 -s 192.168.12.0/24 -d 192.168.12.1/32 --dport 80 -j REDIRECT --to-port 8080
 		iptables -I PREROUTING -p tcp -i uap0 -s 192.168.12.0/24 -d 192.168.12.1/32 --dport 443 -j REDIRECT --to-port 4443
 
-
-		iptables -I FORWARD -d 192.168.0.0/16 -m iprange --src-range 192.168.12.2-192.168.12.255 -j DROP
-		iptables -I FORWARD -d 172.16.0.0/12 -m iprange --src-range 192.168.12.2-192.168.12.255 -j DROP
-		iptables -I FORWARD -d 10.0.0.0/8 -m iprange --src-range 192.168.12.2-192.168.12.255 -j DROP
-
+		# Block access to parent local networks
+		if [ ! -f /boot/firmware/candle_hotspot_allow_traversal.txt ]; then
+			iptables -I FORWARD -d 192.168.0.0/16 -m iprange --src-range 192.168.12.2-192.168.12.255 -j DROP
+			iptables -I FORWARD -d 172.16.0.0/12 -m iprange --src-range 192.168.12.2-192.168.12.255 -j DROP
+			iptables -I FORWARD -d 10.0.0.0/8 -m iprange --src-range 192.168.12.2-192.168.12.255 -j DROP
+		fi
 		
 
 	fi
