@@ -2,10 +2,16 @@
 
 #echo "Candle: in kiosk.sh" >> /dev/kmsg
 
+
 BOOT_DIR="/boot"
 if lsblk | grep -q $BOOT_DIR/firmware; then
     BOOT_DIR="$BOOT_DIR/firmware"
 fi
+
+if [ -f $BOOT_DIR/emergency.txt ]; then
+	exit 0
+fi
+
 
 
 #if [ -e "/bin/ply-image" ] && [ -e /dev/fb0 ] && [ -f "$BOOT_DIR/splash.png" ] && [ -f "$BOOT_DIR/splash180.png" ]; then
