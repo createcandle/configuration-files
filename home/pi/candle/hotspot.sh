@@ -53,7 +53,8 @@ if ip link show | grep -q "uap0:" ; then
 	#ifconfig br0 hw ether $MAC
 	echo "hotspot.sh: short mac address: $SHORTMAC"
 
-	IP4=$(hostname -I | awk '{print $1}')
+	IP4=$(hostname -I | sed -En "s/(.*) 192.168.12.1/\1/p" | xargs)
+	echo "hotspot.sh: IPv4 address: $IP4"
 	
 	if iptables -t nat -L -v | grep -q "uap0"; then
 		echo "uap0 already exists in iptables"
