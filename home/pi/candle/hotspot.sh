@@ -131,7 +131,8 @@ if ip link show | grep -q "uap0:" ; then
 		
 		# this was necessary for hostapd to keep the connection stable. Is it needed for NetworkManager too?
 		#nmcli con modify candle_hotspot wifi.cloned-mac-address $ZEROMAC
-		
+
+		nmcli connection modify candle_hotspot ipv4.never-default true
 		nmcli connection modify candle_hotspot wifi.powersave 2
 	fi
 
