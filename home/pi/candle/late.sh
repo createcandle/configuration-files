@@ -48,7 +48,7 @@ else
 fi
 
 #IP4=$(hostname -I | awk '{print $1}')
-IP4=$(hostname -I | sed -En "s/(.*) 192.168.12.1/\1/p" | xargs)
+IP4=$(hostname -I | sed -r 's/192.168.12.1//' | xargs)
 
 if [ -n "$IP4" ]; then
 
