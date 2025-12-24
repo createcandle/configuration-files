@@ -59,7 +59,7 @@ if ip link show | grep -q "uap0:" ; then
 	#ifconfig br0 hw ether $MAC
 	echo "hotspot.sh: short mac address: $SHORTMAC"
 
-	IP4=$(hostname -I | sed -En "s/(.*) 192.168.12.1/\1/p" | xargs)
+	IP4=$(hostname -I | sed -r 's/192.168.12.1//' | xargs)
 	echo "hotspot.sh: IPv4 address: $IP4"
 	
 	if iptables -t nat -L -v | grep -q "uap0"; then
