@@ -51,8 +51,8 @@ if ip link show | grep -q "uap0:" ; then
 	
 	SHORTMAC=${MAC: -2}
 	#SHORTMAC="${SHORTMAC//:/}"
-	RANDOMCHARS=$(tr -dc A-Z0-9 </dev/urandom | head -c 2; echo '')
-	SHORTMAC=$(echo "$SHORTMAC$RANDOMCHARS")
+	#RANDOMCHARS=$(tr -dc A-Z0-9 </dev/urandom | head -c 2; echo '')
+	#SHORTMAC=$(echo "$SHORTMAC$RANDOMCHARS")
 	RANDOMCHARS=$(tr -dc 'A-Z0-9' < /dev/urandom | head -c 2); 
 	SHORTMAC=$(echo "$SHORTMAC$RANDOMCHARS");
 	
