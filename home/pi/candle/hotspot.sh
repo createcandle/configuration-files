@@ -183,6 +183,7 @@ if ip link show | grep -q "uap0:" ; then
 		if [ -f /boot/firmware/candle_hotspot.txt ]; then
 			echo "Candle: hotspot.sh: bringing up hotspot and starting dnsmasq"
 			echo "Candle: hotspot.sh: bringing up hotspot and starting dnsmasq" >> /dev/kmsg
+			nmcli radio wifi on
 			nmcli connection up candle_hotspot
 			dnsmasq -k -d --no-daemon --conf-file=/home/pi/.webthings/etc/NetworkManager/dnsmasq.d/local-DNS.conf 1> /dev/null
 		else
