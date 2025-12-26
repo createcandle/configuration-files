@@ -21,9 +21,9 @@ fi
 
 
 # Directories
-if [ ! -d /etc/hostapd ]; then
-  echo "/etc/hostapd dir is missing"
-fi
+#if [ ! -d /etc/hostapd ]; then
+#  echo "/etc/hostapd dir is missing"
+#fi
 if [ ! -d /home/pi/.npm ]; then
   echo "/home/pi/.npm dir is missing"
 fi
