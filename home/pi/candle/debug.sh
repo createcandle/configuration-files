@@ -153,7 +153,7 @@ echo
 echo "--------------------------------------------- systemctl"
 echo
 echo "systemd timers"
-systemctl list-timers
+systemctl list-timers --no-pager
 echo
 echo
 echo "systemd enabled services"
