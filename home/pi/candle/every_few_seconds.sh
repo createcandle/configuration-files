@@ -24,6 +24,7 @@ if [ -n "$IP4" ]; then
                         echo "IP4 address already in iptables: -->$IP4<--"
 
                 else
+						echo "Candle late: adding iptables port 80 and 433 redirect rules for IP4: $IP4" 
                         echo "Candle late: adding iptables port 80 and 433 redirect rules for IP4: $IP4" >> /dev/kmsg
 
                         iptables -t mangle -I PREROUTING -s $IP4/24 -p tcp -d $IP4 --dport 80 -j MARK --set-mark 1
