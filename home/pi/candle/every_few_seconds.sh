@@ -2,13 +2,14 @@
 
 # limit the size of the dnsmasq log
 if [ -f /home/pi/dnsmasq_log.txt ]; then
-	mv /home/pi/dnsmasq_log.txt /home/pi/dnsmasq_now.txt
+	cp /home/pi/dnsmasq_log.txt /home/pi/dnsmasq_now.txt
 fi
 if [ -f /home/pi/dnsmasq_now.txt ]; then
 	chown pi:pi /home/pi/dnsmasq_now.txt
 	chmod 755 /home/pi/dnsmasq_now.txt
 fi
 #echo "" > /home/pi/dnsmasq_log.txt
+rm /home/pi/dnsmasq_log.txt
 if ps aux | grep -q 'dnsmasq -k -d'; then
 	kill -USR2 `pidof dnsmasq`
 fi
