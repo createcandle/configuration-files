@@ -2,8 +2,7 @@
 
 # limit the size of the dnsmasq log
 if [ -f /home/pi/dnsmasq_log.txt ]; then
-	cp /home/pi/dnsmasq_log.txt /home/pi/dnsmasq_now.txt
-	chown pi:pi /home/pi/dnsmasq_now.txt
+	mv /home/pi/dnsmasq_log.txt /home/pi/dnsmasq_now.txt
 fi
 if [ -f /home/pi/dnsmasq_now.txt ]; then
 	chown pi:pi /home/pi/dnsmasq_now.txt
