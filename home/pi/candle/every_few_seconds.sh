@@ -7,6 +7,7 @@ if [ -f /home/pi/dnsmasq_log.txt ]; then
 fi
 if [ -f /home/pi/dnsmasq_now.txt ]; then
 	chown pi:pi /home/pi/dnsmasq_now.txt
+	chmod 755 /home/pi/dnsmasq_now.txt
 fi
 #echo "" > /home/pi/dnsmasq_log.txt
 if ps aux | grep -q 'dnsmasq -k -d'; then
