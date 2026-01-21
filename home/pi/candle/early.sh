@@ -19,6 +19,10 @@ echo "in Candle early"
 # Allow Ping
 # iptables -I INPUT -p icmp --icmp-type echo-request -j ACCEPT
 
+# Allow MQTT. Could be made to depend on external MQTT being allowed in the first place.
+# iptables -A INPUT -p tcp -m multiport --dports 1883,1884,1885 -j ACCEPT
+
+
 if [ ! -f /boot/firmware/candle_hotspot.txt ] && nmcli c show | grep 'uap0' | grep -q 'candle_hotspot' ; then
 	nmcli connection delete candle_hotspot
 	echo "$(date) - Candle early. Deleted candle_hotspot from NetworkManager because candle_hotspot.txt was missing from boot partition" >> /dev/kmsg
