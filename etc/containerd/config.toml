@@ -194,7 +194,7 @@ version = 2
     plugin_path = "/home/pi/.webthings/containerd/opt/nri/plugins"
     plugin_registration_timeout = "5s"
     plugin_request_timeout = "2s"
-    socket_path = "/home/pi/.webthings/containerd/nri/nri.sock"
+    socket_path = "/home/pi/.webthings/containerd/var/nri/nri.sock"
 
   [plugins."io.containerd.runtime.v1.linux"]
     no_shim = false
