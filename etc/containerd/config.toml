@@ -265,15 +265,15 @@ version = 2
 
   [stream_processors."io.containerd.ocicrypt.decoder.v1.tar"]
     accepts = ["application/vnd.oci.image.layer.v1.tar+encrypted"]
-    args = ["--decryption-keys-path", "/etc/containerd/ocicrypt/keys"]
-    env = ["OCICRYPT_KEYPROVIDER_CONFIG=/etc/containerd/ocicrypt/ocicrypt_keyprovider.conf"]
+    args = ["--decryption-keys-path", "/home/pi/.webthings/containerd/etc/containerd/ocicrypt/keys"]
+    env = ["OCICRYPT_KEYPROVIDER_CONFIG=/home/pi/.webthings/containerd/etc/containerd/ocicrypt/ocicrypt_keyprovider.conf"]
     path = "ctd-decoder"
     returns = "application/vnd.oci.image.layer.v1.tar"
 
   [stream_processors."io.containerd.ocicrypt.decoder.v1.tar.gzip"]
     accepts = ["application/vnd.oci.image.layer.v1.tar+gzip+encrypted"]
-    args = ["--decryption-keys-path", "/etc/containerd/ocicrypt/keys"]
-    env = ["OCICRYPT_KEYPROVIDER_CONFIG=/etc/containerd/ocicrypt/ocicrypt_keyprovider.conf"]
+    args = ["--decryption-keys-path", "/home/pi/.webthings/containerd/etc/containerd/ocicrypt/keys"]
+    env = ["OCICRYPT_KEYPROVIDER_CONFIG=/home/pi/.webthings/containerd/etc/containerd/ocicrypt/ocicrypt_keyprovider.conf"]
     path = "ctd-decoder"
     returns = "application/vnd.oci.image.layer.v1.tar+gzip"
 
