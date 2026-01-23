@@ -163,6 +163,8 @@ if ip link show | grep -q "uap0:" ; then
 	if [ -f /boot/firmware/candle_wifi_power_save.txt ]; then
 		#nmcli connection modify candle_hotspot wifi.powersave 1
 		nmcli radio wifi powersave on
+	else
+		nmcli radio wifi powersave off
 	fi
 	
 
