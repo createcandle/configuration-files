@@ -175,7 +175,7 @@ if ip link show | grep -q "uap0:" ; then
 	#if [ "$PASSWORD" -ge 8 ]; then
 	if [[ $PASSWORD =~ ^........+ ]]; then
 		echo "adding/updating password for hotspot"
-		nmcli con modify candle_hotspot wifi-sec.key-mgmt wpa-psk wifi-sec.psk "$PASSWORD"
+		nmcli con modify candle_hotspot wifi-sec.key-mgmt sae wifi-sec.psk "$PASSWORD"
 	else
 		echo "password in candle_hotspot.txt was too short"
 	fi
