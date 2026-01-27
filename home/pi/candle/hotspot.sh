@@ -4,6 +4,13 @@ if [ -f /boot/firmware/emergency.txt ]; then
 	exit 0
 fi
 
+if [ ! -f /boot/firmware/candle_hotspot.txt ]; then
+	echo "hotspot.sh: no candle_hotspot.txt, aborting"
+	echo "hotspot.sh: no candle_hotspot.txt, aborting" >> /dev/kmsg
+	sleep 20
+	exit 0
+fi
+
 #if [ ! -f /boot/firmware/candle_hotspot.txt ]; then
 #	echo "candle: hotspot.sh: not starting hotspot"
 #	echo "Candle: hotspot.sh: not starting hotspot" >> /dev/kmsg
@@ -20,13 +27,11 @@ if [ -f /boot/firmware/candle_hotspot_password.txt ]; then
 fi
 #echo "" > /boot/firmware/candle_hotspot.txt
 
-PHY="PHY1"
-
-if iw list | grep -q phy0; then
-    PHY="PHY0"
-fi
-
-echo "PHY: $PHY"
+#PHY="PHY1"
+#if iw list | grep -q phy0; then
+#    PHY="PHY0"
+#fi
+#echo "PHY: $PHY"
 
 
 # Create an alias for 'mlan0' wifi to 'wlan0' if needed
@@ -35,6 +40,8 @@ if ip link show | grep -q "mlan0:" ; then
         if ! ip link show | grep -q "uap0:" ; then
                 echo "uap0 does not exist yet"
                 /sbin/iw dev mlan0 interface add uap0 type __ap
+				iw dev uap0 set power_save off
+				sleep 1
         fi
         
 elif ip link show | grep -q "wlan0:" ; then
@@ -42,12 +49,26 @@ elif ip link show | grep -q "wlan0:" ; then
         if ! ip link show | grep -q "uap0:" ; then
                 echo "uap0 does not exist yet"
                 /sbin/iw dev wlan0 interface add uap0 type __ap
+				iw dev uap0 set power_save off
+				sleep 1
+				
         fi
 fi
 
-if ip link show | grep -q "uap0:" ; then
+if ip link show | grep "uap0:" | grep -q "state UP"; then
 	MAC=$(nmcli device show wlan0 | grep HWADDR | awk '{print $2}')
 	ZEROMAC=${MAC%?}0
+	
+	ip link set dev uap0 address "$ZEROMAC"
+	
+	if ! iwctl device list | grep -q uap0; then
+		sleep 1
+		systemctl restart iwd
+		#iwctl device uap0 set-property Mode ap
+		sleep 1
+		systemctl restart NetworkManager
+		sleep 1
+	fi
 	
 	SHORTMAC=${MAC: -2}
 	#SHORTMAC="${SHORTMAC//:/}"
@@ -149,7 +170,7 @@ if ip link show | grep -q "uap0:" ; then
 		#nmcli c del candle_hotspot
 		#sleep 1
 		
-		nmcli connection add con-name 'candle_hotspot' ifname uap0 type wifi wifi.mode ap wifi.ssid "Candle $SHORTMAC_nomap"
+		nmcli connection add con-name 'candle_hotspot' ifname uap0 type wifi wifi.mode ap wifi.ssid "Candle $SHORTMAC"
 		
 		nmcli connection modify candle_hotspot ipv4.addresses "192.168.12.1/24" ipv4.method manual ipv4.gateway "192.168.12.1" ipv4.dns "192.168.12.1" ipv4.dns-priority 1000 ipv6.dns-priority 1000
 		
@@ -163,8 +184,6 @@ if ip link show | grep -q "uap0:" ; then
 	if [ -f /boot/firmware/candle_wifi_power_save.txt ]; then
 		#nmcli connection modify candle_hotspot wifi.powersave 1
 		nmcli radio wifi powersave on
-	else
-		nmcli radio wifi powersave off
 	fi
 	
 
@@ -186,15 +205,12 @@ if ip link show | grep -q "uap0:" ; then
 			echo "Candle: hotspot.sh: bringing up hotspot and starting dnsmasq"
 			echo "Candle: hotspot.sh: bringing up hotspot and starting dnsmasq" >> /dev/kmsg
 			nmcli radio wifi on
-			nmcli connection modify candle_hotspot wifi.powersave 2
-			nmcli connection modify candle_hotspot connection.autoconnect yes
 			nmcli connection up candle_hotspot
 			dnsmasq -k -d --no-daemon --conf-file=/home/pi/.webthings/etc/NetworkManager/dnsmasq.d/local-DNS.conf 1> /dev/null
 		else
 			echo "Candle: hotspot.sh: not bringing up hotspot"
-			nmcli connection down candle_hotspot
-			nmcli connection modify candle_hotspot connection.autoconnect no
-			sleep 5
+			#nmcli connection down candle_hotspot
+			sleep 30
 		fi
 	else
 		echo "Candle: hotspot.sh: missing dnsmasq config file" >> /dev/kmsg
