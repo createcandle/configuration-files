@@ -24,8 +24,10 @@ echo "in Candle early"
 
 
 if [ ! -f /boot/firmware/candle_hotspot.txt ] && nmcli c show | grep 'uap0' | grep -q 'candle_hotspot' ; then
-	nmcli connection delete candle_hotspot
-	echo "$(date) - Candle early. Deleted candle_hotspot from NetworkManager because candle_hotspot.txt was missing from boot partition" >> /dev/kmsg
+	#nmcli connection delete candle_hotspot
+	nmcli connection down candle_hotspot
+	nmcli connection modify candle_hotspot connection.autoconnect no
+	echo "$(date) - Candle early. Disabled candle_hotspot because candle_hotspot.txt was missing from boot partition" >> /dev/kmsg
 fi
 
 
