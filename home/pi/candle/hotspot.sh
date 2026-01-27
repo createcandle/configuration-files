@@ -186,11 +186,14 @@ if ip link show | grep -q "uap0:" ; then
 			echo "Candle: hotspot.sh: bringing up hotspot and starting dnsmasq"
 			echo "Candle: hotspot.sh: bringing up hotspot and starting dnsmasq" >> /dev/kmsg
 			nmcli radio wifi on
+			nmcli connection modify candle_hotspot wifi.powersave 2
+			nmcli connection modify candle_hotspot connection.autoconnect yes
 			nmcli connection up candle_hotspot
 			dnsmasq -k -d --no-daemon --conf-file=/home/pi/.webthings/etc/NetworkManager/dnsmasq.d/local-DNS.conf 1> /dev/null
 		else
 			echo "Candle: hotspot.sh: not bringing up hotspot"
 			nmcli connection down candle_hotspot
+			nmcli connection modify candle_hotspot connection.autoconnect no
 			sleep 5
 		fi
 	else
