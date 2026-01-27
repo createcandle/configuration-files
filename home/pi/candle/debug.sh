@@ -382,14 +382,18 @@ echo
 echo "--------------------------------------------- network"
 
 echo
+echo "ifconfig:"
 ifconfig
 
 echo
+echo "netstat:"
 netstat -i
 
 echo
 # NetworkManager has been removed for now
-#nmcli -o
+echo
+echo "nmcli overview:"
+nmcli -o
 
 echo
 echo "Wi-Fi:"
@@ -405,6 +409,8 @@ echo
 echo "WiFi regulatory country settings:"
 iw reg get
 echo
+echo "Allowed interface combinations (e.g. wlan0 and uap0 simultaneously):"
+iw list | grep -A 4 'valid interface'
 
 echo
 echo
