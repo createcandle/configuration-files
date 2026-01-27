@@ -6,8 +6,9 @@ if [ -f /home/pi/dnsmasq_log.txt ] && [ -s /home/pi/dnsmasq_log.txt ]; then
 	chown pi:pi /home/pi/dnsmasq_now.txt
 	chmod 755 /home/pi/dnsmasq_now.txt
 	rm /home/pi/dnsmasq_log.txt
-	if ps aux | grep -q 'dnsmasq -k -d'; then
-		kill -USR2 `pidof dnsmasq`
+	DNSMASQ_PID=$(pidof dnsmasq | tr -d '\n')
+	if [ -n "$DNSMASQ_PID" ]; then
+		kill -USR2 $DNSMASQ_PID &> /dev/null
 	fi
 fi
 
