@@ -89,7 +89,12 @@ if [ -L /home/pi/.webthings/chromium/SingletonLock ]; then
 	rm /home/pi/.webthings/chromium/Singleton*
 fi
 
-
+TOTAL_MEMORY=$(grep MemTotal /proc/meminfo | awk '{print $2}')
+if [ "$TOTAL_MEMORY" -gt 600000 ]; then
+	if [ -f /usr/sbin/swapoff ]; then
+		/usr/sbin/swapoff -a
+	fi
+fi
 
 # Do not show blinking cursor
 echo 0 > /sys/class/graphics/fbcon/cursor_blink
