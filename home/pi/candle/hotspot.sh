@@ -55,20 +55,26 @@ elif ip link show | grep -q "wlan0:" ; then
         fi
 fi
 
-if ip link show | grep "uap0:" | grep -q "state UP"; then
+rfkill unblock all
+
+#if ip link show | grep "uap0:" | grep -q "state UP"; then
+if ip link show | grep -q "uap0:"; then
 	MAC=$(nmcli device show wlan0 | grep HWADDR | awk '{print $2}')
 	ZEROMAC=${MAC%?}0
 	
 	ip link set dev uap0 address "$ZEROMAC"
 	
-	if ! iwctl device list | grep -q uap0; then
-		sleep 1
-		systemctl restart iwd
-		#iwctl device uap0 set-property Mode ap
-		sleep 1
-		systemctl restart NetworkManager
-		sleep 1
+	if command -v iwctl &> /dev/null; then
+		if ! iwctl device list | grep -q uap0; then
+			sleep 1
+			systemctl restart iwd
+			#iwctl device uap0 set-property Mode ap
+			sleep 1
+			systemctl restart NetworkManager
+			sleep 1
+		fi
 	fi
+	
 	
 	SHORTMAC=${MAC: -2}
 	#SHORTMAC="${SHORTMAC//:/}"
@@ -87,7 +93,7 @@ if ip link show | grep "uap0:" | grep -q "state UP"; then
 		echo "uap0 already exists in iptables"
 	else
 	
-		
+		echo "hotspot.sh: adding iptables for uap0"
 		
 		# optionally, drop DHCP requests to get an IPV6 address.
 		if [ -f /boot/firmware/candle_hotspot_no_ipv6.txt ]; then
@@ -164,21 +170,39 @@ if ip link show | grep "uap0:" | grep -q "state UP"; then
 	iptables -t nat -L -v
 
 	
-	if nmcli c show | grep -q 'candle_hotspot'; then
-		echo "NetworkManager candle_hotspot seems to already exist"
+	#if [ "$PASSWORD" -ge 8 ]; then
+	if [[ $PASSWORD =~ ^........+ ]]; then
+		nmcli dev wifi hotspot ifname uap0 ssid "Candle $SHORTMAC_nomap" password "$PASSWORD"
+		echo "adding/updating password for hotspot"
+		nmcli con modify Hotspot wifi-sec.key-mgmt sae wifi-sec.psk "$PASSWORD"
+	else
+		echo "password in candle_hotspot.txt was too short"
+		nmcli dev wifi hotspot ifname uap0 ssid "Candle $SHORTMAC_nomap"
+	fi
+	
+	
+	
+	
+	if nmcli c show | grep -q 'Hotspot'; then
+		echo "NetworkManager Hotspot seems to already exist"
+		
+		nmcli connection modify Hotspot ipv4.addresses "192.168.12.1/24" ipv4.method manual ipv4.gateway "192.168.12.1" ipv4.dns "192.168.12.1" ipv4.dns-priority 1000 ipv6.dns-priority 1000
+		nmcli connection modify Hotspot ipv4.never-default true
+		nmcli connection modify Hotspot wifi.powersave 2
+		
 	else
 		#nmcli c del candle_hotspot
 		#sleep 1
 		
-		nmcli connection add con-name 'candle_hotspot' ifname uap0 type wifi wifi.mode ap wifi.ssid "Candle $SHORTMAC"
+		#nmcli connection add con-name Hotspot ifname uap0 type wifi wifi.mode ap wifi.ssid "Candle $SHORTMAC_nomap"
 		
-		nmcli connection modify candle_hotspot ipv4.addresses "192.168.12.1/24" ipv4.method manual ipv4.gateway "192.168.12.1" ipv4.dns "192.168.12.1" ipv4.dns-priority 1000 ipv6.dns-priority 1000
+		nmcli connection modify Hotspot ipv4.addresses "192.168.12.1/24" ipv4.method manual ipv4.gateway "192.168.12.1" ipv4.dns "192.168.12.1" ipv4.dns-priority 1000 ipv6.dns-priority 1000
 		
 		# this was necessary for hostapd to keep the connection stable. Is it needed for NetworkManager too?
 		#nmcli con modify candle_hotspot wifi.cloned-mac-address $ZEROMAC
 
-		nmcli connection modify candle_hotspot ipv4.never-default true
-		nmcli connection modify candle_hotspot wifi.powersave 2
+		nmcli connection modify Hotspot ipv4.never-default true
+		nmcli connection modify Hotspot wifi.powersave 2
 	fi
 
 	if [ -f /boot/firmware/candle_wifi_power_save.txt ]; then
@@ -191,13 +215,7 @@ if ip link show | grep "uap0:" | grep -q "state UP"; then
 	#nmcli con modify hotspot wifi-sec.pmf disable
 
 
-	#if [ "$PASSWORD" -ge 8 ]; then
-	if [[ $PASSWORD =~ ^........+ ]]; then
-		echo "adding/updating password for hotspot"
-		nmcli con modify candle_hotspot wifi-sec.key-mgmt sae wifi-sec.psk "$PASSWORD"
-	else
-		echo "password in candle_hotspot.txt was too short"
-	fi
+	
 
 	if [ -f /home/pi/.webthings/etc/NetworkManager/dnsmasq.d/local-DNS.conf ]; then
 		
@@ -205,7 +223,7 @@ if ip link show | grep "uap0:" | grep -q "state UP"; then
 			echo "Candle: hotspot.sh: bringing up hotspot and starting dnsmasq"
 			echo "Candle: hotspot.sh: bringing up hotspot and starting dnsmasq" >> /dev/kmsg
 			nmcli radio wifi on
-			nmcli connection up candle_hotspot
+			nmcli connection up Hotspot
 			dnsmasq -k -d --no-daemon --conf-file=/home/pi/.webthings/etc/NetworkManager/dnsmasq.d/local-DNS.conf 1> /dev/null
 		else
 			echo "Candle: hotspot.sh: not bringing up hotspot"
