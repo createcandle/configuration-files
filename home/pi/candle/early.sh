@@ -89,6 +89,7 @@ if [ -L /home/pi/.webthings/chromium/SingletonLock ]; then
 	rm /home/pi/.webthings/chromium/Singleton*
 fi
 
+# TODO! It seems the swap can survive the disabling during the installation process
 TOTAL_MEMORY=$(grep MemTotal /proc/meminfo | awk '{print $2}')
 if [ "$TOTAL_MEMORY" -gt 600000 ]; then
 	if [ -f /usr/sbin/swapoff ]; then
