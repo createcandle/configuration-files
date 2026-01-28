@@ -23,10 +23,10 @@ echo "in Candle early"
 # iptables -A INPUT -p tcp -m multiport --dports 1883,1884,1885 -j ACCEPT
 
 
-if [ ! -f /boot/firmware/candle_hotspot.txt ] && nmcli c show | grep 'uap0' | grep -q 'candle_hotspot' ; then
+if [ ! -f /boot/firmware/candle_hotspot.txt ] && nmcli c show | grep 'uap0' | grep -q 'Hotspot' ; then
 	#nmcli connection delete candle_hotspot
-	nmcli connection down candle_hotspot
-	nmcli connection modify candle_hotspot connection.autoconnect no
+	nmcli connection down Hotspot
+	nmcli connection modify Hotspot connection.autoconnect no
 	echo "$(date) - Candle early. Disabled candle_hotspot because candle_hotspot.txt was missing from boot partition" >> /dev/kmsg
 fi
 
