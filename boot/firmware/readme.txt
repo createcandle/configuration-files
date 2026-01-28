@@ -62,7 +62,7 @@ nohotspot.txt 			# Aborts hotspot addon launch. Useful if that feature somehow c
 show_mouse_pointer.txt 		# Forces showing the mouse pointer on the HDMI output.
 hide_mouse_pointer.txt 		# Forces hiding the mouse pointer on the HDMI output.
 rotate180.txt 			# Rotates the display 180 degrees.
-exhibit_mode.txt		# Disables installing and uninstalling addons, as well as most mayor settings.
+exhibit_mode.txt		# Disables actions that can change the controller, such as installing and uninstalling addons.
 do_not_use_repeaker_hat.txt 	# Will stop ReSpeaker hat drivers from being loaded at boot.
 candle_wifi_power_save 	        # If present, wifi power saving will be enabled. This may cause connection issues.
 candle_cutting_edge.txt 	# If present, any system update will attempt to get the very latest version of everything. Risky, For developers only.
