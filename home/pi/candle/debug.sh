@@ -430,6 +430,17 @@ lsmod
 echo
 sysctl -a
 
+
+echo
+echo
+echo "--------------------------------------------- cpu"
+echo
+echo "vmstat -s: "
+vmstat -s
+
+
+
+
 echo
 echo
 echo "--------------------------------------------- memory"
