@@ -151,6 +151,8 @@ commonName              = optional
 emailAddress            = optional
 ')
 
+chmod 400 privatekey.pem
+
 cd ~
 
 
