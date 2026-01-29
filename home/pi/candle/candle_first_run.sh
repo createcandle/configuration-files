@@ -102,7 +102,27 @@ SSL_DIR="${WEBTHINGS_HOME}/ssl"
 
 cd "${SSL_DIR}"
 
-openssl genrsa -out privatekey.pem 4096
+current_year=$(date +%Y)
+future_year=$(($current_year + 10))
+
+if [ -f "$BOOT_DIR/candle_ssl_2048.txt" ]; then
+	openssl genrsa -out privatekey.pem 2048
+elif [ -f "$BOOT_DIR/candle_ssl_3072.txt" ]; then
+	openssl genrsa -out privatekey.pem 3072
+elif [ -f "$BOOT_DIR/candle_ssl_4096.txt" ]; then
+	openssl genrsa -out privatekey.pem 4096
+
+elif [ "$current_year" -gt 2028 ]; then
+	if [ "$current_year" -gt 2032 ]; then
+		openssl genrsa -out privatekey.pem 4096
+	else
+		openssl genrsa -out privatekey.pem 3072
+	fi
+else
+	openssl genrsa -out privatekey.pem 2048
+fi
+
+
 
 openssl req -new -key privatekey.pem -out csr.pem -subj "/C=NL/ST=NH/L=Amsterdam/O=Candle/CN=candlesmarthome.com"
 
@@ -110,7 +130,7 @@ touch index.txt
 
 openssl ca -batch -selfsign -md sha256 -rand_serial \
     -in csr.pem -out certificate.pem -keyfile privatekey.pem \
-    -startdate 20260101000000Z -enddate 20361231235959Z \
+    -startdate "$current_year0101000000Z" -enddate "$future_year1231235959Z" \
     -config <(echo '
 [ ca ]
 default_ca = CA_default
