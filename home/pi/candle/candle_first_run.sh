@@ -96,7 +96,7 @@ SSL_DIR="${WEBTHINGS_HOME}/ssl"
 [ ! -d "${SSL_DIR}" ] && mkdir -p "${SSL_DIR}"
 openssl genrsa -out "${SSL_DIR}/privatekey.pem" 2048
 openssl req -new -sha256 -key "${SSL_DIR}/privatekey.pem" -out "${SSL_DIR}/csr.pem" -subj '/CN=www.sgnihtbew.com/O=Candle Controller/C=US'
-openssl x509 -req -in "${SSL_DIR}/csr.pem" -signkey "${SSL_DIR}/privatekey.pem" -out "${SSL_DIR}/certificate.pem"
+openssl x509 -req -in "${SSL_DIR}/csr.pem" -signkey "${SSL_DIR}/privatekey.pem" -days 3650 -out "${SSL_DIR}/certificate.pem"
 chown -R pi:pi "${SSL_DIR}"
 
 # If the disk image was created on Windows or Mac, it may leave behind cruft
