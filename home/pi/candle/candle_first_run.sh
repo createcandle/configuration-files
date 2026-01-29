@@ -96,68 +96,33 @@ SSL_DIR="${WEBTHINGS_HOME}/ssl"
 [ ! -d "${SSL_DIR}" ] && mkdir -p "${SSL_DIR}"
 
 #openssl genrsa -out "${SSL_DIR}/privatekey.pem" 2048
-#openssl req -new -sha256 -key "${SSL_DIR}/privatekey.pem" -out "${SSL_DIR}/csr.pem" -subj '/CN=www.sgnihtbew.com/O=Candle Controller/C=US'
-#openssl x509 -req -days 3650 -in "${SSL_DIR}/csr.pem" -signkey "${SSL_DIR}/privatekey.pem" -out "${SSL_DIR}/certificate.pem"
-
-
-cd "${SSL_DIR}"
 
 current_year=$(date +%Y)
-future_year=$(($current_year + 10))
+#future_year=$(($current_year + 10))
 
 if [ -f "$BOOT_DIR/candle_ssl_2048.txt" ]; then
-	openssl genrsa -out privatekey.pem 2048
+	openssl genrsa -out "${SSL_DIR}/privatekey.pem" 2048
 elif [ -f "$BOOT_DIR/candle_ssl_3072.txt" ]; then
-	openssl genrsa -out privatekey.pem 3072
+	openssl genrsa -out "${SSL_DIR}/privatekey.pem" 3072
 elif [ -f "$BOOT_DIR/candle_ssl_4096.txt" ]; then
-	openssl genrsa -out privatekey.pem 4096
+	openssl genrsa -out "${SSL_DIR}/privatekey.pem" 4096
 
 elif [ "$current_year" -gt 2028 ]; then
 	if [ "$current_year" -gt 2032 ]; then
-		openssl genrsa -out privatekey.pem 4096
+		openssl genrsa -out "${SSL_DIR}/privatekey.pem" 4096
 	else
-		openssl genrsa -out privatekey.pem 3072
+		openssl genrsa -out "${SSL_DIR}/privatekey.pem" 3072
 	fi
 else
-	openssl genrsa -out privatekey.pem 2048
+	openssl genrsa -out "${SSL_DIR}/privatekey.pem" 2048
 fi
 
 
 
-openssl req -new -key privatekey.pem -out csr.pem -subj "/C=NL/ST=NH/L=Amsterdam/O=Candle/CN=candlesmarthome.com"
-
-touch index.txt
-
-openssl ca -batch -selfsign -md sha256 -rand_serial \
-    -in csr.pem -out certificate.pem -keyfile privatekey.pem \
-    -startdate "$current_year0101000000Z" -enddate "$future_year1231235959Z" \
-    -config <(echo '
-[ ca ]
-default_ca = CA_default
-
-[ CA_default ]
-database = ./index.txt
-new_certs_dir = .
-rand_serial = yes
-policy = policy_any
-
-[ policy_any ]
-countryName             = optional
-stateOrProvinceName     = optional
-localityName            = optional
-organizationName        = optional
-organizationalUnitName  = optional
-commonName              = optional
-emailAddress            = optional
-')
-
-#chmod 400 privatekey.pem
-
-cd ~
+openssl req -new -sha256 -key "${SSL_DIR}/privatekey.pem" -out "${SSL_DIR}/csr.pem" -subj '/CN=www.sgnihtbew.com/O=Candle Controller/C=US'
+openssl x509 -req -days 3650 -in "${SSL_DIR}/csr.pem" -signkey "${SSL_DIR}/privatekey.pem" -out "${SSL_DIR}/certificate.pem"
 
 
-#openssl req -newkey rsa:4096 -x509 -sha512 -days 3650 -nodes -out "${SSL_DIR}/certificate.pem" -keyout "${SSL_DIR}/privatekey.pem"
-#openssl req -new -sha256 -key privatekey.pem -out "${SSL_DIR}/csr.pem" -subj '/CN=candlesmarthome.com/O=Candle/C=US'
 
 chown -R pi:pi "${SSL_DIR}"
 
