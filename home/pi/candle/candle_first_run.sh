@@ -94,9 +94,11 @@ echo "FIRST_RUN: new SSH security keys generated." >> $BOOT_DIR/candle_log.txt
 WEBTHINGS_HOME="${WEBTHINGS_HOME:=/home/pi/.webthings}"
 SSL_DIR="${WEBTHINGS_HOME}/ssl"
 [ ! -d "${SSL_DIR}" ] && mkdir -p "${SSL_DIR}"
-openssl genrsa -out "${SSL_DIR}/privatekey.pem" 2048
-openssl req -new -sha256 -key "${SSL_DIR}/privatekey.pem" -out "${SSL_DIR}/csr.pem" -subj '/CN=www.sgnihtbew.com/O=Candle Controller/C=US'
-openssl x509 -req -days 3650 -in "${SSL_DIR}/csr.pem" -signkey "${SSL_DIR}/privatekey.pem" -out "${SSL_DIR}/certificate.pem"
+#openssl genrsa -out "${SSL_DIR}/privatekey.pem" 2048
+#openssl req -new -sha256 -key "${SSL_DIR}/privatekey.pem" -out "${SSL_DIR}/csr.pem" -subj '/CN=www.sgnihtbew.com/O=Candle Controller/C=US'
+#openssl x509 -req -days 3650 -in "${SSL_DIR}/csr.pem" -signkey "${SSL_DIR}/privatekey.pem" -out "${SSL_DIR}/certificate.pem"
+openssl req -newkey rsa:4096 -x509 -sha512 -days 3650 -nodes -out "${SSL_DIR}/certificate.pem" -keyout "${SSL_DIR}/privatekey.pem"
+openssl req -new -sha256 -key privatekey.pem -out "${SSL_DIR}/csr.pem" -subj '/CN=candlesmarthome.com/O=Candle/C=US'
 chown -R pi:pi "${SSL_DIR}"
 
 # If the disk image was created on Windows or Mac, it may leave behind cruft
