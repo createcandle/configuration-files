@@ -94,6 +94,7 @@ TOTAL_MEMORY=$(grep MemTotal /proc/meminfo | awk '{print $2}')
 if [ "$TOTAL_MEMORY" -gt 600000 ]; then
 	if [ -f /usr/sbin/swapoff ]; then
 		/usr/sbin/swapoff -a
+		systemctl stop rpi-zram-writeback.timer
 	fi
 fi
 
