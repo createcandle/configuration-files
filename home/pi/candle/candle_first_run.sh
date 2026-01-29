@@ -94,11 +94,49 @@ echo "FIRST_RUN: new SSH security keys generated." >> $BOOT_DIR/candle_log.txt
 WEBTHINGS_HOME="${WEBTHINGS_HOME:=/home/pi/.webthings}"
 SSL_DIR="${WEBTHINGS_HOME}/ssl"
 [ ! -d "${SSL_DIR}" ] && mkdir -p "${SSL_DIR}"
+
 #openssl genrsa -out "${SSL_DIR}/privatekey.pem" 2048
 #openssl req -new -sha256 -key "${SSL_DIR}/privatekey.pem" -out "${SSL_DIR}/csr.pem" -subj '/CN=www.sgnihtbew.com/O=Candle Controller/C=US'
 #openssl x509 -req -days 3650 -in "${SSL_DIR}/csr.pem" -signkey "${SSL_DIR}/privatekey.pem" -out "${SSL_DIR}/certificate.pem"
-openssl req -newkey rsa:4096 -x509 -sha512 -days 3650 -nodes -out "${SSL_DIR}/certificate.pem" -keyout "${SSL_DIR}/privatekey.pem"
-openssl req -new -sha256 -key privatekey.pem -out "${SSL_DIR}/csr.pem" -subj '/CN=candlesmarthome.com/O=Candle/C=US'
+
+
+cd "${SSL_DIR}"
+
+openssl genrsa -out privatekey.pem 4096
+
+openssl req -new -key privatekey.pem -out csr.pem -subj "/C=NL/ST=NH/L=Amsterdam/O=Candle/CN=candlesmarthome.com"
+
+touch index.txt
+
+openssl ca -batch -selfsign -md sha256 -rand_serial \
+    -in csr.pem -out certificate.pem -keyfile privatekey.pem \
+    -startdate 20260101000000Z -enddate 20361231235959Z \
+    -config <(echo '
+[ ca ]
+default_ca = CA_default
+
+[ CA_default ]
+database = ./index.txt
+new_certs_dir = .
+rand_serial = yes
+policy = policy_any
+
+[ policy_any ]
+countryName             = optional
+stateOrProvinceName     = optional
+localityName            = optional
+organizationName        = optional
+organizationalUnitName  = optional
+commonName              = optional
+emailAddress            = optional
+')
+
+cd ~
+
+
+#openssl req -newkey rsa:4096 -x509 -sha512 -days 3650 -nodes -out "${SSL_DIR}/certificate.pem" -keyout "${SSL_DIR}/privatekey.pem"
+#openssl req -new -sha256 -key privatekey.pem -out "${SSL_DIR}/csr.pem" -subj '/CN=candlesmarthome.com/O=Candle/C=US'
+
 chown -R pi:pi "${SSL_DIR}"
 
 # If the disk image was created on Windows or Mac, it may leave behind cruft
@@ -107,7 +145,7 @@ rm -rf $BOOT_DIR/.Spotlight*
 rm -rf $BOOT_DIR/.Trashes
 rm -rf $BOOT_DIR/.fseventsd
 if [ -f $BOOT_DIR/._cmdline.txt ]; then
-    rm $BOOT_DIR/._cmdline.txt
+    rm $BOOT_DIR/._*
 fi
 
 
