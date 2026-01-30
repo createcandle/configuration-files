@@ -182,24 +182,7 @@ if ip link show | grep -q "uap0:"; then
 
 	fi
 
-	if [ -f /boot/firmware/candle_no_time_server.txt ]; then
-		echo "candle: hotspot.sh: not starting time server"
-	elif [ -f /home/pi/candle/time_server.py ]; then
-		
-		if ps aux | grep 'python3 /home/pi/candle/time_server.py' | grep -q '192.168.12.1 123'; then
-			echo "timeserver is already running"
-		else
-			echo "starting NTP server"
-			
-			if iptables -t nat -L -v | grep -q "192.168.12.1:123"; then
-				echo "NTP server iptables rule seems to already exist"
-			else
-				echo "adding NTP server iptables rule"
-				iptables -t nat -A PREROUTING -i uap0 -p udp --dport 123 -j DNAT --to-destination 192.168.12.1:123
-			fi
-			python3 /home/pi/candle/time_server.py 192.168.12.1 123 &
-		fi
-	fi
+	
 	
 	#iptables -t nat -L -v
 
@@ -285,6 +268,26 @@ if ip link show | grep -q "uap0:"; then
 
 			echo "IPv6 address:"
 			ip -6 addr show uap0
+			
+			# Start NTP time server
+			if [ -f /boot/firmware/candle_no_time_server.txt ]; then
+				echo "candle: hotspot.sh: not starting time server"
+			elif [ -f /home/pi/candle/time_server.py ]; then
+				
+				if ps aux | grep 'python3 /home/pi/candle/time_server.py' | grep -q '192.168.12.1 123'; then
+					echo "timeserver is already running"
+				else
+					echo "starting NTP server"
+					
+					if iptables -t nat -L -v | grep -q "192.168.12.1:123"; then
+						echo "NTP server iptables rule seems to already exist"
+					else
+						echo "adding NTP server iptables rule"
+						iptables -t nat -A PREROUTING -i uap0 -p udp --dport 123 -j DNAT --to-destination 192.168.12.1:123
+					fi
+					python3 /home/pi/candle/time_server.py 192.168.12.1 123 &
+				fi
+			fi
 			
 			dnsmasq -k -d --no-daemon --conf-file=/home/pi/.webthings/etc/NetworkManager/dnsmasq.d/local-DNS.conf 1> /dev/null
 		else
