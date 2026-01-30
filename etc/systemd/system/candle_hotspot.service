@@ -17,7 +17,7 @@ ExecStartPre=/bin/chmod +x /home/pi/candle/hotspot.sh
 ExecStart=/home/pi/candle/hotspot.sh                           
 Restart=always
 RestartSec=10s
-StartLimitIntervalSec=0
+#StartLimitIntervalSec=0
 StartLimitBurst=0
 
 [Install]
