@@ -75,8 +75,8 @@ if ip link show | grep -q "uap0:"; then
 	fi
 	
 	
-	ip link set dev uap0 address "$ZEROMAC"
-	ip -6 addr add fd00:12::1 dev uap0
+	#ip link set dev uap0 address "$ZEROMAC"
+	#ip -6 addr add fd00:12::1 dev uap0
 	
 	if command -v iwctl &> /dev/null; then
 		echo "iwctl exists, so iwd installed"
