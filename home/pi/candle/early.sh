@@ -37,6 +37,13 @@ if [ -f /home/pi/dnsmasq_log.txt ]; then
 fi
 
 
+
+if iw reg get | grep -q 'country 00'; then
+	iw reg set NL
+fi
+
+
+
 # Create an alias for 'mlan0' wifi to 'wlan0' if needed
 if ip link show | grep -q "mlan0:" ; then
 	echo "Candle: early.sh: spotted mlan0"
