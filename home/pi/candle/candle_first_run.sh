@@ -25,6 +25,11 @@ then
   exit 1
 fi
 
+# if wifi country is not set, use NL
+if iw reg get | grep -q 'country 00'; then
+	iw reg set NL
+fi
+
 # Just to be sure..
 echo "Deleting NetworkManager Wifi connections"
 nmcli --terse connection show | grep 802-11-wireless | cut -d : -f 1 | while read name; do nmcli connection delete "$name"; done
