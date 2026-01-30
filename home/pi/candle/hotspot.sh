@@ -211,6 +211,8 @@ if ip link show | grep -q "uap0:"; then
 		nmcli connection modify Hotspot wifi.powersave 2
 		nmcli connection modify Hotspot 802-11-wireless.band bg
 		nmcli connection modify Hotspot 802-11-wireless.channel 1
+		nmcli connection modify Hotspot ipv6.addresses 'fd00::/8' ipv6.method manual
+		
 		nmcli connection modify Hotspot connection.autoconnect yes
 		#nmcli connection modify Hotspot ipv6.method "ignore"
 	fi
