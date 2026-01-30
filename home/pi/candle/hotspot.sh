@@ -68,9 +68,15 @@ fi
 #if ip link show | grep "uap0:" | grep -q "state UP"; then
 if ip link show | grep -q "uap0:"; then
 	MAC=$(nmcli device show wlan0 | grep HWADDR | awk '{print $2}')
-	ZEROMAC=${MAC%?}0
+	if [[ $MAC =~ 0$ ]]; then
+    	ZEROMAC=${MAC%?}1
+	else
+		ZEROMAC=${MAC%?}0
+	fi
+	
 	
 	ip link set dev uap0 address "$ZEROMAC"
+	ip -6 addr add fd00:12::1 dev uap0
 	
 	if command -v iwctl &> /dev/null; then
 		echo "iwctl exists, so iwd installed"
@@ -251,6 +257,10 @@ if ip link show | grep -q "uap0:"; then
 				echo "warning, Hotspot connection exists, but wasn't up. Setting it to up now."
 				nmcli connection up Hotspot
 			fi
+
+			echo "IPv6 address:"
+			ip -6 addr show uap0
+			
 			dnsmasq -k -d --no-daemon --conf-file=/home/pi/.webthings/etc/NetworkManager/dnsmasq.d/local-DNS.conf 1> /dev/null
 		else
 			echo "Candle: hotspot.sh: not bringing up hotspot"
