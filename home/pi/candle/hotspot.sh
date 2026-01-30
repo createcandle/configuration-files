@@ -213,7 +213,9 @@ if ip link show | grep -q "uap0:"; then
 	FIRSTRUN=true
 	if nmcli connection show | grep -q Hotspot; then
 		FIRSTRUN=false
+		echo "nmcli Hotspot item exists"
 	else
+		echo "No Hotspot item yet, generating it now"
 		#if [ "$PASSWORD" -ge 8 ]; then
 		if [[ $PASSWORD =~ ^........+ ]]; then
 			nmcli dev wifi hotspot ifname uap0 ssid "Candle $SHORTMAC" wifi-sec.key-mgmt sae wifi-sec.psk "$PASSWORD"
