@@ -212,7 +212,7 @@ if ip link show | grep -q "uap0:"; then
 		nmcli connection modify Hotspot 802-11-wireless.band bg
 		nmcli connection modify Hotspot 802-11-wireless.channel 1
 		nmcli connection modify Hotspot connection.autoconnect yes
-		nmcli connection modify Hotspot ipv6.method "ignore"
+		#nmcli connection modify Hotspot ipv6.method "ignore"
 	fi
 	
 	#if [ "$PASSWORD" -ge 8 ]; then
