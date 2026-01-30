@@ -96,8 +96,10 @@ if ip link show | grep -q "uap0:"; then
 	#SHORTMAC="${SHORTMAC//:/}"
 	#RANDOMCHARS=$(tr -dc A-Z0-9 </dev/urandom | head -c 2; echo '')
 	#SHORTMAC=$(echo "$SHORTMAC$RANDOMCHARS")
-	RANDOMCHARS=$(tr -dc 'A-Z0-9' < /dev/urandom | head -c 2); 
-	SHORTMAC=$(echo "$SHORTMAC$RANDOMCHARS");
+	#RANDOMCHARS=$(tr -dc 'A-Z0-9' < /dev/urandom | head -c 2)
+	RANDOMCHARS=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 2 | head -n 1)
+	
+	SHORTMAC=$(echo "$SHORTMAC$RANDOMCHARS")
 	
 	#ifconfig br0 hw ether $MAC
 	echo "hotspot.sh: short mac address: $SHORTMAC"
