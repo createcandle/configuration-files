@@ -38,25 +38,28 @@ fi
 
 # Create an alias for 'mlan0' wifi to 'wlan0' if needed
 if ip link show | grep -q "mlan0:" ; then
-        echo "hotspot.sh: spotted mlan0"
-        if ! ip link show | grep -q "uap0:" ; then
-                echo "uap0 does not exist yet"
-                /sbin/iw dev mlan0 interface add uap0 type __ap
-				sleep 1
-				iw dev uap0 set power_save off
-				sleep 1
-        fi
+	echo "hotspot.sh: spotted mlan0"
+	if ip link show | grep -q "uap0:" ; then
+		echo "mlan0 and uap0 exist"
+	else
+		echo "uap0 does not exist yet"
+		/sbin/iw dev mlan0 interface add uap0 type __ap
+		sleep 1
+		iw dev uap0 set power_save off
+		sleep 1
+	fi
         
 elif ip link show | grep -q "wlan0:" ; then
-        echo "wlan0 exists"
-        if ! ip link show | grep -q "uap0:" ; then
-                echo "uap0 does not exist yet"
-                /sbin/iw dev wlan0 interface add uap0 type __ap
-				sleep 1
-				iw dev uap0 set power_save off
-				sleep 1
-				
-        fi
+    echo "wlan0 exists"
+	if ip link show | grep -q "uap0:"; then
+		echo "wlan0 and uap0 exist"
+	else
+		echo "uap0 does not exist yet"
+		/sbin/iw dev wlan0 interface add uap0 type __ap
+		sleep 1
+		iw dev uap0 set power_save off
+		sleep 1
+	fi
 fi
 
 #if rfkill | grep -q ' blocked '; then
@@ -219,9 +222,9 @@ if ip link show | grep -q "uap0:"; then
 		fi
 	
 		if nmcli connection show --active | grep -q Hotspot; then
-				echo "warning, Hotspot connection started up. Setting it to down before making lots of changes."
-				nmcli connection down Hotspot
-				sleep 1
+			echo "warning, Hotspot connection started up. Setting it to down before making lots of changes."
+			nmcli connection down Hotspot
+			sleep 1
 		fi
 		
 		
@@ -267,9 +270,12 @@ if ip link show | grep -q "uap0:"; then
 			echo "Candle: hotspot.sh: bringing up hotspot and starting dnsmasq"
 			echo "Candle: hotspot.sh: bringing up hotspot and starting dnsmasq" >> /dev/kmsg
 			if nmcli radio wifi | grep -q 'disabled'; then
+				echo "hotspot.sh: had to being up wifi radio"
 				nmcli radio wifi on
 			fi
-			if ! nmcli connection show --active | grep -q Hotspot; then
+			if nmcli connection show --active | grep -q Hotspot; then
+				echo "Hotspot connection is already up"
+			else
 				echo "warning, Hotspot connection exists, but wasn't up. Setting it to up now."
 				nmcli connection up Hotspot
 			fi
@@ -288,6 +294,7 @@ if ip link show | grep -q "uap0:"; then
 		sleep 30
 	fi
 
-	sleep 5
 
 fi
+
+sleep 15
