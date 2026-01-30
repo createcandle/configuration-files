@@ -393,7 +393,7 @@ echo
 # NetworkManager has been removed for now
 echo
 echo "nmcli overview:"
-nmcli -o
+nmcli -o | cat
 
 echo
 echo "Wi-Fi:"
