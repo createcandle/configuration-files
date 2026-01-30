@@ -133,9 +133,12 @@ if ip link show | grep -q "uap0:"; then
 		
 		# Force all DNS traffic on the hotspot network to go to/through the Candle Controller
 		iptables -t nat -A PREROUTING -i uap0 -s 192.168.12.0/24 -p udp --dport 53 -j DNAT --to-destination 192.168.12.1:53
+		#ip6tables -t nat -A PREROUTING -i uap0 -s fd00:12::/8 -p udp --dport 53 -j DNAT --to-destination fd00:12::1
+		ip6tables -t nat -A PREROUTING -i uap0 -p udp --dport 53 -j DNAT --to-destination fd00:12::1
 		
 		echo "candle: hotspot.sh: adding iptables forwarding rules"
 		iptables -A FORWARD -i uap0 -j ACCEPT
+		ip6tables -A FORWARD -i uap0 -j ACCEPT
 		iptables -A FORWARD -o uap0 -m state --state ESTABLISHED,RELATED -j ACCEPT
 		ip6tables -A FORWARD -d ff02::1 -o uap0 -m state --state ESTABLISHED,RELATED -j ACCEPT
 		#iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
@@ -149,11 +152,18 @@ if ip link show | grep -q "uap0:"; then
 		iptables -I PREROUTING -p tcp -i uap0 -s 192.168.12.0/24 -d 192.168.12.1/32 --dport 80 -j REDIRECT --to-port 8080
 		iptables -I PREROUTING -p tcp -i uap0 -s 192.168.12.0/24 -d 192.168.12.1/32 --dport 443 -j REDIRECT --to-port 4443
 
+		ip6tables -I PREROUTING -p tcp -i uap0 -s fd00:12::/8 -d fd00:12::1 --dport 80 -j REDIRECT --to-port 8080
+		ip6tables -I PREROUTING -p tcp -i uap0 -s fd00:12::/8 -d fd00:12::1 --dport 443 -j REDIRECT --to-port 4443
+		
+	
 		# Block access to parent local networks
 		if [ ! -f /boot/firmware/candle_hotspot_allow_traversal.txt ]; then
 			iptables -I FORWARD -i uap0 -d 192.168.0.0/16 -m iprange --src-range 192.168.12.2-192.168.12.255 -j DROP
 			iptables -I FORWARD -i uap0 -d 172.16.0.0/12 -m iprange --src-range 192.168.12.2-192.168.12.255 -j DROP
 			iptables -I FORWARD -i uap0 -d 10.0.0.0/8 -m iprange --src-range 192.168.12.2-192.168.12.255 -j DROP
+
+			ip6tables -I FORWARD -i uap0 -d fe80::/10 -m iprange --src-range 192.168.12.2-192.168.12.255 -j DROP
+			
 		fi
 
 
