@@ -212,12 +212,16 @@ if ip link show | grep -q "uap0:"; then
 				sleep 1
 		fi
 		
-		nmcli connection modify Hotspot ipv4.addresses "192.168.12.1/24" ipv4.method manual ipv4.gateway "192.168.12.1" ipv4.dns "192.168.12.1" ipv4.dns-priority 1000 ipv6.dns-priority 1000
-		nmcli connection modify Hotspot ipv4.never-default true
-		nmcli connection modify Hotspot wifi.powersave 2
+		
 		nmcli connection modify Hotspot 802-11-wireless.band bg
 		nmcli connection modify Hotspot 802-11-wireless.channel 1
-		nmcli connection modify Hotspot ipv6.addresses 'fd00::/8' ipv6.method manual
+		nmcli connection modify Hotspot ipv4.addresses "192.168.12.1/24" ipv4.method manual ipv4.gateway "192.168.12.1" ipv4.dns "192.168.12.1" ipv4.dns-priority 1000
+		nmcli connection modify Hotspot ipv6.addresses 'fd00::/8' ipv6.method manual ipv6.gateway 'fd00:12::1' ipv6.dns 'fd00:12::1' ipv6.dns-priority 1000
+		
+		nmcli connection modify Hotspot ipv4.never-default true
+		nmcli connection modify Hotspot wifi.powersave 2
+		
+
 		
 		nmcli connection modify Hotspot connection.autoconnect yes
 		#nmcli connection modify Hotspot ipv6.method "ignore"
