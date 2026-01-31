@@ -2,6 +2,7 @@
 Description=Launches a very basic hotspot for emergency access
 After=NetworkManager.service
 Requires=NetworkManager.service
+ConditionPathExists=/boot/firmware/candle_emergency_hotspot.txt
 
 [Service]
 Type=oneshot
