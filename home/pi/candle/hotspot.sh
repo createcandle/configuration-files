@@ -175,8 +175,8 @@ start_dnsmasq () {
 		
 		echo "Candle: hotspot.sh: bringing up hotspot and starting dnsmasq" >> /dev/kmsg
 		if nmcli radio wifi | grep -q 'disabled'; then
-			echo "hotspot.sh: WARNING, had to bring up wifi radio"
-			echo "candle: hotspot.sh: WARNING, had to bring up wifi radio" >> /dev/kmsg
+			echo "hotspot.sh: WARNING, had to bring up wifi radio (2)"
+			echo "candle: hotspot.sh: WARNING, had to bring up wifi radio (2)" >> /dev/kmsg
 			nmcli radio wifi on
 		fi
 		if nmcli connection show --active | grep -q Hotspot; then
@@ -245,7 +245,19 @@ start_dnsmasq () {
 }
 
 
+if rfkill | grep -q ' blocked '; then
+	echo "Had to rfkll unblock all (1)"
+	echo "candle: hotspot.sh: Had to rfkll unblock all (1)" >> /dev/kmsg
+	rfkill unblock all
+	sleep 1
+fi
 
+if nmcli radio wifi | grep -q 'disabled'; then
+	echo "hotspot.sh: WARNING, had to bring up wifi radio (1)"
+	echo "candle: hotspot.sh: WARNING, had to bring up wifi radio (1)" >> /dev/kmsg
+	nmcli radio wifi on
+	sleep 1
+fi
 
 
 # Create virtual UAP0 interface for hotspot
@@ -282,13 +294,6 @@ fi
 
 
 
-
-
-#if rfkill | grep -q ' blocked '; then
-#	echo "Had to rfkll unblock early (1)"
-#	rfkill unblock all
-#	sleep 1
-#fi
 
 #if ip link show | grep "uap0:" | grep -q "state UP"; then
 if ip link show | grep -q "uap0:"; then
