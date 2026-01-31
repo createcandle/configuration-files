@@ -26,6 +26,37 @@ fi
 # iptables -A INPUT -p tcp -m multiport --dports 1883,1884,1885 -j ACCEPT
 
 
+
+if ip link show | grep -q "mlan0:" ; then
+	echo "hotspot.sh: spotted mlan0"
+	if ip link show | grep -q "uap0:" ; then
+		echo "mlan0 and uap0 exist"
+	else
+		echo "uap0 does not exist yet"
+		/sbin/iw dev mlan0 interface add uap0 type __ap
+		sleep 1
+		#ip address add 192.168.12.1/24 dev uap0
+		ifconfig uap0 192.168.12.1 netmask 255.255.255.0
+		iw dev uap0 set power_save off
+		sleep 1
+	fi
+        
+elif ip link show | grep -q "wlan0:" ; then
+    echo "wlan0 exists"
+	if ip link show | grep -q "uap0:"; then
+		echo "wlan0 and uap0 exist"
+	else
+		echo "uap0 does not exist yet"
+		/sbin/iw dev wlan0 interface add uap0 type __ap
+		sleep 1
+		#ip address add 192.168.12.1/24 dev uap0
+		ifconfig uap0 192.168.12.1 netmask 255.255.255.0
+		iw dev uap0 set power_save off
+		sleep 1
+	fi
+fi
+
+
 if [ ! -f /boot/firmware/candle_hotspot.txt ] && nmcli c show --active | grep 'uap0' | grep -q 'Hotspot' ; then
 	#nmcli connection delete candle_hotspot
 	nmcli connection down Hotspot
