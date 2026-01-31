@@ -167,7 +167,7 @@ if ip link show | grep -q "uap0:"; then
 			iptables -I FORWARD -i uap0 -d 172.16.0.0/12 -m iprange --src-range 192.168.12.2-192.168.12.255 -j DROP
 			iptables -I FORWARD -i uap0 -d 10.0.0.0/8 -m iprange --src-range 192.168.12.2-192.168.12.255 -j DROP
 
-			ip6tables -I FORWARD -i uap0 -d fe80::/10 -m iprange --src-range 192.168.12.2-192.168.12.255 -j DROP
+			ip6tables -I FORWARD -i uap0 -d fe80::/10 -s fd00:12::/8 -j DROP
 			
 		fi
 
