@@ -7,6 +7,7 @@ ConditionPathExists=/boot/firmware/candle_emergency_hotspot.txt
 [Service]
 Type=oneshot
 ExecStartPre=/usr/sbin/rfkill unblock all
+ExecStartPre=//usr/bin/nmcli radio wifi on
 ExecStart=/usr/bin/nmcli dev wifi hotspot ifname wlan0 ssid "Candle emergency"
 RemainAfterExit=yes
 
