@@ -31,14 +31,10 @@ if cat /home/pi/.webthings/etc/wpa_supplicant/wpa_supplicant.conf | grep -q psk=
     fi
 fi
 
-if ip link show wlan0 | grep -q DORMANT; then
-	echo "Candle: every minute: wlan0 was in DORMANT mode, setting to DEFAULT instead" >> /dev/kmsg
-	ip link set wlan0 mode default
-	ifdown wlan0 && ifup wlan0
-fi
+#if ip link show wlan0 | grep -q DORMANT; then
+#	echo "Candle: every minute: wlan0 was in DORMANT mode, setting to DEFAULT instead" >> /dev/kmsg
+#	ip link set wlan0 mode default
+#	#ifdown wlan0 && ifup wlan0
+#fi
 
-if ip link show uap0 | grep -q DORMANT; then
-	echo "Candle: every minute: uap0 was in DORMANT mode, setting to DEFAULT instead" >> /dev/kmsg
-	ip link set uap0 mode default
-	ifdown uap0 && ifup uap0
-fi
+
