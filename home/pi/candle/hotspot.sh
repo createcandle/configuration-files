@@ -289,14 +289,18 @@ if ip link show | grep -q "uap0:"; then
 							fi
 							python3 /home/pi/candle/time_server.py 192.168.12.1 123 &
 						fi
+
+						echo "STARTING DNSMASQ"
+						dnsmasq -k -d --no-daemon --conf-file=/home/pi/.webthings/etc/NetworkManager/dnsmasq.d/local-DNS.conf 1> /dev/null
+
+
 					else
 						echo "ERROR, uap0 interface does not have an ip address (yet). Cannot start NTP server"
 						
 					fi
 				fi
 				
-				dnsmasq -k -d --no-daemon --conf-file=/home/pi/.webthings/etc/NetworkManager/dnsmasq.d/local-DNS.conf 1> /dev/null
-
+				
 			else
 				echo
 				echo "ERROR, Hotspot was not active"
