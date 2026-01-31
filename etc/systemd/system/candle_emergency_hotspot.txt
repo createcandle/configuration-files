@@ -6,7 +6,7 @@ ConditionPathExists=/boot/firmware/candle_emergency_hotspot.txt
 
 [Service]
 Type=oneshot
-ExecStart=/usr/bin/nmcli dev wifi hotspot ifname wlan0 ssid "Candle emergency" password "smarthome"
+ExecStart=/usr/bin/nmcli dev wifi hotspot ifname wlan0 ssid "Candle emergency"
 RemainAfterExit=yes
 
 [Install]
