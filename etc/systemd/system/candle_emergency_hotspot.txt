@@ -1,0 +1,12 @@
+[Unit]
+Description=Launches a very basic hotspot for emergency access
+After=NetworkManager.service
+Requires=NetworkManager.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/nmcli dev wifi hotspot ifname wlan0 ssid "Candle emergency" password "smarthome"
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
