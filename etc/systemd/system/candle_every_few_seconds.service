@@ -9,6 +9,7 @@ User=root
 ExecStartPre=/bin/chmod +x /home/pi/candle/every_few_seconds.sh
 ExecStart=/bin/bash /home/pi/candle/every_few_seconds.sh
 StandardOutput=null
+LogNamespace=noisy
 
 
 [Install]
