@@ -430,7 +430,7 @@ if ip link show | grep -q "uap0:"; then
 			if [[ $PASSWORD =~ ^........+ ]]; then
 				
                 nmcli connection add \
-                    con-name wifi_hotspot \
+                    con-name Hotspot \
                     ifname uap0 \
                     type wifi \
                     autoconnect yes \
@@ -448,7 +448,7 @@ if ip link show | grep -q "uap0:"; then
 			
 			else
                 nmcli connection add \
-                    con-name wifi_hotspot \
+                    con-name Hotspot \
                     ifname uap0 \
                     type wifi \
                     autoconnect yes \
@@ -459,9 +459,9 @@ if ip link show | grep -q "uap0:"; then
                     ipv6.method manual ipv6.addresses 'fd00::/8' 802-11-wireless.band bg 802-11-wireless.channel 1
 				
 			fi
-			#nmcli con modify wifi_hotspot wifi-sec.pmf disable
-			nmcli con modify wifi_hotspot 802-11-wireless.mode ap
-			nmcli con modify wifi_hotspot wifi.cloned-mac-address "$ZEROMAC"
+			#nmcli con modify Hotspot wifi-sec.pmf disable
+			nmcli con modify Hotspot 802-11-wireless.mode ap
+			nmcli con modify Hotspot wifi.cloned-mac-address "$ZEROMAC"
 			
 			
 		fi
