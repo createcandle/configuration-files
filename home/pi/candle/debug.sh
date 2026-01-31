@@ -144,6 +144,8 @@ fi
 echo
 echo "--------------------------------------------- firmware"
 echo
+rpi-eeprom-update
+echo
 vcgencmd bootloader_version
 echo
 vcgencmd bootloader_config
