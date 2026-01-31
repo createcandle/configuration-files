@@ -220,6 +220,7 @@ if ip link show | grep -q "uap0:"; then
 		nmcli connection modify Hotspot ipv6.addresses 'fd00::/8' ipv6.method manual ipv6.gateway 'fd00:12::1' ipv6.dns 'fd00:12::1' ipv6.dns-priority 1000
 		
 		nmcli connection modify Hotspot ipv4.never-default true
+		nmcli connection modify Hotspot ipv6.never-default true
 		nmcli connection modify Hotspot wifi.powersave 2
 		
 
