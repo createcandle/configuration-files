@@ -364,7 +364,9 @@ fi
 
 totalk=$(awk '/^MemTotal:/{print $2}' /proc/meminfo)
 #logger total memory: $totalk
-
+echo "early.sh: total memory: $totalk"
+free -h
+echo
 
 if [ "$totalk" -lt 600000 ]
 then
