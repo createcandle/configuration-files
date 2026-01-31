@@ -1,5 +1,3 @@
-COOLSPOT
-
 #!/bin/bash
 
 if [ -f /boot/firmware/emergency.txt ]; then
@@ -305,7 +303,7 @@ if ip link show | grep -q "uap0:"; then
 	
 	
 	MAC=$(nmcli device show wlan0 | grep HWADDR | awk '{print $2}')
-	if [[ $MAC =~ 0$ ]]; then
+	if [[ "$MAC" =~ 0$ ]]; then
     	ZEROMAC=${MAC%?}1
 	else
 		ZEROMAC=${MAC%?}0
@@ -319,53 +317,10 @@ if ip link show | grep -q "uap0:"; then
 	
 	sleep 1
 	
-	echo
-	echo "ifconfig uap0:"
-	ifconfig uap0
-	echo
-	
-
-	if command -v iwctl &> /dev/null; then
-		echo "hotspot.sh: OK, iwctl exists, so IWD is installed"
-		
-		if iwctl device list | grep -q uap0; then
-			echo "hotspot.sh: OK, iwd already sees uap0"
-		else
-			echo "hotspot.sh: WARNING, iwd does not see uap0 yet. Restarting IWD"
-			echo "candle: hotspot.sh: WARNING, iwd does not see uap0 yet. Restarting IWD" >> /dev/kmsg
-			sleep 1
-			systemctl restart iwd
-			#iwctl device uap0 set-property Mode ap
-			sleep 1
-			#systemctl restart NetworkManager
-			#sleep 1
-			echo "Does IWD see uap0 now?"
-			iwctl device list 
-			echo
-		fi
-		
-		if iwctl device list | grep -q uap0; then
-			if iwctl device list | grep uap0 | grep -q off; then
-				echo "hotspot.sh: WARNING, according to iwctl (IWD) uap0 is not powered. Attempting to override.."
-				echo "candle: hotspot.sh: WARNING, according to iwctl (IWD) uap0 is not powered. Attempting to override.." >> /dev/kmsg
-				iwctl device uap0 set-property Powered on;
-				sleep 1
-				echo "iwctl device list after powering on uap0:"
-				iwctl device list
-			fi
-		else
-			echo "hotspot.sh: ERROR even after restarting IWD does not see uap0"
-			echo "candle: hotspot.sh: ERROR even after restarting IWD does not see uap0" >> /dev/kmsg
-			sleep 10
-			exit 1
-		fi
-	fi
-	
-	
-	echo
-	echo "ifconfig uap0:"
-	ifconfig uap0
-	echo
+	#echo
+	#echo "ifconfig uap0:"
+	#ifconfig uap0
+	#echo
 	
 	
 	SHORTMAC=${MAC: -2}
