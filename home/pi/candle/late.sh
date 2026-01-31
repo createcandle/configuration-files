@@ -50,27 +50,39 @@ fi
 #IP4=$(hostname -I | awk '{print $1}')
 IP4=$(hostname -I | sed -r 's/192.168.12.1//' | xargs)
 
-if [ -n "$IP4" ]; then
+if [ -n "$IP4S" ]; then
 
 	if [ -d /boot/firmware/ ]; then
-		echo $IP4 > /boot/firmware/candle_last_known_ip_address.txt
+		echo "$IP4S" > /boot/firmware/candle_last_known_ip_address.txt
 	fi
+	
+	for IP4 in $IP4S; do
+		echo "Candle late.sh: looping over IP address: $IP4"
 
-	# Add firewall rules
-	if [ -f /usr/sbin/iptables ] ; then
-		echo "Candle late: Adding IP tables for Candle Controller port redirect for IP4: -->$IP4<--"
-	    echo "Candle late: adding iptables port 80 and 433 redirect rules for IP4: $IP4" >> /dev/kmsg
-	    
-		iptables -t mangle -I PREROUTING -s $IP4/24 -p tcp -d $IP4 --dport 80 -j MARK --set-mark 1
-		iptables -t mangle -I PREROUTING -s $IP4/24 -p tcp -d $IP4 --dport 443 -j MARK --set-mark 1
-		iptables -t nat -I PREROUTING -s $IP4/24 -p tcp -d $IP4 --dport 80 -j REDIRECT --to-port 8080
-		iptables -t nat -I PREROUTING -s $IP4/24 -p tcp -d $IP4 --dport 443 -j REDIRECT --to-port 4443
-		iptables -I INPUT -s $IP4/24 -m state --state NEW -m tcp -p tcp -d $IP4 --dport 8080 -m mark --mark 1 -j ACCEPT
-		iptables -I INPUT -s $IP4/24 -m state --state NEW -m tcp -p tcp -d $IP4 --dport 4443 -m mark --mark 1 -j ACCEPT
-	else
-		echo "Candle later: error: iptables not installed?" >> /dev/kmsg
-	fi
+		if echo "$IP4" | grep -q "."; then
+			
+			# Add iptables port forwarding
+			if [ -f /usr/sbin/iptables ] ; then
+				echo "Candle late: Adding IP tables for Candle Controller port redirect for IP4: -->$IP4<--"
+			    echo "Candle late: adding iptables port 80 and 433 redirect rules for IP4: $IP4" >> /dev/kmsg
+			    
+				iptables -t mangle -I PREROUTING -s $IP4/24 -p tcp -d $IP4 --dport 80 -j MARK --set-mark 1
+				iptables -t mangle -I PREROUTING -s $IP4/24 -p tcp -d $IP4 --dport 443 -j MARK --set-mark 1
+				iptables -t nat -I PREROUTING -s $IP4/24 -p tcp -d $IP4 --dport 80 -j REDIRECT --to-port 8080
+				iptables -t nat -I PREROUTING -s $IP4/24 -p tcp -d $IP4 --dport 443 -j REDIRECT --to-port 4443
+				iptables -I INPUT -s $IP4/24 -m state --state NEW -m tcp -p tcp -d $IP4 --dport 8080 -m mark --mark 1 -j ACCEPT
+				iptables -I INPUT -s $IP4/24 -m state --state NEW -m tcp -p tcp -d $IP4 --dport 4443 -m mark --mark 1 -j ACCEPT
+			else
+				echo "Candle later: error: iptables not installed?" >> /dev/kmsg
+			fi
 
+		fi
+		
+	done
+
+	
+
+	
 fi
 
 
