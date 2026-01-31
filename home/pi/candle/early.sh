@@ -10,6 +10,9 @@ fi
 
 echo "in Candle early"
 
+if [ ! -f $BOOT_DIR/candle_log.txt ]; then
+	echo "$(date) - Candle early.sh: created missing log file" > $BOOT_DIR/candle_log.txt
+fi
 
 # NOT CURRENTLTY USED, BUT COULD BE USEFUL FOR A FUTURE FIREWALL THAT BLOCKS BY DEFAULT
 
@@ -23,7 +26,7 @@ echo "in Candle early"
 # iptables -A INPUT -p tcp -m multiport --dports 1883,1884,1885 -j ACCEPT
 
 
-if [ ! -f /boot/firmware/candle_hotspot.txt ] && nmcli c show | grep 'uap0' | grep -q 'Hotspot' ; then
+if [ ! -f /boot/firmware/candle_hotspot.txt ] && nmcli c show --active | grep 'uap0' | grep -q 'Hotspot' ; then
 	#nmcli connection delete candle_hotspot
 	nmcli connection down Hotspot
 	nmcli connection modify Hotspot connection.autoconnect no
@@ -62,9 +65,9 @@ then
     NEW_HOSTNAME=$(head -1 $BOOT_DIR/hostname.txt)
     
     if [ "$OLD_HOSTNAME" == "$NEW_HOSTNAME" ]; then
-        echo "hostname.txt is the same as the current hostname file" >> /dev/kmsg
+        echo "candle: early.sh: OK, hostname.txt is the same as the current hostname file" >> /dev/kmsg
     else
-        echo "new hostname from hostname.txt: $OLD_HOSTNAME to $NEW_HOSTNAME" >> /dev/kmsg
+        echo "candle: early.sh: spotted different hostname from hostname.txt: $OLD_HOSTNAME to $NEW_HOSTNAME" >> /dev/kmsg
         if [ -f $BOOT_DIR/candle_first_run_complete.txt ]; then
             echo "new hostname from hostname.txt: $OLD_HOSTNAME to $NEW_HOSTNAME" >> $BOOT_DIR/candle_log.txt
         fi
