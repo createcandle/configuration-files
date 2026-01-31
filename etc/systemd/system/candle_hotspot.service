@@ -5,6 +5,7 @@ After=network.target candle_early.service dbus.service home-pi-.webthings.mount
 Requires=dbus.service home-pi-.webthings.mount
 #OnFailure=webthings-gateway.update-rollback.service
 ConditionPathExists=/home/pi/.webthings/etc/NetworkManager/dnsmasq.d/local-DNS.conf
+ConditionPathExists=!/boot/firmware/candle_emergency_hotspot.txt
 
 [Service]
 User=root
