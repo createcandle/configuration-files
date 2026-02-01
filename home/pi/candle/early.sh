@@ -106,7 +106,7 @@ fi
 
 
 if [ -f /usr/sbin/wpa_cli ]; then
-	wpa_cli -i uap0 terminate
+	wpa_cli -i uap0 terminate | cat
 fi
 
 
