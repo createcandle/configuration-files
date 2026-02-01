@@ -1,48 +1,67 @@
 #!/bin/bash
 
-if [ -f /boot/firmware/emergency.txt ]; then
+BOOT_DIR="/boot"
+if lsblk | grep -q /boot/firmware; then
+    BOOT_DIR="$BOOT_DIR/firmware"
+fi
+
+if [ ! -f $BOOT_DIR/candle_log.txt ]; then
+	echo "$(date) - Candle hotspot.sh: created missing log file" > $BOOT_DIR/candle_log.txt
+fi
+
+if [ -f $BOOT_DIR/candle_emergency_hotspot.txt ]; then
 	exit 0
 fi
 
-if [ -f /boot/firmware/candle_emergency_hotspot.txt ]; then
-	exit 0
-fi
-#nmcli dev wifi hotspot ifname uap0 ssid "Candle x" password "testje"
+# most basc command to create a hotspot:
+# nmcli dev wifi hotspot ifname uap0 ssid "Candle" password "smarthome"
 
 
-WIFI_COUNTRY="NL"
-if [ -f /boot/firmware/candle_wifi_country_code.txt ]; then
-	SPOTTED_WIFI_COUNTRY=$(cat /boot/firmware/candle_wifi_country_code.txt)
+
+if [ -f $BOOT_DIR/candle_wifi_country_code.txt ]; then
+	SPOTTED_WIFI_COUNTRY=$(cat $BOOT_DIR/candle_wifi_country_code.txt | tr -d '\n')
 	if [ "${#SPOTTED_WIFI_COUNTRY}" -eq 2 ]; then 
-		WIFI_COUNTRY="$SPOTTED_WIFI_COUNTRY"
+
+		echo "hotspot.sh: spotted a country code in candle_wifi_country_code.txt: -->$SPOTTED_WIFI_COUNTRY<--"
+
+		if iw reg get | grep -q "country $WIFI_COUNTRY:"; then
+			echo "hotspot.sh: OK, wifi regulatory country is already set to: $SPOTTED_WIFI_COUNTRY"
+		else
+			echo "hotspot.sh: WARNING, changing WiFi regulatory country to: $SPOTTED_WIFI_COUNTRY"
+			echo "hotspot.sh: WARNING, changing WiFi regulatory country to: $SPOTTED_WIFI_COUNTRY" >> /dev/kmsg
+			iw reg set "$SPOTTED_WIFI_COUNTRY"
+			sleep 1
+		fi
+
+		rm $BOOT_DIR/candle_wifi_country_code.txt
 	else
-		echo "hotspot.sh: ERROR, country code in boot/firmware/candle_wifi_country_code.txt was of invalid length: $WIFI_COUNTRY"
-		echo "hotspot.sh: ERROR, country code in boot/firmware/candle_wifi_country_code.txt was of invalid length: $WIFI_COUNTRY" >> /dev/kmsg
+		echo "hotspot.sh: ERROR, provided country code in candle_wifi_country_code.txt was of invalid length: $WIFI_COUNTRY"
+		echo "hotspot.sh: ERROR, provided country code in candle_wifi_country_code.txt was of invalid length: $WIFI_COUNTRY" >> /dev/kmsg
+		echo "ERROR, provided country code in candle_wifi_country_code.txt was of invalid length (should be two letters): -->$WIFI_COUNTRY<--" >> $BOOT_DIR/candle_log.txt
+		echo "Invalid country code provided. It should be two capital letters, such as NL, GB or US." > $BOOT_DIR/candle_wifi_country_code.txt
 	fi
 fi
 
-echo "hotspot.sh: WIFI_COUNTRY: -->$WIFI_COUNTRY<--"
-
-if iw reg get | grep -q "country $WIFI_COUNTRY:"; then
-	echo "hotspot.sh: OK, wifi regulatory country is already set to: $WIFI_COUNTRY"
-else
-	echo "hotspot.sh: WARNING, changing WiFi regulatory country to: $WIFI_COUNTRY"
-	echo "hotspot.sh: WARNING, changing WiFi regulatory country to: $WIFI_COUNTRY" >> /dev/kmsg
+if iw reg get | grep -q "country 00" ; then
+	iw reg set NL
+	echo "Wifi regulatory country was invalid, it has been set back to the default, NL" >> $BOOT_DIR/candle_log.txt
+	
 fi
 
+
 # Setting it (again) seems to solve issues with starting the hotspot with iwd
-iw reg set "$WIFI_COUNTRY"
-sleep 1
+#iw reg set "$WIFI_COUNTRY"
+#sleep 1
 
 
-if [ ! -f /boot/firmware/candle_hotspot.txt ]; then
+if [ ! -f $BOOT_DIR/candle_hotspot.txt ]; then
 	echo "hotspot.sh: no candle_hotspot.txt, aborting"
 	echo "hotspot.sh: no candle_hotspot.txt, aborting" >> /dev/kmsg
 	sleep 20
 	exit 0
 fi
 
-#if [ ! -f /boot/firmware/candle_hotspot.txt ]; then
+#if [ ! -f $BOOT_DIR/candle_hotspot.txt ]; then
 #	echo "candle: hotspot.sh: not starting hotspot"
 #	echo "Candle: hotspot.sh: not starting hotspot" >> /dev/kmsg
 #	exit 0
@@ -52,11 +71,11 @@ sysctl -w net.ipv4.ip_forward=1
 sysctl -w net.ipv6.conf.all.forwarding=1
 
 PASSWORD=""
-if [ -f /boot/firmware/candle_hotspot_password.txt ]; then
-	PASSWORD=$(cat /boot/firmware/candle_hotspot_password.txt)
+if [ -f $BOOT_DIR/candle_hotspot_password.txt ]; then
+	PASSWORD=$(cat $BOOT_DIR/candle_hotspot_password.txt)
 	#echo "Updating hotspot password" >> candle_log.txt 
 fi
-#echo "" > /boot/firmware/candle_hotspot.txt
+#echo "" > $BOOT_DIR/candle_hotspot.txt
 
 #PHY="PHY1"
 #if iw list | grep -q phy0; then
@@ -76,7 +95,7 @@ fi
 start_dnsmasq () {
 	echo "in start_dnsmasq"
 	
-	if [ -f /boot/firmware/candle_hotspot.txt ]; then
+	if [ -f $BOOT_DIR/candle_hotspot.txt ]; then
 		echo "hotspot.sh: bringing up hotspot and starting dnsmasq"
 		
 		echo
@@ -95,11 +114,11 @@ start_dnsmasq () {
 			echo "hotspot.sh: adding iptables for uap0"
 		
 			# optionally, drop DHCP requests to get an IPV6 address.
-			if [ -f /boot/firmware/candle_hotspot_no_ipv6.txt ]; then
+			if [ -f $BOOT_DIR/candle_hotspot_no_ipv6.txt ]; then
 				ip6tables -A INPUT -m state --state NEW -m udp -p udp -s fe80::/10 --dport 546 -j DROP
 			fi
 		
-			if [ ! -f /boot/firmware/candle_hotspot_allow_access_to_main_network.txt ]; then
+			if [ ! -f $BOOT_DIR/candle_hotspot_allow_access_to_main_network.txt ]; then
 				echo "blocking access of hotspot network to main network"
 				#iptables -A FORWARD -d 192.168.2.2 -m iprange --src-range 192.168.12.2-192.168.12.255 -j DROP
 				#iptables -I INPUT -i uap0 -d <main_network_IP> -j DROP
@@ -136,7 +155,7 @@ start_dnsmasq () {
 		
 	
 			# Block access to parent local networks
-			if [ ! -f /boot/firmware/candle_hotspot_allow_traversal.txt ]; then
+			if [ ! -f $BOOT_DIR/candle_hotspot_allow_traversal.txt ]; then
 				echo "candle: hotspot.sh: blocking traversal to local network"
 				iptables -I FORWARD -i uap0 -d 192.168.0.0/16 -m iprange --src-range 192.168.12.2-192.168.12.255 -j DROP
 				iptables -I FORWARD -i uap0 -d 172.16.0.0/12 -m iprange --src-range 192.168.12.2-192.168.12.255 -j DROP
@@ -189,7 +208,7 @@ start_dnsmasq () {
 			ip -6 addr show uap0
 	
 			# Start NTP time server
-			if [ -f /boot/firmware/candle_no_time_server.txt ]; then
+			if [ -f $BOOT_DIR/candle_no_time_server.txt ]; then
 				echo "candle: hotspot.sh: not starting time server"
 			elif [ -f /home/pi/candle/time_server.py ]; then
 
@@ -357,8 +376,8 @@ if ip link show | grep -q "uap0:"; then
 	
 	
 	# Allow the user to override the SSID
-	if [ -f /boot/firmware/candle_hotspot_name.txt ]; then
-		SPOTTED_HOTSPOT_SSID=$(cat /boot/firmware/candle_hotspot_name.txt)
+	if [ -f $BOOT_DIR/candle_hotspot_name.txt ]; then
+		SPOTTED_HOTSPOT_SSID=$(cat $BOOT_DIR/candle_hotspot_name.txt)
 		if [ -n "$SPOTTED_HOTSPOT_SSID" ]; then 
 			echo "Spotted a prefered hotspot SSID in candle_hotspot_name.txt: $SPOTTED_HOTSPOT_SSID"
 			SSID=$(echo "$SPOTTED_HOTSPOT_SSID")
@@ -466,7 +485,7 @@ if ip link show | grep -q "uap0:"; then
 			
 		fi
 	
-		if [ -f /boot/firmware/developer.txt ]; then
+		if [ -f $BOOT_DIR/developer.txt ]; then
 			echo "Will try to start Hotspot with: "
 			echo " - SSID: $SSID"
 			echo " - PASS: $PASSWORD"
@@ -543,7 +562,7 @@ if ip link show | grep -q "uap0:"; then
 		
 	
 		# Protected Management Frames can lead to connectivity issues with some WiFi devices
-		if [ -f /boot/firmware/candle_disable_wifi_pmf.txt ]; then
+		if [ -f $BOOT_DIR/candle_disable_wifi_pmf.txt ]; then
 			echo "candle: hotspot.sh: spotted candle_disable_wifi_pmf.txt -> disabling wifi protected management frames"
 			#nmcli connection modify candle_hotspot wifi.powersave 1
 			nmcli con modify Hotspot wifi-sec.pmf disable
@@ -552,7 +571,7 @@ if ip link show | grep -q "uap0:"; then
 	
 		# POWER SAVE
 	
-		if [ -f /boot/firmware/candle_wifi_power_save.txt ]; then
+		if [ -f $BOOT_DIR/candle_wifi_power_save.txt ]; then
 			echo "candle: hotspot.sh: spotted candle_wifi_power_save.txt -> forcing wifi powersave to on"
 			#nmcli connection modify candle_hotspot wifi.powersave 1
 			nmcli radio wifi powersave on
