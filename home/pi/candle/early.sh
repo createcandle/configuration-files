@@ -104,7 +104,9 @@ elif ip link show | grep -q "wlan0:" ; then
 	fi
 fi
 
-
+if [ -f /usr/sbin/wpa_cli ]; then
+	wpa_cli -i uap0 terminate
+fi
 if [ ! -f /boot/firmware/candle_hotspot.txt ] && nmcli c show --active | grep 'uap0' | grep -q 'Hotspot' ; then
 	#nmcli connection delete candle_hotspot
 	nmcli connection down Hotspot
