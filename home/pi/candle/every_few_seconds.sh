@@ -41,7 +41,7 @@ IP4S=$(hostname -I | sed -r 's/192.168.12.1//' | xargs)
 
 if [ -n "$IP4S" ]; then
 	for IP4 in $IP4S; do
-		echo "every_few_seconds: IP4: -->$IP4<--"
+		#echo "every_few_seconds: IP4: -->$IP4<--"
 		
 		# Check if the variable is a valid IP address
 		if [[ $IP4 =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$ ]]; then
