@@ -447,6 +447,9 @@ if ip link show | grep -q "uap0:"; then
 	#	sleep 1
 	#fi
 
+	if nmcli device status | grep uap0 | grep -q unmanaged ; then
+		nmcli device set uap0 managed true
+	fi
 	
 
 	if nmcli connection show --active | grep -q Hotspot; then
