@@ -61,6 +61,12 @@ fi
 
 #systemctl status iwd.service | cat
 
+if [ -f /usr/sbin/wpa_cli ] ; then
+	if wpa_cli interface_list | grep -q "Selected interface 'uap0'" ; then
+		wpa_cli interface wlan0
+		
+	fi
+fi
 
 
 
@@ -70,11 +76,6 @@ start_dnsmasq () {
 	
 	if [ -f $BOOT_DIR/candle_hotspot.txt ]; then
 		echo "hotspot.sh: bringing up hotspot and starting dnsmasq"
-		
-		echo
-		echo "ifconfig uap0:"
-		ifconfig uap0
-		echo
 		
 		
 		IP4S=$(hostname -I | sed -r 's/192.168.12.1//' | xargs)
@@ -170,13 +171,15 @@ start_dnsmasq () {
 			nmcli radio wifi on
 		fi
 		if nmcli connection show --active | grep -q Hotspot; then
-			echo "hotspot.sh: OK, Hotspot connection is already up"
+			echo "hotspot.sh: OK, Hotspot connection is still up"
 		else
-			echo "hotspot.sh: warning, Hotspot connection exists, but wasn't up. Attempting to set it to up now. This is expected to fail"
+			echo "hotspot.sh: warning, Hotspot connection exists, but still wasn't up anymore. Attempting to set it to up again. This is expected to fail"
 			nmcli connection up Hotspot
+			sleep 1
 		fi
 
 		if nmcli connection show --active | grep -q Hotspot; then
+			
 			echo "IPv6 address(es):"
 			ip -6 addr show uap0
 	
@@ -200,15 +203,21 @@ start_dnsmasq () {
 						python3 /home/pi/candle/time_server.py 192.168.12.1 123 &
 					fi
 
-					echo "STARTING DNSMASQ"
-					dnsmasq -k -d --no-daemon --conf-file=/home/pi/.webthings/etc/NetworkManager/dnsmasq.d/local-DNS.conf 1> /dev/null
-
 
 				else
 					echo "ERROR, uap0 interface does not have 192.168.12.1 ip address (yet). Cannot start NTP server. ifconfig:"
-					ifconfig uap0
-			
 				fi
+				
+				
+				echo "active connections right before starting dnsmasq:"
+				nmcli connection show --active
+				
+				
+				if nmcli connection show --active | grep -q Hotspot; then
+					echo "FINAL STEP: STARTING DNSMASQ"
+					dnsmasq -k -d --no-daemon --conf-file=/home/pi/.webthings/etc/NetworkManager/dnsmasq.d/local-DNS.conf 1> /dev/null
+				fi
+				
 			fi
 	
 	
@@ -239,13 +248,6 @@ if rfkill | grep -q ' blocked '; then
 	echo "Had to rfkll unblock all (1)"
 	echo "candle: hotspot.sh: Had to rfkll unblock all (1)" >> /dev/kmsg
 	rfkill unblock all
-	sleep 1
-fi
-
-if nmcli radio wifi | grep -q 'disabled'; then
-	echo "hotspot.sh: WARNING, had to bring up wifi radio (1)"
-	echo "candle: hotspot.sh: WARNING, had to bring up wifi radio (1)" >> /dev/kmsg
-	nmcli radio wifi on
 	sleep 1
 fi
 
@@ -367,7 +369,14 @@ if ip link show | grep -q "uap0:"; then
 	#RANDOMCHARS=$(tr -dc A-Z0-9 </dev/urandom | head -c 2; echo '')
 	#SHORTMAC=$(echo "$SHORTMAC$RANDOMCHARS")
 	#RANDOMCHARS=$(tr -dc 'A-Z0-9' < /dev/urandom | head -c 2)
-	RANDOMCHARS=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 2 | head -n 1)
+	#RANDOMCHARS=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 2 | head -n 1)
+	
+	RANDOMCHARS=""
+	chars=1234567890ABCDEF
+	for i in {1..2}; do
+		RANDOMCHARS=$(echo -n "$RANDOMCHARS${chars:RANDOM%${#chars}:1}")
+	done
+	echo "RANDOMCHARS: $RANDOMCHARS"
 	
 	SHORTMAC=$(echo "$SHORTMAC$RANDOMCHARS")
 	
@@ -420,10 +429,10 @@ if ip link show | grep -q "uap0:"; then
 	#	sleep 1
 	#fi
 
-	if nmcli device status | grep uap0 | grep -q unmanaged ; then
-		nmcli device set uap0 managed true
-		sleep 5
-	fi
+	#if nmcli device status | grep uap0 | grep -q unmanaged ; then
+	#	nmcli device set uap0 managed true
+	#	sleep 5
+	#fi
 	
 
 	if nmcli connection show --active | grep -q Hotspot; then
@@ -452,16 +461,13 @@ if ip link show | grep -q "uap0:"; then
 		#ifconfig uap0
 		#echo
 		
-		if nmcli connection show | grep -q Hotspot; then
-			
+		if nmcli connection show | grep -q 'Hotspot'; then
+			echo "Hotspot connection already exists"
 			
 			echo "What is the interface name of the not-active Hotspot connection? (0)"
 			nmcli connection show Hotspot | grep connection.interface-name
 			
-			echo "deleting old Hotspot connection before creating a new one"
-			#nmcli connection delete Hotspot
-			sleep 1
-			
+
 		else
 			#nmcli connection add con-name "Hotspot" \
 			#    ifname uap0 wifi.mode ap wifi.ssid "$SSID" \
@@ -506,6 +512,19 @@ if ip link show | grep -q "uap0:"; then
 			nmcli con modify Hotspot 802-11-wireless.mode ap
 			nmcli con modify Hotspot wifi.cloned-mac-address "$ZEROMAC"
 			
+			nmcli connection modify Hotspot ipv4.gateway "192.168.12.1" 
+			nmcli connection modify Hotspot ipv4.dns "192.168.12.1" ipv4.dns-priority 1000
+			nmcli connection modify Hotspot ipv4.never-default true
+		
+			#nmcli connection modify Hotspot ipv6.addresses 'fd00::/8' ipv6.method manual 
+			nmcli connection modify Hotspot ipv6.gateway 'fd00:12::1' 
+			nmcli connection modify Hotspot ipv6.dns 'fd00:12::1' ipv6.dns-priority 1000
+			nmcli connection modify Hotspot ipv6.never-default true
+			#nmcli connection modify Hotspot ipv6.method "ignore"
+		
+			nmcli connection modify Hotspot wifi.powersave 2
+		
+			nmcli connection modify Hotspot connection.autoconnect yes
 			
 		fi
 	
@@ -521,102 +540,131 @@ if ip link show | grep -q "uap0:"; then
 		#nmcli con add con-name Hotspot ifname uap0 type wifi connection.autoconnect yes 802-11-wireless.ssid "$SSID" ipv4.method manual ipv4.addresses "192.168.12.1/24" ipv6.method manual ipv6.addresses 'fd00::/8' 802-11-wireless.band bg 802-11-wireless.channel 1
 		#nmcli con add type wifi ifname wlan0 con-name <your_hotspot_name> autoconnect yes ssid <your_ssid>
 		
-		echo "What is the interface name of the (still down) Hotspot connection that was just created?"
-		nmcli connection show Hotspot | grep connection.interface-name
+		
 		
 		#nmcli connection modify Hotspot wifi.cloned-mac-address "$ZEROMAC"
 		#nmcli connection modify Hotspot 802-11-wireless.band bg 802-11-wireless.channel 1
 		
 		
 		#nmcli connection modify Hotspot ipv4.addresses "192.168.12.1/24" ipv4.method manual 
-		nmcli connection modify Hotspot ipv4.gateway "192.168.12.1" 
-		nmcli connection modify Hotspot ipv4.dns "192.168.12.1" ipv4.dns-priority 1000
-		nmcli connection modify Hotspot ipv4.never-default true
 		
-		#nmcli connection modify Hotspot ipv6.addresses 'fd00::/8' ipv6.method manual 
-		nmcli connection modify Hotspot ipv6.gateway 'fd00:12::1' 
-		nmcli connection modify Hotspot ipv6.dns 'fd00:12::1' ipv6.dns-priority 1000
-		nmcli connection modify Hotspot ipv6.never-default true
-		#nmcli connection modify Hotspot ipv6.method "ignore"
-		
-		nmcli connection modify Hotspot wifi.powersave 2
-		
-		nmcli connection modify Hotspot connection.autoconnect yes
 		
 		#nmcli connection modify Hotspot connection.interface-name uap0
 		
-	
-		if [[ $PASSWORD =~ ^........+ ]]; then
-			echo "Setting hotspot password"
+		if nmcli connection show | grep -q Hotspot; then
 			
-			nmcli con modify Hotspot 802-11-wireless-security.key-mgmt wpa-psk \
-                802-11-wireless-security.proto rsn \
-                wifi-sec.pairwise ccmp \
-                802-11-wireless-security.psk "$PASSWORD" \
-			
-			#nmcli dev wifi hotspot ifname uap0 ssid "$SSID" password "$PASSWORD" 
-			#sleep 1
-			#echo "Basic hotspot command run, with basic security. Did it work?"
-			echo
-			echo "nmcli connection show --active:"
-			nmcli connection show --active
-			echo
+			echo "What is the interface name of the Hotspot connection?"
+			nmcli connection show Hotspot | grep connection.interface-name
 			
 			
+			if [[ $PASSWORD =~ ^........+ ]]; then
+				echo "Setting hotspot password"
 			
-			#if nmcli connection show --active | grep -q Hotspot; then
-				#nmcli con modify Hotspot wifi-sec.key-mgmt sae wifi-sec.psk "$PASSWORD"
+				nmcli con modify Hotspot 802-11-wireless-security.key-mgmt wpa-psk \
+	                802-11-wireless-security.proto rsn \
+	                wifi-sec.pairwise ccmp \
+	                802-11-wireless-security.psk "$PASSWORD" \
+			
+				#nmcli dev wifi hotspot ifname uap0 ssid "$SSID" password "$PASSWORD" 
 				#sleep 1
-				#echo "upgraded security to WPA3. Is it still working?"
-			#else
-				#echo "hotspot.sh: failed to start Hotspot!"
-				#echo "candle: hotspot.sh: ERROR, failed to start Hotspot!" >> /dev/kmsg
-				#sleep 10
-				#exit 1
-			#fi
+				#echo "Basic hotspot command run, with basic security. Did it work?"
+				echo
+				echo "nmcli connection show --active:"
+				nmcli connection show --active
+				echo
+			
+			
+			
+				#if nmcli connection show --active | grep -q Hotspot; then
+					#nmcli con modify Hotspot wifi-sec.key-mgmt sae wifi-sec.psk "$PASSWORD"
+					#sleep 1
+					#echo "upgraded security to WPA3. Is it still working?"
+				#else
+					#echo "hotspot.sh: failed to start Hotspot!"
+					#echo "candle: hotspot.sh: ERROR, failed to start Hotspot!" >> /dev/kmsg
+					#sleep 10
+					#exit 1
+				#fi
 		
-		else
-			#nmcli con modify Hotspot wifi-sec.key-mgmt sae wifi-sec.psk ""
-			nmcli con modify Hotspot wifi-sec.psk ""
-			echo "Warning, creating open hotspot without any security"
-			#nmcli dev wifi hotspot ifname uap0 ssid "$SSID"
-		fi
+			else
+				#nmcli con modify Hotspot wifi-sec.key-mgmt sae wifi-sec.psk ""
+				nmcli con modify Hotspot wifi-sec.psk ""
+				echo "Warning, creating open hotspot without any security"
+				#nmcli dev wifi hotspot ifname uap0 ssid "$SSID"
+			fi
 	
 		
 		
 	
-		# Protected Management Frames can lead to connectivity issues with some WiFi devices
-		if [ -f $BOOT_DIR/candle_disable_wifi_pmf.txt ]; then
-			echo "candle: hotspot.sh: spotted candle_disable_wifi_pmf.txt -> disabling wifi protected management frames"
-			#nmcli connection modify candle_hotspot wifi.powersave 1
-			nmcli con modify Hotspot wifi-sec.pmf disable
-		fi
+			# Protected Management Frames can lead to connectivity issues with some WiFi devices
+			if [ -f $BOOT_DIR/candle_disable_wifi_pmf.txt ]; then
+				echo "candle: hotspot.sh: spotted candle_disable_wifi_pmf.txt -> disabling wifi protected management frames"
+				#nmcli connection modify candle_hotspot wifi.powersave 1
+				nmcli con modify Hotspot wifi-sec.pmf disable
+			fi
+			
+			
+			
+			# POWER SAVE
 	
+			if [ -f $BOOT_DIR/candle_wifi_power_save.txt ]; then
+				echo "candle: hotspot.sh: spotted candle_wifi_power_save.txt -> forcing wifi powersave to on"
+				#nmcli connection modify candle_hotspot wifi.powersave 1
+				nmcli radio wifi powersave on
+			fi
 	
-		# POWER SAVE
-	
-		if [ -f $BOOT_DIR/candle_wifi_power_save.txt ]; then
-			echo "candle: hotspot.sh: spotted candle_wifi_power_save.txt -> forcing wifi powersave to on"
-			#nmcli connection modify candle_hotspot wifi.powersave 1
-			nmcli radio wifi powersave on
-		fi
-	
-		echo
-		echo
-		echo "HERE WE GO, turning on the hotspot"
-		echo
-		echo
+			echo
+			echo
+			echo "HERE WE GO, turning on the hotspot"
+			echo "HERE WE GO, turning on the hotspot" >> /dev/kmsg
+			echo
+			echo
 
-		# Make sure no other connection is using the UAP0 interface
-		# nmcli dev dis uap0
+
+			if nmcli radio wifi | grep -q 'disabled'; then
+				echo "hotspot.sh: WARNING, had to bring up wifi radio (1)"
+				echo "candle: hotspot.sh: WARNING, had to bring up wifi radio (1)" >> /dev/kmsg
+				nmcli radio wifi on
+				sleep 1
+			fi
+			
+			
+
+			# Make sure no other connection is using the UAP0 interface
+			# nmcli dev dis uap0
 		
-		HOTSPOT_UP_OUTPUT=$(nmcli con up Hotspot)
-		echo "HOTSPOT_UP_OUTPUT: $HOTSPOT_UP_OUTPUT"
-		if echo "$HOTSPOT_UP_OUTPUT" | grep -q "successfully activated" ; then
-			start_dnsmasq
+			if nmcli connection show --active | grep -q uap0; then
+				echo "Strange, the Hotspot was already active?"
+				start_dnsmasq
+				
+			else
+				HOTSPOT_UP_OUTPUT=$(nmcli con up Hotspot)
+				echo "HOTSPOT_UP_OUTPUT: $HOTSPOT_UP_OUTPUT"
+				echo "candle: HOTSPOT_UP_OUTPUT: $HOTSPOT_UP_OUTPUT" >> /dev/kmsg
+			
+				if ip link show | grep -q "uap0:"; then
+					if echo "$HOTSPOT_UP_OUTPUT" | grep -q "successfully activated" ; then
+						sleep 1
+						if nmcli connection show --active | grep -q Hotspot; then
+							start_dnsmasq
+						else
+							echo "ERROR, Hotspot seemed to be succesfully actvated, but is not in active connections list"
+						fi
+					else
+						echo "ERROR, bringing Hotspot connection up failed"
+						echo "candle: hotspot.sh: ERROR, starting Hotspot connection failed. Try rebooting." >> /dev/kmsg
+					fi
+				else
+					echo "ERROR, uap0 has vanished?!"
+				fi
+				
+			fi
+				
+			
+			
 		else
-			echo "ERROR, bringing Hotspot connection up failed"
-			echo "candle: hotspot.sh: ERROR, starting Hotspot connection failed. Try rebooting." >> /dev/kmsg
+			echo "ERROR, failed to create hotspot connection?"
+			
 		fi
 		
 	fi
