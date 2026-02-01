@@ -104,8 +104,8 @@ start_dnsmasq () {
 		echo
 		
 		
-		IP4=$(hostname -I | sed -r 's/192.168.12.1//' | xargs)
-		echo "hotspot.sh: IPv4 address: $IP4"
+		IP4S=$(hostname -I | sed -r 's/192.168.12.1//' | xargs)
+		echo "hotspot.sh: IPv4 address(es): $IP4S"
 	
 		if iptables -t nat -L -v | grep -q "uap0"; then
 			echo "uap0 already exists in iptables"
@@ -115,7 +115,7 @@ start_dnsmasq () {
 		
 			# optionally, drop DHCP requests to get an IPV6 address.
 			if [ -f $BOOT_DIR/candle_hotspot_no_ipv6.txt ]; then
-				ip6tables -A INPUT -m state --state NEW -m udp -p udp -s fe80::/10 --dport 546 -j DROP
+				ip6tables -A INPUT -m state --state NEW -m udp -p udp -s fd00:12::/8 --dport 546 -j DROP
 			fi
 		
 			if [ ! -f $BOOT_DIR/candle_hotspot_allow_access_to_main_network.txt ]; then
@@ -204,7 +204,7 @@ start_dnsmasq () {
 		fi
 
 		if nmcli connection show --active | grep -q Hotspot; then
-			echo "IPv6 address:"
+			echo "IPv6 address(es):"
 			ip -6 addr show uap0
 	
 			# Start NTP time server
@@ -286,11 +286,11 @@ if ip link show | grep -q "mlan0:" ; then
 		echo "uap0 does not exist yet"
 		/sbin/iw dev mlan0 interface add uap0 type __ap
 		sleep 1
-		ip address add 192.168.12.1/24 dev uap0
-		ifconfig uap0 192.168.12.1 netmask 255.255.255.0
-		ip -6 addr add fd00:12::1 dev uap0
+		#ip address add 192.168.12.1/24 dev uap0
+		#ifconfig uap0 192.168.12.1 netmask 255.255.255.0
+		#ip -6 addr add fd00:12::1 dev uap0
 		#iw dev uap0 set power_save off
-		sleep 1
+		#sleep 1
 	fi
         
 elif ip link show | grep -q "wlan0:" ; then
@@ -301,11 +301,11 @@ elif ip link show | grep -q "wlan0:" ; then
 		echo "uap0 does not exist yet"
 		/sbin/iw dev wlan0 interface add uap0 type __ap
 		sleep 1
-		ip address add 192.168.12.1/24 dev uap0
-		ifconfig uap0 192.168.12.1 netmask 255.255.255.0
-		ip -6 addr add fd00:12::1 dev uap0
+		#ip address add 192.168.12.1/24 dev uap0
+		#ifconfig uap0 192.168.12.1 netmask 255.255.255.0
+		#ip -6 addr add fd00:12::1 dev uap0
 		#iw dev uap0 set power_save off
-		sleep 1
+		#sleep 1
 	fi
 fi
 
@@ -320,7 +320,7 @@ if ip link show | grep -q "uap0:"; then
 	ifconfig uap0
 	echo
 	
-	
+	# Generate a slightly different MAC address for UAP0. Ending it with zero might even help creating a hotspot.
 	MAC=$(nmcli device show wlan0 | grep HWADDR | awk '{print $2}')
 	if [[ "$MAC" =~ 0$ ]]; then
     	ZEROMAC=${MAC%?}1
