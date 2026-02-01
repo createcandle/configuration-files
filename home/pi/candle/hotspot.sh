@@ -311,6 +311,53 @@ fi
 
 
 
+# Purge any connections, other than Hotspot, that are set to use uap0
+
+
+nmcli -t -f NAME connection | while read name; do
+	if [[ "$name" != "Hotspot" ]] ; then
+		if nmcli -t connection show "$name" | grep -q "connection.interface-name:uap0" ; then
+			WASUP="false"
+			if nmcli -f GENERAL.STATE con show "$name" | grep -q activated ; then
+				echo "hotspot.sh: bringing down a connection that was using uap0, but was not Hotspot: $name"
+				echo "hotspot.sh: bringing down a connection that was using uap0, but was not Hotspot: $name" >> /dev/kmsg
+				nmcli connection down "$name"
+				WASUP="true"
+			fi
+			if ip link show | grep -q "wlan0:" ; then
+				nmcli connection modify "$name" ifname wlan0
+				if nmcli -t connection show "$name" | grep -q "connection.interface-name:wlan0" ; then
+					# Connection was succesfully modified to use wlan0 instead
+					if [ "$WASUP" -eq "true" ] ; then
+						if nmcli -t -f DEVICE c s --active | grep -q "wlan0" ; then
+							echo "hotspot.sh: connection pruning: want to bring up the modified connection, but another connection is already using wlan0"
+						else
+							nmcli connection up "$name"
+							echo "hotspot.sh: connection pruning: succesfully moved connection from uap0 to wlan0 interface"
+							echo "hotspot.sh: connection pruning: succesfully moved connection from uap0 to wlan0 interface" >> /dev/kmsg
+						fi
+					fi
+				else
+					nmcli connection delete "$name"
+				fi
+			else
+				nmcli connection delete "$name"
+				#REMAINING_ACTIVE_CONNECTIONS=$(nmcli -t -f DEVICE c s --active | grep -v lo)
+				#echo "hotspot.sh: connection pruning:  REMAINING_ACTIVE_CONNECTIONS: $REMAINING_ACTIVE_CONNECTIONS"
+				#if [ -n "$REMAINING_ACTIVE_CONNECTIONS" ] ; then
+				#	nmcli connection delete "$name"
+				#	echo "hotspot.sh: had to delete a connection that was set to use uap0: $name" >> /dev/kmsg
+				#else:
+				#	echo "hotspot.sh: a connection is already using uap0, and it can't be moved to wlan0, and there is no other connection either. So it will have to remain this way." >> /dev/kmsg
+				#fi
+			fi
+		fi
+	fi
+done
+
+
+
+
 
 #if ip link show | grep "uap0:" | grep -q "state UP"; then
 if ip link show | grep -q "uap0:"; then
