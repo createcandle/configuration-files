@@ -449,6 +449,7 @@ if ip link show | grep -q "uap0:"; then
 
 	if nmcli device status | grep uap0 | grep -q unmanaged ; then
 		nmcli device set uap0 managed true
+		sleep 5
 	fi
 	
 
