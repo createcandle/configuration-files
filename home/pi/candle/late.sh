@@ -18,7 +18,9 @@ fi
 
 #/bin/echo "in late" | sudo tee -a /dev/kmsg
 echo "$(date) - Candle: in late" >> /dev/kmsg
-
+echo "late.sh: initial hostname -i: "
+hostname -I
+echo
 
 # Wait for IP address for at most 30 seconds
 echo "Candle: late: waiting for IP address"
@@ -26,29 +28,19 @@ for i in {1..30}
 do
     #echo "current hostname: $(hostname -I)"
 	IPS=$(hostname -I | sed -r 's/192.168.12.1//' | xargs)
-    if [ "$IPS" = "" ]
-    then
-		echo "Candle: late.sh: no network yet $i" >> /dev/kmsg
-	    echo "no network yet $i"
-		sleep 1    
-    else
+	if echo "$IPS" | grep -q "." ; then
 		echo "Candle: late.sh: IP address detected: $(hostname -I)" >> /dev/kmsg
 		break
-    fi
+	else
+		echo "Candle: late.sh: no IP4 network address yet: $i" >> /dev/kmsg
+		sleep 1    
+	fi
 done
 
-if [ -f $BOOT_DIR/candle_island.txt ] && [ -f /home/pi.webthings/addons/hotspot/island.sh ]
-then
-    echo "Candle: late.sh: not doing backup resolvconf -u because island mode is enabled" >> /dev/kmsg
-else
-	if [ -f /usr/sbin/resolvconf ]; then
-		echo "Candle: late.sh: doing backup resolvconf -u" >> /dev/kmsg
-		resolvconf -u
-	fi
-fi
+
 
 #IP4=$(hostname -I | awk '{print $1}')
-IP4=$(hostname -I | sed -r 's/192.168.12.1//' | xargs)
+IP4S=$(hostname -I | sed -r 's/192.168.12.1//' | xargs)
 
 if [ -n "$IP4S" ]; then
 
