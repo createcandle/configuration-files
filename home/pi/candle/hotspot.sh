@@ -400,7 +400,7 @@ if ip link show | grep -q "uap0:"; then
 	#	sleep 1
 	#fi
 
-
+	
 
 	if nmcli connection show --active | grep -q Hotspot; then
 		echo "hotspot.sh: WARNING, the Hotspot connection is already up. Did dnsmasq crash?"
@@ -415,18 +415,18 @@ if ip link show | grep -q "uap0:"; then
 		ifconfig uap0
 		echo
 		
-		if ifconfig uap0 | grep -q '192.168.12.1'; then
-			echo "OK, uap0 still has the correct IP address"
-		else
-			echo "forcing ip address for uap0 again"
-			ip address add 192.168.12.1/24 dev uap0
-		fi	
+		#if ifconfig uap0 | grep -q '192.168.12.1'; then
+		#	echo "OK, uap0 still has the correct IP address"
+		#else
+		#	echo "forcing ip address for uap0 again"
+		#	ip address add 192.168.12.1/24 dev uap0
+		#fi	
 		
 		
-		echo
-		echo "ifconfig uap0:"
-		ifconfig uap0
-		echo
+		#echo
+		#echo "ifconfig uap0:"
+		#ifconfig uap0
+		#echo
 		
 		if nmcli connection show | grep -q Hotspot; then
 			
@@ -582,6 +582,9 @@ if ip link show | grep -q "uap0:"; then
 		echo "HERE WE GO, turning on the hotspot"
 		echo
 		echo
+
+		# Make sure no other connection is using the UAP0 interface
+		nmcli dev dis uap0
 		
 		HOTSPOT_UP_OUTPUT=$(nmcli con up Hotspot)
 		echo "HOTSPOT_UP_OUTPUT: $HOTSPOT_UP_OUTPUT"
