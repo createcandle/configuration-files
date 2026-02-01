@@ -6,6 +6,8 @@ Requires=dbus.service home-pi-.webthings.mount
 #OnFailure=webthings-gateway.update-rollback.service
 ConditionPathExists=/home/pi/.webthings/etc/NetworkManager/dnsmasq.d/local-DNS.conf
 ConditionPathExists=!/boot/firmware/candle_emergency_hotspot.txt
+StartLimitIntervalSec=0
+StartLimitBurst=0
 
 [Service]
 User=root
@@ -18,8 +20,6 @@ ExecStartPre=/bin/chmod +x /home/pi/candle/hotspot.sh
 ExecStart=/home/pi/candle/hotspot.sh                           
 Restart=always
 RestartSec=10s
-#StartLimitIntervalSec=0
-StartLimitBurst=0
 
 [Install]
 WantedBy=multi-user.target
