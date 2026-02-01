@@ -1,10 +1,6 @@
 #!/bin/bash
 set +e
 
-if [ -f /boot/firmware/emergency.txt ]; then
-	exit 0
-fi
-
 
 BOOT_DIR="/boot"
 if lsblk | grep -q $BOOT_DIR/firmware; then
@@ -38,44 +34,6 @@ do
 done
 
 
-
-#IP4=$(hostname -I | awk '{print $1}')
-IP4S=$(hostname -I | sed -r 's/192.168.12.1//' | xargs)
-
-if [ -n "$IP4S" ]; then
-
-	if [ -d /boot/firmware/ ]; then
-		echo "$IP4S" > /boot/firmware/candle_last_known_ip_address.txt
-	fi
-	
-	for IP4 in $IP4S; do
-		echo "Candle late.sh: looping over IP address: $IP4"
-
-		if echo "$IP4" | grep -q "."; then
-			
-			# Add iptables port forwarding
-			if [ -f /usr/sbin/iptables ] ; then
-				echo "Candle late: Adding IP tables for Candle Controller port redirect for IP4: -->$IP4<--"
-			    echo "Candle late: adding iptables port 80 and 433 redirect rules for IP4: $IP4" >> /dev/kmsg
-			    
-				iptables -t mangle -I PREROUTING -s $IP4/24 -p tcp -d $IP4 --dport 80 -j MARK --set-mark 1
-				iptables -t mangle -I PREROUTING -s $IP4/24 -p tcp -d $IP4 --dport 443 -j MARK --set-mark 1
-				iptables -t nat -I PREROUTING -s $IP4/24 -p tcp -d $IP4 --dport 80 -j REDIRECT --to-port 8080
-				iptables -t nat -I PREROUTING -s $IP4/24 -p tcp -d $IP4 --dport 443 -j REDIRECT --to-port 4443
-				iptables -I INPUT -s $IP4/24 -m state --state NEW -m tcp -p tcp -d $IP4 --dport 8080 -m mark --mark 1 -j ACCEPT
-				iptables -I INPUT -s $IP4/24 -m state --state NEW -m tcp -p tcp -d $IP4 --dport 4443 -m mark --mark 1 -j ACCEPT
-			else
-				echo "Candle later: error: iptables not installed?" >> /dev/kmsg
-			fi
-
-		fi
-		
-	done
-
-	
-
-	
-fi
 
 
 
@@ -132,42 +90,42 @@ fi
 
 
 # Do aditional checks for missing files, and restore them if possible. rc.local does this too.
-if [ -f $BOOT_DIR/restore_boot_backup.txt ] && [ ! -d /ro ]; then
-    if [ -d /home/pi/candle/configuration-files-backup ]; then
-        if rsync --ignore-existing --dry-run --inplace -vri /home/pi/candle/configuration-files-backup/ / | grep -q  +++++; then
-            echo "Candle: ERROR, late.sh detected missing files. Attempting to fix" >> /dev/kmsg
-            echo "$(date) - ERROR, late.sh detected missing files. Attempting to fix." >> $BOOT_DIR/candle_log.txt
-            if [ -d /ro ]; then
-                if [ -d /ro/home/pi/candle/configuration-files-backup ]; then
-                    sudo mount -o remount,ro /rw
-                    rsync --ignore-existing --inplace -vri /ro/home/pi/candle/configuration-files-backup/* /ro > $BOOT_DIR/candle_fix.txt
-                    sudo mount -o remount,ro /ro
-                fi
-            else
-                rsync -vr --ignore-existing --inplace /home/pi/candle/configuration-files-backup/ / >> /dev/kmsg
-            fi
-
-            sleep 2
-            if rsync --ignore-existing --inplace --dry-run -vri /home/pi/candle/configuration-files-backup/ / | grep -q  +++++; then
-                echo "Candle: ERROR, late.sh: missing files fix failed" >> /dev/kmsg
-                echo "$(date) - ERROR, late.sh: missing files fix failed. See candle_fix_failed.txt" >> $BOOT_DIR/candle_log.txt
-                rsync --ignore-existing --inplace --dry-run -vri /home/pi/candle/configuration-files-backup/ / > $BOOT_DIR/candle_fix_failed.txt
-            else
-                echo "Candle: late.sh: missing files fix succeeded" >> /dev/kmsg
-                echo "$(date) - late.sh: missing files fix succeeded" >> $BOOT_DIR/candle_log.txt
-                if [ -f $BOOT_DIR/candle_failed_fix.txt ]; then
-                    rm $BOOT_DIR/candle_failed_fix.txt
-                fi
-            fi
-        fi
-    else
-        echo "Candle: late.sh: warning, configuration files backup dir does not exist" >> /dev/kmsg
-    fi
-fi
+#if [ -f $BOOT_DIR/restore_boot_backup.txt ] && [ ! -d /ro ]; then
+#    if [ -d /home/pi/candle/configuration-files-backup ]; then
+#        if rsync --ignore-existing --dry-run --inplace -vri /home/pi/candle/configuration-files-backup/ / | grep -q  +++++; then
+#            echo "Candle: ERROR, late.sh detected missing files. Attempting to fix" >> /dev/kmsg
+#            echo "$(date) - ERROR, late.sh detected missing files. Attempting to fix." >> $BOOT_DIR/candle_log.txt
+#            if [ -d /ro ]; then
+#                if [ -d /ro/home/pi/candle/configuration-files-backup ]; then
+#                    sudo mount -o remount,ro /rw
+#                    rsync --ignore-existing --inplace -vri /ro/home/pi/candle/configuration-files-backup/* /ro > $BOOT_DIR/candle_fix.txt
+#                    sudo mount -o remount,ro /ro
+#                fi
+#            else
+#                rsync -vr --ignore-existing --inplace /home/pi/candle/configuration-files-backup/ / >> /dev/kmsg
+#            fi
+#
+#            sleep 2
+#            if rsync --ignore-existing --inplace --dry-run -vri /home/pi/candle/configuration-files-backup/ / | grep -q  +++++; then
+#                echo "Candle: ERROR, late.sh: missing files fix failed" >> /dev/kmsg
+#                echo "$(date) - ERROR, late.sh: missing files fix failed. See candle_fix_failed.txt" >> $BOOT_DIR/candle_log.txt
+#                rsync --ignore-existing --inplace --dry-run -vri /home/pi/candle/configuration-files-backup/ / > $BOOT_DIR/candle_fix_failed.txt
+#            else
+#                echo "Candle: late.sh: missing files fix succeeded" >> /dev/kmsg
+#                echo "$(date) - late.sh: missing files fix succeeded" >> $BOOT_DIR/candle_log.txt
+#                if [ -f $BOOT_DIR/candle_failed_fix.txt ]; then
+#                    rm $BOOT_DIR/candle_failed_fix.txt
+#                fi
+#            fi
+#        fi
+#    else
+#        echo "Candle: late.sh: warning, configuration files backup dir does not exist" >> /dev/kmsg
+#    fi
+#fi
 
 
     
-# This can occur is developer mode is permanently enabled
+# This can occur if developer mode is permanently enabled
 if [ -f /var/log/syslog ]; then
     if [ "$(stat -c%s /var/log/syslog)" -gt 10000000 ]; then
         echo "Candle: Warning, deleted large syslog" >> /dev/kmsg
@@ -185,34 +143,10 @@ fi
 
 # Clean up the journal
 if [ ! -f $BOOT_DIR/developer.txt ]; then
-  journalctl --vacuum-size=20K
+  journalctl --vacuum-size=100K
 fi
 
 
-
-
-
-# Try to upgrade security of the wifi password
-if cat /home/pi/.webthings/etc/wpa_supplicant/wpa_supplicant.conf | grep -q psk=; then
-    current_ssid="$(cat /home/pi/.webthings/etc/wpa_supplicant/wpa_supplicant.conf | grep 'ssid=' | cut -d'"' -f 2 )"
-    current_pass="$(cat /home/pi/.webthings/etc/wpa_supplicant/wpa_supplicant.conf | grep 'psk=' | cut -d'"' -f 2 )"
-    if [ $(echo -n "$current_pass" | wc -c) -lt 64 ]; then
-        echo "Candle: late.sh: upgrading wifi password security" >> /dev/kmsg
-        echo "$current_pass" | wpa_passphrase "$current_ssid" > ./temporary
-        phrase=$(cat ./temporary | grep -v '#psk=' | grep 'psk=' | cut -d'=' -f 2)
-        rm ./temporary
-        #phrase="$(wpa_passphrase '$current_ssid' '$current_pass' | grep -v '#psk=' | grep 'psk=' | cut -d'=' -f 2  )"
-        sed -i "s'\\\"${current_pass}\\\"'${phrase}'" /home/pi/.webthings/etc/wpa_supplicant/wpa_supplicant.conf
-    else
-        echo "Candle: late.sh: Wifi password seems to already be upgraded" >> /dev/kmsg
-    fi
-fi
-
-# Forget the wifi password. Already handled in early.sh
-#if [ -f $BOOT_DIR/candle_forget_wifi.txt ]; then
-#    rm $BOOT_DIR/candle_forget_wifi.txt
-#    echo -e 'ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev\nupdate_config=1\ncountry=NL\n' > /home/pi/.webthings/etc/wpa_supplicant/wpa_supplicant.conf
-#fi
 
 # After booting it's not longer necessary to keep triggerhappy running
 if [ -f /usr/sbin/thd ]; then
@@ -225,17 +159,5 @@ fi
     #sleep 60
     #systemctl stop getty@tty3.service 
 #fi
-
-sleep 15
-
-if [ -f $BOOT_DIR/candle_island.txt ] && [ -f /home/pi.webthings/addons/hotspot/island.sh ]
-then
-    echo "Candle: late.sh: not doing backup resolvconf -u because island mode is enabled" >> /dev/kmsg
-else
-	if [ -f /usr/sbin/resolvconf ]; then
-		echo "Candle: late.sh: doing backup resolvconf -u" >> /dev/kmsg
-		resolvconf -u
-	fi
-fi
 
 echo "$(date) - end of late.sh" >> /dev/kmsg
