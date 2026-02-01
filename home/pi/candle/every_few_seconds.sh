@@ -18,18 +18,30 @@ if ip link show | grep -q "mlan0:" ; then
 	if ip link show | grep -q "uap0:" ; then
 		:
 	else
-		echo "every_few_seconds: fixing missing uap0"
-		echo "candle: every_few_seconds.sh: fixing missing uap0" >> /dev/kmsg
-		/sbin/iw dev mlan0 interface add uap0 type __ap
+		echo "every_few_seconds: possibly missing uap0" >> /dev/kmsg
+		sleep 1
+		if nmcli | grep -q "uap0:" ; then
+			:
+		else
+			echo "every_few_seconds: fixing missing uap0"
+			echo "candle: every_few_seconds.sh: fixing missing uap0" >> /dev/kmsg
+			/sbin/iw dev mlan0 interface add uap0 type __ap
+		fi
 	fi
         
 elif ip link show | grep -q "wlan0:" ; then
 	if ip link show | grep -q "uap0:"; then
 		:
 	else
-		echo "candle: every_few_seconds.sh: fixing missing uap0"
-		echo "candle: every_few_seconds.sh: fixing missing uap0" >> /dev/kmsg
-		/sbin/iw dev wlan0 interface add uap0 type __ap
+		echo "every_few_seconds: possibly missing uap0" >> /dev/kmsg
+		sleep 1
+		if nmcli | grep -q "uap0:" ; then
+			:
+		else
+			echo "every_few_seconds: fixing missing uap0"
+			echo "candle: every_few_seconds.sh: fixing missing uap0" >> /dev/kmsg
+			/sbin/iw dev wlan0 interface add uap0 type __ap
+		fi
 	fi
 fi
 
