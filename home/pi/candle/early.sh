@@ -31,7 +31,7 @@ fi
 #nmcli device wifi rescan
 
 if ip link show | grep -q "mlan0:" ; then
-	echo "hotspot.sh: spotted mlan0"
+	echo "early.sh: spotted mlan0"
 	nmcli device wifi rescan ifname mlan0
 	if ip link show | grep -q "uap0:" ; then
 		echo "mlan0 and uap0 exist"
