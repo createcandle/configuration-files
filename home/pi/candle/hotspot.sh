@@ -328,13 +328,13 @@ nmcli -t -f NAME connection | while read name; do
 				nmcli connection modify "$name" ifname wlan0
 				if nmcli -t connection show "$name" | grep -q "connection.interface-name:wlan0" ; then
 					# Connection was succesfully modified to use wlan0 instead
-					if [ "$WASUP" -eq "true" ] ; then
+					if [ "$WASUP" == "true" ] ; then
 						if nmcli -t -f DEVICE c s --active | grep -q "wlan0" ; then
 							echo "hotspot.sh: connection pruning: want to bring up the modified connection, but another connection is already using wlan0"
 						else
 							nmcli connection up "$name"
-							echo "hotspot.sh: connection pruning: succesfully moved connection from uap0 to wlan0 interface"
-							echo "hotspot.sh: connection pruning: succesfully moved connection from uap0 to wlan0 interface" >> /dev/kmsg
+							echo "hotspot.sh: connection pruning: succesfully moved active connection from uap0 to wlan0 interface"
+							echo "hotspot.sh: connection pruning: succesfully moved active connection from uap0 to wlan0 interface" >> /dev/kmsg
 						fi
 					fi
 				else
@@ -631,13 +631,16 @@ if ip link show | grep -q "uap0:"; then
 		echo
 
 		# Make sure no other connection is using the UAP0 interface
-		nmcli dev dis uap0
+		# nmcli dev dis uap0
 		
 		HOTSPOT_UP_OUTPUT=$(nmcli con up Hotspot)
 		echo "HOTSPOT_UP_OUTPUT: $HOTSPOT_UP_OUTPUT"
-		
-	
-		start_dnsmasq
+		if echo "$HOTSPOT_UP_OUTPUT" | grep -q "successfully activated" ; then
+			start_dnsmasq
+		else
+			echo "ERROR, bringing Hotspot connection up failed"
+			echo "candle: hotspot.sh: ERROR, starting Hotspot connection failed. Try rebooting." >> /dev/kmsg
+		fi
 		
 	fi
 		
