@@ -1,1 +1,1 @@
-console=tty3 root=/dev/mmcblk0p2 rootfstype=ext4 fsck.repair=yes CONFIG_IPV6_ROUTER_PREF=1 rootwait consoleblank=0 net.ifnames=0 quiet plymouth.ignore-serial-consoles splash logo.nologo vt.global_cursor_default=0 init=/bin/ro-root.sh
+console=tty3 root=/dev/mmcblk0p2 rootfstype=ext4 fsck.repair=yes CONFIG_IPV6_ROUTER_PREF=1 rootwait consoleblank=0 quiet plymouth.ignore-serial-consoles splash logo.nologo vt.global_cursor_default=0 init=/bin/ro-root.sh
