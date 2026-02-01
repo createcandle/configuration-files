@@ -31,7 +31,7 @@ if [ ! -f $BOOT_DIR/candle_hotspot.txt ]; then
 	sleep 20
 	exit 0
 fi
-
+echo "$(date) - Candle hotspot.sh: starting"
 echo "$(date) - Candle hotspot.sh: starting" >> /dev/kmsg
 
 #if [ ! -f $BOOT_DIR/candle_hotspot.txt ]; then
