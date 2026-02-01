@@ -16,37 +16,8 @@ fi
 # most basc command to create a hotspot:
 # nmcli dev wifi hotspot ifname uap0 ssid "Candle" password "smarthome"
 
-echo "$(date) - Candle hotspot.sh: starting" >> /dev/kmsg
 
-if [ -f $BOOT_DIR/candle_wifi_country_code.txt ]; then
-	SPOTTED_WIFI_COUNTRY=$(cat $BOOT_DIR/candle_wifi_country_code.txt | tr -d '\n')
-	if [ "${#SPOTTED_WIFI_COUNTRY}" -eq 2 ]; then 
 
-		echo "hotspot.sh: spotted a country code in candle_wifi_country_code.txt: -->$SPOTTED_WIFI_COUNTRY<--"
-
-		if iw reg get | grep -q "country $WIFI_COUNTRY:"; then
-			echo "hotspot.sh: OK, wifi regulatory country is already set to: $SPOTTED_WIFI_COUNTRY"
-		else
-			echo "hotspot.sh: WARNING, changing WiFi regulatory country to: $SPOTTED_WIFI_COUNTRY"
-			echo "hotspot.sh: WARNING, changing WiFi regulatory country to: $SPOTTED_WIFI_COUNTRY" >> /dev/kmsg
-			iw reg set "$SPOTTED_WIFI_COUNTRY"
-			sleep 1
-		fi
-
-		rm $BOOT_DIR/candle_wifi_country_code.txt
-	else
-		echo "hotspot.sh: ERROR, provided country code in candle_wifi_country_code.txt was of invalid length: $WIFI_COUNTRY"
-		echo "hotspot.sh: ERROR, provided country code in candle_wifi_country_code.txt was of invalid length: $WIFI_COUNTRY" >> /dev/kmsg
-		echo "ERROR, provided country code in candle_wifi_country_code.txt was of invalid length (should be two letters): -->$WIFI_COUNTRY<--" >> $BOOT_DIR/candle_log.txt
-		echo "Invalid country code provided. It should be two capital letters, such as NL, GB or US." > $BOOT_DIR/candle_wifi_country_code.txt
-	fi
-fi
-
-if iw reg get | grep -q "country 00" ; then
-	iw reg set NL
-	echo "Wifi regulatory country was invalid, it has been set back to the default, NL" >> $BOOT_DIR/candle_log.txt
-	
-fi
 
 
 # Setting it (again) seems to solve issues with starting the hotspot with iwd
@@ -60,6 +31,8 @@ if [ ! -f $BOOT_DIR/candle_hotspot.txt ]; then
 	sleep 20
 	exit 0
 fi
+
+echo "$(date) - Candle hotspot.sh: starting" >> /dev/kmsg
 
 #if [ ! -f $BOOT_DIR/candle_hotspot.txt ]; then
 #	echo "candle: hotspot.sh: not starting hotspot"
