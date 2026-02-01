@@ -16,7 +16,7 @@ fi
 # most basc command to create a hotspot:
 # nmcli dev wifi hotspot ifname uap0 ssid "Candle" password "smarthome"
 
-
+echo "$(date) - Candle hotspot.sh: starting" >> /dev/kmsg
 
 if [ -f $BOOT_DIR/candle_wifi_country_code.txt ]; then
 	SPOTTED_WIFI_COUNTRY=$(cat $BOOT_DIR/candle_wifi_country_code.txt | tr -d '\n')
@@ -602,3 +602,4 @@ fi
 echo "Sleeping 15 seconds..."
 sleep 15
 echo "Sleeping 15 seconds done"
+exit 0
