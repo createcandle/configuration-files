@@ -64,7 +64,12 @@ fi
 if [ -f /usr/sbin/wpa_cli ] ; then
 	if wpa_cli interface_list | grep -q "Selected interface 'uap0'" ; then
 		wpa_cli interface wlan0
-		
+	fi
+	if [ -f /var/run/wpa_supplicant/uap0 ] ; then
+		rm /var/run/wpa_supplicant/uap0
+	fi
+	if [ -f run/wpa_supplicant/uap0 ] ; then
+		rm /run/wpa_supplicant/uap0
 	fi
 fi
 
@@ -188,7 +193,7 @@ start_dnsmasq () {
 				echo "candle: hotspot.sh: not starting time server"
 			elif [ -f /home/pi/candle/time_server.py ]; then
 
-				if ifconfig | grep -q '192.168.12.1'; then
+				if ip addr show uap0 | grep -q '192.168.12.1'; then
 					if ps aux | grep 'python3 /home/pi/candle/time_server.py' | grep -q '192.168.12.1 123'; then
 						echo "timeserver is already running"
 					else
@@ -429,10 +434,7 @@ if ip link show | grep -q "uap0:"; then
 	#	sleep 1
 	#fi
 
-	#if nmcli device status | grep uap0 | grep -q unmanaged ; then
-	#	nmcli device set uap0 managed true
-	#	sleep 5
-	#fi
+	
 	
 
 	if nmcli connection show --active | grep -q Hotspot; then
@@ -613,6 +615,9 @@ if ip link show | grep -q "uap0:"; then
 				nmcli radio wifi powersave on
 			fi
 	
+	
+			
+	
 			echo
 			echo
 			echo "HERE WE GO, turning on the hotspot"
@@ -638,11 +643,25 @@ if ip link show | grep -q "uap0:"; then
 				start_dnsmasq
 				
 			else
-				HOTSPOT_UP_OUTPUT=$(nmcli con up Hotspot)
-				echo "HOTSPOT_UP_OUTPUT: $HOTSPOT_UP_OUTPUT"
-				echo "candle: HOTSPOT_UP_OUTPUT: $HOTSPOT_UP_OUTPUT" >> /dev/kmsg
-			
 				if ip link show | grep -q "uap0:"; then
+					
+					
+					if ip link show uap0 | grep -q DORMANT; then
+						echo "hotspot.sh: uap0 was in DORMANT mode, setting to DEFAULT instead" >> /dev/kmsg
+						ip link set uap0 mode default
+					fi
+					
+					if ip link show uap0 | grep -q 'state DOWN'; then
+						if nmcli device status | grep uap0 | grep -q unmanaged ; then
+							nmcli device set uap0 managed true
+						fi
+					fi
+					
+					
+					HOTSPOT_UP_OUTPUT=$(nmcli con up Hotspot)
+					echo "HOTSPOT_UP_OUTPUT: $HOTSPOT_UP_OUTPUT"
+					echo "candle: HOTSPOT_UP_OUTPUT: $HOTSPOT_UP_OUTPUT" >> /dev/kmsg
+			
 					if echo "$HOTSPOT_UP_OUTPUT" | grep -q "successfully activated" ; then
 						sleep 1
 						if nmcli connection show --active | grep -q Hotspot; then
@@ -655,8 +674,11 @@ if ip link show | grep -q "uap0:"; then
 						echo "candle: hotspot.sh: ERROR, starting Hotspot connection failed. Try rebooting." >> /dev/kmsg
 					fi
 				else
-					echo "ERROR, uap0 has vanished?!"
+					echo "ERROR, uap0 has disappeared..."
+					exit 1
+					
 				fi
+				
 				
 			fi
 				
