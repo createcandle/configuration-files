@@ -66,9 +66,9 @@ fi
 
 
 
-if [ -f /home/pi/dnsmasq_log.txt ]; then
-	rm /home/pi/dnsmasq_log.txt
-fi
+#if [ -f /home/pi/dnsmasq_log.txt ]; then
+#	rm /home/pi/dnsmasq_log.txt
+#fi
 
 
 
