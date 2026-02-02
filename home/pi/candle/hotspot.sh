@@ -505,9 +505,10 @@ if ip link show | grep -q "uap0:"; then
                     autoconnect yes \
                     ipv4.method manual ipv4.addresses "192.168.12.1/24" \
                     802-11-wireless.band bg \
+                    802-11-wireless.channel 1 \
                     802-11-wireless.mode ap \
                     802-11-wireless.ssid "$SSID" \
-                    ipv6.method manual ipv6.addresses 'fd00::/8' 802-11-wireless.band bg 802-11-wireless.channel 1
+                    ipv6.method manual ipv6.addresses 'fd00::/8'
 				
 			fi
 			#nmcli con modify Hotspot wifi-sec.pmf disable
@@ -557,15 +558,28 @@ if ip link show | grep -q "uap0:"; then
 			
 			echo "What is the interface name of the Hotspot connection?"
 			nmcli connection show Hotspot | grep connection.interface-name
+
+
+			# TODO: check if there is a normal wireless connection too, and if so, follow that connection's band (5G / 2.4G) to keep the radio happy
+			# TODO: maybe also explain that to the user, or automatically switch to a 5G/2.4G version of the SSID if available? That may be a security risk though..
 			
+			if [ -f $BOOT_DIR/candle_hotspot_5G.txt ]; then
+				nmcli con modify Hotspot 802-11-wireless.band a 802-11-wireless.channel 44
+			else
+				nmcli con modify Hotspot 802-11-wireless.band bg 802-11-wireless.channel 1
+			fi
+
+			
+
 			
 			if [[ $PASSWORD =~ ^........+ ]]; then
 				echo "Setting hotspot password"
 			
 				nmcli con modify Hotspot 802-11-wireless-security.key-mgmt wpa-psk \
 	                802-11-wireless-security.proto rsn \
-	                wifi-sec.pairwise ccmp \
-	                802-11-wireless-security.psk "$PASSWORD" \
+	                802-11-wireless-security.psk "$PASSWORD"
+
+					# wifi-sec.pairwise ccmp \
 			
 				#nmcli dev wifi hotspot ifname uap0 ssid "$SSID" password "$PASSWORD" 
 				#sleep 1
