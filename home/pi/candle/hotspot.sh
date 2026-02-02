@@ -514,6 +514,7 @@ if ip link show | grep -q "uap0:"; then
 			#nmcli con modify Hotspot wifi-sec.pmf disable
 			nmcli con modify Hotspot 802-11-wireless.mode ap
 			nmcli con modify Hotspot wifi.cloned-mac-address "$ZEROMAC"
+			nmcli con modify Hotspot connection.autoconnect-priority 10
 			
 			nmcli connection modify Hotspot ipv4.gateway "192.168.12.1" 
 			nmcli connection modify Hotspot ipv4.dns "192.168.12.1" ipv4.dns-priority 1000
