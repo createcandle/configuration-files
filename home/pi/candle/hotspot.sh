@@ -491,10 +491,10 @@ if ip link show | grep -q "uap0:"; then
                     802-11-wireless.ssid "$SSID" \
                     802-11-wireless-security.key-mgmt wpa-psk \
                     802-11-wireless-security.proto rsn \
-                    wifi-sec.pairwise ccmp \
                     802-11-wireless-security.psk "$PASSWORD" \
                     ipv6.method manual ipv6.addresses 'fd00::/8' 802-11-wireless.band bg 802-11-wireless.channel 1
-			
+
+					#wifi-sec.pairwise ccmp \
 			
 			
 			else
