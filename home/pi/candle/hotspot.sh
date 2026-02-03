@@ -508,7 +508,7 @@ if ip link show | grep -q "uap0:"; then
                     802-11-wireless.channel 1 \
                     802-11-wireless.mode ap \
                     802-11-wireless.ssid "$SSID" \
-                    ipv6.method manual ipv6.addresses 'fd00::/8'
+                    ipv6.method manual ipv6.addresses 'fd00:12::1/8'
 				
 			fi
 			#nmcli con modify Hotspot wifi-sec.pmf disable
