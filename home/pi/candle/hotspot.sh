@@ -487,12 +487,13 @@ if ip link show | grep -q "uap0:"; then
                     autoconnect yes \
                     ipv4.method manual ipv4.addresses "192.168.12.1/24" \
                     802-11-wireless.band bg \
+                    802-11-wireless.channel 1 \
                     802-11-wireless.mode ap \
                     802-11-wireless.ssid "$SSID" \
                     802-11-wireless-security.key-mgmt wpa-psk \
                     802-11-wireless-security.proto rsn \
                     802-11-wireless-security.psk "$PASSWORD" \
-                    ipv6.method manual ipv6.addresses 'fd00::/8' 802-11-wireless.band bg 802-11-wireless.channel 1
+                    ipv6.method manual ipv6.addresses 'fd00:12::1/8'
 
 					#wifi-sec.pairwise ccmp \
 			
@@ -511,11 +512,12 @@ if ip link show | grep -q "uap0:"; then
                     ipv6.method manual ipv6.addresses 'fd00:12::1/8'
 				
 			fi
-			#nmcli con modify Hotspot wifi-sec.pmf disable
+			
 			nmcli con modify Hotspot 802-11-wireless.mode ap
 			nmcli con modify Hotspot wifi.cloned-mac-address "$ZEROMAC"
 			nmcli con modify Hotspot connection.autoconnect-priority 10
-			
+
+			#nmcli con modify Hotspot wifi-sec.pmf disable
 			nmcli con modify Hotspot 802-11-wireless-security.pmf optional
 			
 			nmcli connection modify Hotspot ipv4.gateway "192.168.12.1" 
