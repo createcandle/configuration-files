@@ -175,15 +175,15 @@ start_dnsmasq () {
 			echo "candle: hotspot.sh: WARNING, had to bring up wifi radio (2)" >> /dev/kmsg
 			nmcli radio wifi on
 		fi
-		if nmcli connection show --active | grep -q Hotspot; then
-			echo "hotspot.sh: OK, Hotspot connection is still up"
+		if nmcli connection show --active | grep -q Candle_hotspot; then
+			echo "hotspot.sh: OK, Candle_hotspot connection is still up"
 		else
-			echo "hotspot.sh: warning, Hotspot connection exists, but still wasn't up anymore. Attempting to set it to up again. This is expected to fail"
-			nmcli connection up Hotspot
+			echo "hotspot.sh: warning, Candle_hotspot connection exists, but still wasn't up anymore. Attempting to set it to up again. This is expected to fail"
+			nmcli connection up Candle_hotspot
 			sleep 1
 		fi
 
-		if nmcli connection show --active | grep -q Hotspot; then
+		if nmcli connection show --active | grep -q Candle_hotspot; then
 			
 			echo "IPv6 address(es):"
 			ip -6 addr show uap0
@@ -218,7 +218,7 @@ start_dnsmasq () {
 				nmcli connection show --active
 				
 				
-				if nmcli connection show --active | grep -q Hotspot; then
+				if nmcli connection show --active | grep -q Candle_hotspot; then
 					echo "FINAL STEP: STARTING DNSMASQ"
 					dnsmasq -k -d --no-daemon --conf-file=/home/pi/.webthings/etc/NetworkManager/dnsmasq.d/local-DNS.conf 1> /dev/null
 				fi
@@ -228,7 +228,7 @@ start_dnsmasq () {
 	
 		else
 			echo
-			echo "hotspot.sh: ERROR, Hotspot was not active (attempt to bring it up failed as expected)"
+			echo "hotspot.sh: ERROR, Candle_hotspot was not active (attempt to bring it up failed as expected)"
 			echo
 		fi
 
@@ -291,16 +291,16 @@ fi
 
 
 
-# Purge any connections, other than Hotspot, that are set to use uap0
+# Purge any connections, other than Candle_hotspot, that are set to use uap0
 
 
 nmcli -t -f NAME connection | while read name; do
-	if [[ "$name" != "Hotspot" ]] ; then
+	if [[ "$name" != "Candle_hotspot" ]] ; then
 		if nmcli -t connection show "$name" | grep -q "connection.interface-name:uap0" ; then
 			WASUP="false"
 			if nmcli -f GENERAL.STATE con show "$name" | grep -q activated ; then
-				echo "hotspot.sh: bringing down a connection that was using uap0, but was not Hotspot: $name"
-				echo "hotspot.sh: bringing down a connection that was using uap0, but was not Hotspot: $name" >> /dev/kmsg
+				echo "hotspot.sh: bringing down a connection that was using uap0, but was not Candle_hotspot: $name"
+				echo "hotspot.sh: bringing down a connection that was using uap0, but was not Candle_hotspot: $name" >> /dev/kmsg
 				nmcli connection down "$name"
 				WASUP="true"
 			fi
@@ -401,10 +401,10 @@ if ip link show | grep -q "uap0:"; then
 	fi
 	
 	# check if there is an existing SSID to re-use instead
-	OLD_SSID=$(nmcli c s Hotspot | grep 802-11-wireless.ssid | awk '{print $2}')
+	OLD_SSID=$(nmcli c s Candle_hotspot | grep 802-11-wireless.ssid | awk '{print $2}')
 	#if [[ "$OLD_SSID" == *"_nomap"* ]]; then
 	if [ -n "$OLD_SSID" ]; then	
-	    echo "spotted existing Hotspot connection. Existing SSID: $OLD_SSID"
+	    echo "spotted existing Candle_hotspot connection. Existing SSID: $OLD_SSID"
 		SSID=$(echo "$OLD_SSID")
 	fi
 	
@@ -437,9 +437,9 @@ if ip link show | grep -q "uap0:"; then
 	
 	
 
-	if nmcli connection show --active | grep -q Hotspot; then
-		echo "hotspot.sh: WARNING, the Hotspot connection is already up. Did dnsmasq crash?"
-		echo "candle: hotspot.sh: WARNING, the Hotspot connection is already up. Did dnsmasq crash?" >> /dev/kmsg
+	if nmcli connection show --active | grep -q Candle_hotspot; then
+		echo "hotspot.sh: WARNING, the Candle_hotspot connection is already up. Did dnsmasq crash?"
+		echo "candle: hotspot.sh: WARNING, the Candle_hotspot connection is already up. Did dnsmasq crash?" >> /dev/kmsg
 		start_dnsmasq
 		exit 1
 	else
@@ -463,15 +463,15 @@ if ip link show | grep -q "uap0:"; then
 		#ifconfig uap0
 		#echo
 		
-		if nmcli connection show | grep -q 'Hotspot'; then
-			echo "Hotspot connection already exists"
+		if nmcli connection show | grep -q 'Candle_hotspot'; then
+			echo "Candle_hotspot connection already exists"
 			
-			echo "What is the interface name of the not-active Hotspot connection? (0)"
-			nmcli connection show Hotspot | grep connection.interface-name
+			echo "What is the interface name of the not-active Candle_hotspot connection? (0)"
+			nmcli connection show Candle_hotspot | grep connection.interface-name
 			
 
 		else
-			#nmcli connection add con-name "Hotspot" \
+			#nmcli connection add con-name "Candle_hotspot" \
 			#    ifname uap0 wifi.mode ap wifi.ssid "$SSID" \
 			#	wifi-sec.key-mgmt wpa-psk \
 			#    wifi-sec.proto rsn wifi-sec.pairwise ccmp \
@@ -481,7 +481,7 @@ if ip link show | grep -q "uap0:"; then
 			if [[ $PASSWORD =~ ^........+ ]]; then
 				
                 nmcli connection add \
-                    con-name Hotspot \
+                    con-name Candle_hotspot \
                     ifname uap0 \
                     type wifi \
                     autoconnect yes \
@@ -500,7 +500,7 @@ if ip link show | grep -q "uap0:"; then
 			
 			else
                 nmcli connection add \
-                    con-name Hotspot \
+                    con-name Candle_hotspot \
                     ifname uap0 \
                     type wifi \
                     autoconnect yes \
@@ -513,65 +513,65 @@ if ip link show | grep -q "uap0:"; then
 				
 			fi
 			
-			nmcli con modify Hotspot 802-11-wireless.mode ap
-			nmcli con modify Hotspot wifi.cloned-mac-address "$ZEROMAC"
-			nmcli con modify Hotspot connection.autoconnect-priority 10
+			nmcli con modify Candle_hotspot 802-11-wireless.mode ap
+			nmcli con modify Candle_hotspot wifi.cloned-mac-address "$ZEROMAC"
+			nmcli con modify Candle_hotspot connection.autoconnect-priority 10
 
-			#nmcli con modify Hotspot wifi-sec.pmf disable
-			nmcli con modify Hotspot 802-11-wireless-security.pmf optional
+			#nmcli con modify Candle_hotspot wifi-sec.pmf disable
+			nmcli con modify Candle_hotspot 802-11-wireless-security.pmf optional
 			
-			nmcli connection modify Hotspot ipv4.gateway "192.168.12.1" 
-			nmcli connection modify Hotspot ipv4.dns "192.168.12.1" ipv4.dns-priority 1000
-			nmcli connection modify Hotspot ipv4.never-default true
+			nmcli connection modify Candle_hotspot ipv4.gateway "192.168.12.1" 
+			nmcli connection modify Candle_hotspot ipv4.dns "192.168.12.1" ipv4.dns-priority 1000
+			nmcli connection modify Candle_hotspot ipv4.never-default true
 		
-			#nmcli connection modify Hotspot ipv6.addresses 'fd00::/8' ipv6.method manual 
-			nmcli connection modify Hotspot ipv6.gateway 'fd00:12::1' 
-			nmcli connection modify Hotspot ipv6.dns 'fd00:12::1' ipv6.dns-priority 1000
-			nmcli connection modify Hotspot ipv6.never-default true
-			#nmcli connection modify Hotspot ipv6.method "ignore"
+			#nmcli connection modify Candle_hotspot ipv6.addresses 'fd00::/8' ipv6.method manual 
+			nmcli connection modify Candle_hotspot ipv6.gateway 'fd00:12::1' 
+			nmcli connection modify Candle_hotspot ipv6.dns 'fd00:12::1' ipv6.dns-priority 1000
+			nmcli connection modify Candle_hotspot ipv6.never-default true
+			#nmcli connection modify Candle_hotspot ipv6.method "ignore"
 		
-			nmcli connection modify Hotspot wifi.powersave 2
+			nmcli connection modify Candle_hotspot wifi.powersave 2
 		
-			nmcli connection modify Hotspot connection.autoconnect yes
+			nmcli connection modify Candle_hotspot connection.autoconnect yes
 			
 		fi
 	
 		if [ -f $BOOT_DIR/developer.txt ]; then
-			echo "Will try to start Hotspot with: "
+			echo "Will try to start Candle_hotspot with: "
 			echo " - SSID: $SSID"
 			echo " - PASS: $PASSWORD"
 		fi
 		
-		#nmcli connection add type wifi ifname uap0 con-name Hotspot
+		#nmcli connection add type wifi ifname uap0 con-name Candle_hotspot
 	
-		#nmcli con add con-name Hotspot ifname uap0 type dummy
-		#nmcli con add con-name Hotspot ifname uap0 type wifi connection.autoconnect yes 802-11-wireless.ssid "$SSID" ipv4.method manual ipv4.addresses "192.168.12.1/24" ipv6.method manual ipv6.addresses 'fd00::/8' 802-11-wireless.band bg 802-11-wireless.channel 1
+		#nmcli con add con-name Candle_hotspot ifname uap0 type dummy
+		#nmcli con add con-name Candle_hotspot ifname uap0 type wifi connection.autoconnect yes 802-11-wireless.ssid "$SSID" ipv4.method manual ipv4.addresses "192.168.12.1/24" ipv6.method manual ipv6.addresses 'fd00::/8' 802-11-wireless.band bg 802-11-wireless.channel 1
 		#nmcli con add type wifi ifname wlan0 con-name <your_hotspot_name> autoconnect yes ssid <your_ssid>
 		
 		
 		
-		#nmcli connection modify Hotspot wifi.cloned-mac-address "$ZEROMAC"
-		#nmcli connection modify Hotspot 802-11-wireless.band bg 802-11-wireless.channel 1
+		#nmcli connection modify Candle_hotspot wifi.cloned-mac-address "$ZEROMAC"
+		#nmcli connection modify Candle_hotspot 802-11-wireless.band bg 802-11-wireless.channel 1
 		
 		
-		#nmcli connection modify Hotspot ipv4.addresses "192.168.12.1/24" ipv4.method manual 
+		#nmcli connection modify Candle_hotspot ipv4.addresses "192.168.12.1/24" ipv4.method manual 
 		
 		
-		#nmcli connection modify Hotspot connection.interface-name uap0
+		#nmcli connection modify Candle_hotspot connection.interface-name uap0
 		
-		if nmcli connection show | grep -q Hotspot; then
+		if nmcli connection show | grep -q Candle_hotspot; then
 			
-			echo "What is the interface name of the Hotspot connection?"
-			nmcli connection show Hotspot | grep connection.interface-name
+			echo "What is the interface name of the Candle_hotspot connection?"
+			nmcli connection show Candle_hotspot | grep connection.interface-name
 
 
 			# TODO: check if there is a normal wireless connection too, and if so, follow that connection's band (5G / 2.4G) to keep the radio happy
 			# TODO: maybe also explain that to the user, or automatically switch to a 5G/2.4G version of the SSID if available? That may be a security risk though..
 			
 			if [ -f $BOOT_DIR/candle_hotspot_5G.txt ]; then
-				nmcli con modify Hotspot 802-11-wireless.band a 802-11-wireless.channel 44
+				nmcli con modify Candle_hotspot 802-11-wireless.band a 802-11-wireless.channel 44
 			else
-				nmcli con modify Hotspot 802-11-wireless.band bg 802-11-wireless.channel 1
+				nmcli con modify Candle_hotspot 802-11-wireless.band bg 802-11-wireless.channel 1
 			fi
 
 			
@@ -580,7 +580,7 @@ if ip link show | grep -q "uap0:"; then
 			if [[ $PASSWORD =~ ^........+ ]]; then
 				echo "Setting hotspot password"
 			
-				nmcli con modify Hotspot 802-11-wireless-security.key-mgmt wpa-psk \
+				nmcli con modify Candle_hotspot 802-11-wireless-security.key-mgmt wpa-psk \
 	                802-11-wireless-security.proto rsn \
 	                802-11-wireless-security.psk "$PASSWORD"
 
@@ -596,20 +596,20 @@ if ip link show | grep -q "uap0:"; then
 			
 			
 			
-				#if nmcli connection show --active | grep -q Hotspot; then
-					#nmcli con modify Hotspot wifi-sec.key-mgmt sae wifi-sec.psk "$PASSWORD"
+				#if nmcli connection show --active | grep -q Candle_hotspot; then
+					#nmcli con modify Candle_hotspot wifi-sec.key-mgmt sae wifi-sec.psk "$PASSWORD"
 					#sleep 1
 					#echo "upgraded security to WPA3. Is it still working?"
 				#else
-					#echo "hotspot.sh: failed to start Hotspot!"
-					#echo "candle: hotspot.sh: ERROR, failed to start Hotspot!" >> /dev/kmsg
+					#echo "hotspot.sh: failed to start Candle_hotspot!"
+					#echo "candle: hotspot.sh: ERROR, failed to start Candle_hotspot!" >> /dev/kmsg
 					#sleep 10
 					#exit 1
 				#fi
 		
 			else
-				#nmcli con modify Hotspot wifi-sec.key-mgmt sae wifi-sec.psk ""
-				nmcli con modify Hotspot wifi-sec.psk ""
+				#nmcli con modify Candle_hotspot wifi-sec.key-mgmt sae wifi-sec.psk ""
+				nmcli con modify Candle_hotspot wifi-sec.psk ""
 				echo "Warning, creating open hotspot without any security"
 				#nmcli dev wifi hotspot ifname uap0 ssid "$SSID"
 			fi
@@ -621,7 +621,7 @@ if ip link show | grep -q "uap0:"; then
 			if [ -f $BOOT_DIR/candle_disable_wifi_pmf.txt ]; then
 				echo "candle: hotspot.sh: spotted candle_disable_wifi_pmf.txt -> disabling wifi protected management frames"
 				#nmcli connection modify candle_hotspot wifi.powersave 1
-				nmcli con modify Hotspot wifi-sec.pmf disable
+				nmcli con modify Candle_hotspot wifi-sec.pmf disable
 			fi
 			
 			
@@ -658,7 +658,7 @@ if ip link show | grep -q "uap0:"; then
 			# nmcli dev dis uap0
 		
 			if nmcli connection show --active | grep -q uap0; then
-				echo "Strange, the Hotspot was already active?"
+				echo "Strange, the Candle_hotspot was already active?"
 				start_dnsmasq
 				
 			else
@@ -677,20 +677,20 @@ if ip link show | grep -q "uap0:"; then
 					fi
 					
 					
-					HOTSPOT_UP_OUTPUT=$(nmcli con up Hotspot)
+					HOTSPOT_UP_OUTPUT=$(nmcli con up Candle_hotspot)
 					echo "HOTSPOT_UP_OUTPUT: $HOTSPOT_UP_OUTPUT"
 					echo "candle: HOTSPOT_UP_OUTPUT: $HOTSPOT_UP_OUTPUT" >> /dev/kmsg
 			
 					if echo "$HOTSPOT_UP_OUTPUT" | grep -q "successfully activated" ; then
 						sleep 1
-						if nmcli connection show --active | grep -q Hotspot; then
+						if nmcli connection show --active | grep -q Candle_hotspot; then
 							start_dnsmasq
 						else
-							echo "ERROR, Hotspot seemed to be succesfully actvated, but is not in active connections list"
+							echo "ERROR, Candle_hotspot seemed to be succesfully actvated, but is not in active connections list"
 						fi
 					else
-						echo "ERROR, bringing Hotspot connection up failed"
-						echo "candle: hotspot.sh: ERROR, starting Hotspot connection failed. Try rebooting." >> /dev/kmsg
+						echo "ERROR, bringing Candle_hotspot connection up failed"
+						echo "candle: hotspot.sh: ERROR, starting Candle_hotspot connection failed. Try rebooting." >> /dev/kmsg
 					fi
 				else
 					echo "ERROR, uap0 has disappeared..."
