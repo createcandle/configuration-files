@@ -492,6 +492,7 @@ if ip link show | grep -q "uap0:"; then
                     802-11-wireless.ssid "$SSID" \
                     802-11-wireless-security.key-mgmt wpa-psk \
                     802-11-wireless-security.proto rsn \
+                    802-11-wireless-security.pairwise ccmp \
                     802-11-wireless-security.psk "$PASSWORD" \
                     ipv6.method manual ipv6.addresses 'fd00:12::1/8'
 
@@ -580,8 +581,10 @@ if ip link show | grep -q "uap0:"; then
 			if [[ $PASSWORD =~ ^........+ ]]; then
 				echo "Setting hotspot password"
 			
-				nmcli con modify Candle_hotspot 802-11-wireless-security.key-mgmt wpa-psk \
+				nmcli con modify Candle_hotspot \
+	                802-11-wireless-security.key-mgmt wpa-psk \
 	                802-11-wireless-security.proto rsn \
+	                802-11-wireless-security.pairwise ccmp \
 	                802-11-wireless-security.psk "$PASSWORD"
 
 					# wifi-sec.pairwise ccmp \
@@ -609,7 +612,11 @@ if ip link show | grep -q "uap0:"; then
 		
 			else
 				#nmcli con modify Candle_hotspot wifi-sec.key-mgmt sae wifi-sec.psk ""
-				nmcli con modify Candle_hotspot wifi-sec.psk ""
+				nmcli con modify Candle_hotspot \
+	                802-11-wireless-security.key-mgmt "" \
+	                802-11-wireless-security.proto "" \
+	                802-11-wireless-security.pairwise "" \
+	                802-11-wireless-security.psk ""
 				echo "Warning, creating open hotspot without any security"
 				#nmcli dev wifi hotspot ifname uap0 ssid "$SSID"
 			fi
