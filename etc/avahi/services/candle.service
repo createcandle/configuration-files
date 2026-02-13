@@ -2,6 +2,11 @@
 <!DOCTYPE service-group SYSTEM "avahi-service.dtd">
 <service-group>
   <name replace-wildcards="yes">%h (Candle)</name>
+  <service>
+    <type>_device-info._tcp</type>
+    <port>0</port>
+    <txt-record>model=Candle</txt-record>
+  </service>
   <service protocol="any">
     <type>_http._tcp</type>
     <port>8080</port>
