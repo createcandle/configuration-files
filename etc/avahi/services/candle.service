@@ -1,7 +1,7 @@
 <?xml version="1.0" standalone='no'?><!--*-nxml-*-->
 <!DOCTYPE service-group SYSTEM "avahi-service.dtd">
 <service-group>
-  <name replace-wildcards="yes">%h_(Candle)</name>
+  <name replace-wildcards="yes">%h (Candle)</name>
   <service protocol="any">
     <type>_http._tcp</type>
     <port>8080</port>
