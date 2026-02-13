@@ -5,13 +5,13 @@
   <service>
     <type>_device-info._tcp</type>
     <port>0</port>
-    <txt-record>model=Candle</txt-record>
+    <txt-record>model=Candle_Controller</txt-record>
   </service>
   <service protocol="any">
     <type>_http._tcp</type>
     <port>8080</port>
     <txt-record value-format="text">vendor=Candle</txt-record>
-    <txt-record value-format="text">model=Candle Controller 3.0</txt-record>
+    <txt-record value-format="text">model=Candle_Controller</txt-record>
     <txt-record value-format="text">version=3.0</txt-record>
     <txt-record value-format="text">description=Privacy_Protecting_Smart_Home_Controller</txt-record>
     <txt-record value-format="text">admin_port=8080</txt-record>
@@ -21,7 +21,7 @@
     <type>_https._tcp</type>
     <port>4443</port>
     <txt-record value-format="text">vendor=Candle</txt-record>
-    <txt-record value-format="text">model=Candle Controller 3.0</txt-record>
+    <txt-record value-format="text">model=Candle_Controller_3.0</txt-record>
     <txt-record value-format="text">version=3.0</txt-record>
     <txt-record value-format="text">description=Privacy_Protecting_Smart_Home_Controller</txt-record>
     <txt-record value-format="text">admin_port=4443</txt-record>
