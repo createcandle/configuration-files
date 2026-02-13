@@ -7,6 +7,7 @@
     <port>8080</port>
     <txt-record value-format="text">vendor=Candle</txt-record>
     <txt-record value-format="text">model=Candle Controller 3.0</txt-record>
+    <txt-record value-format="text">version=3.0</txt-record>
     <txt-record value-format="text">description=Privacy_Protecting_Smart_Home_Controller</txt-record>
     <txt-record value-format="text">admin_port=8080</txt-record>
     <txt-record value-format="text">url=http://www.candlesmarthome.com</txt-record>
@@ -16,6 +17,7 @@
     <port>4443</port>
     <txt-record value-format="text">vendor=Candle</txt-record>
     <txt-record value-format="text">model=Candle Controller 3.0</txt-record>
+    <txt-record value-format="text">version=3.0</txt-record>
     <txt-record value-format="text">description=Privacy_Protecting_Smart_Home_Controller</txt-record>
     <txt-record value-format="text">admin_port=4443</txt-record>
     <txt-record value-format="text">url=http://www.candlesmarthome.com</txt-record>
