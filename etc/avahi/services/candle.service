@@ -24,7 +24,7 @@
     <txt-record value-format="text">model=Candle_Controller_3.0</txt-record>
     <txt-record value-format="text">version=3.0</txt-record>
     <txt-record value-format="text">description=Privacy_Protecting_Smart_Home_Controller</txt-record>
-    <txt-record value-format="text">admin_port=4443</txt-record>
+    <txt-record value-format="text">secure_admin_port=4443</txt-record>
     <txt-record value-format="text">url=http://www.candlesmarthome.com</txt-record>
   </service>
 </service-group>
