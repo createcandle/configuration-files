@@ -173,5 +173,6 @@ exec /usr/bin/chromium --kiosk $url --load-extension=/home/pi/candle/virtual_key
  --disable-fullscreen-tab-detaching --disable-hang-monitor --disable-pinch --overscroll-history-navigation=0 --disk-cache-size=1 \
  --dns-prefetch-disable --enable-profiling=0 --user-data-dir=/home/pi/.webthings/chromium/ --disable-features=Translate,TranslateUI \
  --disable-translate-new-ux --disable-suggestions-ui --disable-sync --enable-features=WebUIDarkMode --force-dark-mode --homepage=http://localhost:8080 \
- --disable-session-crashed-bubble --disk-cache-dir=/dev/null --overscroll-history-navigation=disabled --no-referrers \
- --disable-gpu-compositing --window-position=0,0 -window-size=$WIDTH,$HEIGHT --start-maximized --start-fullscreen --enable-touch-events 
+ --disable-session-crashed-bubble --disk-cache-dir=/dev/null --overscroll-history-navigation=disabled --no-referrers --disable-logging \
+ --disable-gpu-compositing --window-position=0,0 -window-size=$WIDTH,$HEIGHT --start-maximized --start-fullscreen --enable-touch-events \
+ --disable-pdf-extension --disable-new-tab-first-run --disable-crashpad --disable-hang-monitor --disable-sync-preferences --memory-pressure-off  
