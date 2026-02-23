@@ -175,4 +175,5 @@ exec /usr/bin/chromium --kiosk $url --load-extension=/home/pi/candle/virtual_key
  --disable-translate-new-ux --disable-suggestions-ui --disable-sync --enable-features=WebUIDarkMode --force-dark-mode --homepage=http://localhost:8080 \
  --disable-session-crashed-bubble --disk-cache-dir=/dev/null --overscroll-history-navigation=disabled --no-referrers --disable-logging \
  --disable-gpu-compositing --window-position=0,0 -window-size=$WIDTH,$HEIGHT --start-maximized --start-fullscreen --enable-touch-events \
- --disable-pdf-extension --disable-new-tab-first-run --disable-crashpad --disable-hang-monitor --disable-sync-preferences --memory-pressure-off  
+ --disable-pdf-extension --disable-new-tab-first-run --disable-crashpad --disable-hang-monitor --disable-sync-preferences --memory-pressure-off \
+ --disable-dev-shm-usage
