@@ -11,7 +11,7 @@ if [ -z ${DBUS_SESSION_BUS_PID+x} ];then
   echo ensure_dbus: starting session dbus
   #eval "export $(/usr/bin/dbus-launch)"
   /usr/bin/dbus-launch | while read line; do
-    echo "exporting: $line"
+    echo "ensure_dbus: exporting: $line"
     export "$line"
   done
   #echo "${DBUS_SESSION_BUS_PID}">/var/run/dbus/sessionbus.pid
