@@ -1,16 +1,16 @@
-if [ -z ${DBUS_SESSION_BUS_PID} ] && [ -e "/var/run/dbus/sessionbus.pid" ]; then
+if [ -z "${DBUS_SESSION_BUS_PID}" ] && [ -e "/var/run/dbus/sessionbus.pid" ]; then
 	DBUS_SESSION_BUS_PID=`cat /var/run/dbus/sessionbus.pid`
 fi
-if [ -z ${DBUS_SESSION_BUS_ADDRESS} ] && [ -e "/var/run/dbus/sessionbus.address" ]; then
+if [ -z "${DBUS_SESSION_BUS_ADDRESS}" ] && [ -e "/var/run/dbus/sessionbus.address" ]; then
 	DBUS_SESSION_BUS_ADDRESS=`cat /var/run/dbus/sessionbus.address`
 fi
 # start the dbus as session bus and save the enviroment vars
 #if [ -z ${DBUS_SESSION_BUS_PID+x} ]; then
-if [ -z ${DBUS_SESSION_BUS_PID} ]; then
+if [ -z "${DBUS_SESSION_BUS_PID}" ]; then
   echo ensure_dbus: starting session dbus
   #eval "export $(/usr/bin/dbus-launch)"
   /usr/bin/dbus-launch | while read line; do
-    line=$(echo $line | tr -d '\n')
+    line=$(echo "$line" | tr -d '\n')
     echo "ensure_dbus: exporting: -->$line<--"
     export "$line"
   done
@@ -18,7 +18,7 @@ if [ -z ${DBUS_SESSION_BUS_PID} ]; then
   echo "${DBUS_SESSION_BUS_PID}" | sudo tee /var/run/dbus/sessionbus.pid
   #echo "${DBUS_SESSION_BUS_ADDRESS}">/var/run/dbus/sessionbus.address
   echo "${DBUS_SESSION_BUS_ADDRESS}" | sudo tee /var/run/dbus/sessionbus.address
-  echo ensure_dbus: session dbus now runs at pid="${DBUS_SESSION_BUS_PID}"
+  #echo ensure_dbus: session dbus now runs at pid="${DBUS_SESSION_BUS_PID}"
   echo "ensure_dbus: session dbus now runs at pid=$DBUS_SESSION_BUS_PID"
   
 else
