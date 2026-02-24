@@ -1,13 +1,12 @@
-# Candle
-
-if [ -e "/var/run/dbus/sessionbus.pid" ];then
+if [ -z ${DBUS_SESSION_BUS_PID} ] && [ -e "/var/run/dbus/sessionbus.pid" ]; then
 	DBUS_SESSION_BUS_PID=`cat /var/run/dbus/sessionbus.pid`
 fi
-if [ -e "/var/run/dbus/sessionbus.address" ];then
+if [ -z ${DBUS_SESSION_BUS_ADDRESS} ] && [ -e "/var/run/dbus/sessionbus.address" ]; then
 	DBUS_SESSION_BUS_ADDRESS=`cat /var/run/dbus/sessionbus.address`
 fi
 # start the dbus as session bus and save the enviroment vars
-if [ -z ${DBUS_SESSION_BUS_PID+x} ];then
+#if [ -z ${DBUS_SESSION_BUS_PID+x} ]; then
+if [ -z ${DBUS_SESSION_BUS_PID} ]; then
   echo ensure_dbus: starting session dbus
   #eval "export $(/usr/bin/dbus-launch)"
   /usr/bin/dbus-launch | while read line; do
@@ -26,7 +25,7 @@ else
   echo "ensure_dbus: session dbus already runs at pid=$DBUS_SESSION_BUS_PID"
 fi
 
-if [[ -z "$XDG_RUNTIME_DIR" ]]; then
+if [ -z "$XDG_RUNTIME_DIR" ]; then
   XDG_RUNTIME_DIR="/run/user/$(id -u)"
   echo ensure_dbus: had to create XDG_RUNTIME_DIR, it is now: "${XDG_RUNTIME_DIR}"
 fi
