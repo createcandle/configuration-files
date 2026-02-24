@@ -1,8 +1,8 @@
 if [ -z "${DBUS_SESSION_BUS_PID}" ] && [ -e "/var/run/dbus/sessionbus.pid" ]; then
-	DBUS_SESSION_BUS_PID=`cat /var/run/dbus/sessionbus.pid`
+	DBUS_SESSION_BUS_PID=$(cat /var/run/dbus/sessionbus.pid)
 fi
 if [ -z "${DBUS_SESSION_BUS_ADDRESS}" ] && [ -e "/var/run/dbus/sessionbus.address" ]; then
-	DBUS_SESSION_BUS_ADDRESS=`cat /var/run/dbus/sessionbus.address`
+	DBUS_SESSION_BUS_ADDRESS=$(cat /var/run/dbus/sessionbus.address)
 fi
 # start the dbus as session bus and save the enviroment vars
 #if [ -z ${DBUS_SESSION_BUS_PID+x} ]; then
