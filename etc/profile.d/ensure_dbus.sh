@@ -11,7 +11,8 @@ if [ -z ${DBUS_SESSION_BUS_PID+x} ];then
   echo ensure_dbus: starting session dbus
   #eval "export $(/usr/bin/dbus-launch)"
   /usr/bin/dbus-launch | while read line; do
-    echo "ensure_dbus: exporting: $line"
+    line=$(echo $line | tr -d '\n')
+    echo "ensure_dbus: exporting: -->$line<--"
     export "$line"
   done
   #echo "${DBUS_SESSION_BUS_PID}">/var/run/dbus/sessionbus.pid
@@ -19,8 +20,10 @@ if [ -z ${DBUS_SESSION_BUS_PID+x} ];then
   #echo "${DBUS_SESSION_BUS_ADDRESS}">/var/run/dbus/sessionbus.address
   echo "${DBUS_SESSION_BUS_ADDRESS}" | sudo tee /var/run/dbus/sessionbus.address
   echo ensure_dbus: session dbus now runs at pid="${DBUS_SESSION_BUS_PID}"
+  echo "ensure_dbus: session dbus now runs at pid=$DBUS_SESSION_BUS_PID"
+  
 else
-  echo ensure_dbus: session dbus already runs at pid="${DBUS_SESSION_BUS_PID}"
+  echo "ensure_dbus: session dbus already runs at pid=$DBUS_SESSION_BUS_PID"
 fi
 
 if [[ -z "$XDG_RUNTIME_DIR" ]]; then
