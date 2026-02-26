@@ -28,16 +28,17 @@ fi
 
 alias ro='sudo mount -o remount,ro /ro'
 alias rw='sudo mount -o remount,rw /ro'
-if test -z "$DBUS_SESSION_BUS_ADDRESS" ; 
-then
-  if [ -f /usr/bin/dbus-launch ] ; 
-  then
-    echo "calling dbus-launch"
-    #eval "dbus-launch --sh-syntax --exit-with-session"
-    export $(dbus-launch)
-    echo "DBUS_SESSION_BUS_ADDRESS after dbus-launch: $DBUS_SESSION_BUS_ADDRESS"
-  fi
-fi
+
+#if test -z "$DBUS_SESSION_BUS_ADDRESS" ; 
+#then
+#  if [ -f /usr/bin/dbus-launch ] ; 
+#  then
+#    echo "calling dbus-launch"
+#    #eval "dbus-launch --sh-syntax --exit-with-session"
+#    export $(dbus-launch)
+#    echo "DBUS_SESSION_BUS_ADDRESS after dbus-launch: $DBUS_SESSION_BUS_ADDRESS"
+#  fi
+#fi
 
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
