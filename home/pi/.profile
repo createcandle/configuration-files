@@ -33,8 +33,9 @@ then
   if [ -f /usr/bin/dbus-launch ] ; 
   then
     echo "calling dbus-launch"
-    eval "dbus-launch --sh-syntax --exit-with-session"
-	  echo "DBUS_SESSION_BUS_ADDRESS after dbus-launch: $DBUS_SESSION_BUS_ADDRESS"
+    #eval "dbus-launch --sh-syntax --exit-with-session"
+    export $(dbus-launch)
+    echo "DBUS_SESSION_BUS_ADDRESS after dbus-launch: $DBUS_SESSION_BUS_ADDRESS"
   fi
 fi
 
