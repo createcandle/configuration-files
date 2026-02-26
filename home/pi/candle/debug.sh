@@ -250,7 +250,7 @@ echo
 echo "--------------------------------------------- apt"
 echo
 
-apt policy 
+apt policy | cat
 
 echo
 echo
@@ -285,12 +285,12 @@ echo "Attached HMDI devices:"
 cat /sys/class/drm/card0/*HDMI*/status
 
 echo "kmsprint:"
-kmsprint
+kmsprint | cat
 
 
 echo
 echo "fbset:"
-fbset -i -v
+fbset -i -v | cat
 
 echo
 #xrandr -d :0  
