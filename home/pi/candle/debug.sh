@@ -569,7 +569,7 @@ echo
 
 sysctl net.ipv6.conf.all.forwarding
 sysctl net.ipv6.conf.wlan0.accept_ra
-sysctl net.ipv6.conf.wlan0.accept_ra_rt_info_max_plen=64
+sysctl net.ipv6.conf.wlan0.accept_ra_rt_info_max_plen
 
 sysctl net.ipv4.conf.all.arp_ignore
 
