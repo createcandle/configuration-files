@@ -12,7 +12,7 @@ StartLimitBurst=0
 [Service]
 User=root
 Type=simple
-StandardOutput=journal
+StandardOutput=null
 StandardError=journal
 WorkingDirectory=/home/pi/
 ExecStartPre=/bin/chmod +x /home/pi/candle/hotspot.sh
