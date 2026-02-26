@@ -138,7 +138,8 @@ fi
 
 echo
 if [[ $(vcgencmd get_throttled) != "throttled=0x0" ]]; then
-    echo "Your power supply is too weak"
+    echo "Your power supply is too weak, or the controller gets too warm (or both)"
+	vcgencmd get_throttled
 fi
 
 echo
@@ -181,11 +182,11 @@ echo "--------------------------------------------- dmesg"
 echo 
 
 echo "Last 100 dmesg errors:"
-dmesg --level=emerg,alert,crit,err | tail -100
+dmesg --level=emerg,alert,crit,err | tail -100 | cat
 
 echo
 echo "Last 100 dmesg warnings:"
-dmesg --level=warn | tail -100
+dmesg --level=warn | tail -100 | cat
 
 echo
 echo "NOTE:"
@@ -209,11 +210,27 @@ echo "/home/pi/.webthings/.node_version:"
 cat /home/pi/.webthings/.node_version
 
 echo
-echo "package sources:"
+echo "package sources.list:"
 cat /etc/apt/sources.list
-cat /etc/apt/sources.list.d/raspi.list
+echo
+echo "debian.sources:"
+cat /etc/apt/sources.list.d/debian.sources
+echo
+echo "raspi.sources:"
+cat /etc/apt/sources.list.d/raspi.sources
 
 
+echo
+echo
+echo "--------------------------------------------- shell environment"
+echo
+
+echo "printenv: "
+printenv
+
+echo
+echo "declare -p: "
+declare -p
 
 echo
 echo
