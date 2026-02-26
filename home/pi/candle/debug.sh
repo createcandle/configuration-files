@@ -259,7 +259,7 @@ loginctl user-status --no-pager
 echo
 export -p
 echo
-systemctl --user show-environment
+systemctl --user show-environment --no-pager
 
 
 echo
