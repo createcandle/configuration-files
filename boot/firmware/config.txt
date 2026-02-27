@@ -8,9 +8,10 @@ dtparam=i2c_arm=on
 dtparam=spi=on
 
 # Seeed Voicecard support
-dtoverlay=i2s-mmap
+#dtoverlay=i2s-mmap
 dtparam=i2s=on
-dtoverlay=seeed-2mic-voicecard
+#dtoverlay=seeed-2mic-voicecard
+# dtoverlay are apparently no longer needed. E.g. i2s-mmap is always enabled now.
 
 # Enable audio (loads snd_bcm2835)
 dtparam=audio=on
