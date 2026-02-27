@@ -16,8 +16,12 @@ fi
 # most basc command to create a hotspot:
 # nmcli dev wifi hotspot ifname uap0 ssid "Candle" password "smarthome"
 
-
-
+TOTAL_MEMORY=$(awk '/MemTotal/ {print $2}' /proc/meminfo)
+if [ "$TOTAL_MEMORY" -lt "800000" ] && [ -f $BOOT_DIR/candle_hotspot_5G.txt ]; then
+    echo "hotspot.sh: on a Raspberry Pi zero, which has no 5Ghz radio. Deleting candle_hotspot_5G.txt"
+	echo "candle hotspot.sh: on a Raspberry Pi zero, which has no 5Ghz radio. Deleting candle_hotspot_5G.txt" >> /dev/kmsg
+	rm "$BOOT_DIR/candle_hotspot_5G.txt"
+fi
 
 
 # Setting it (again) seems to solve issues with starting the hotspot with iwd
