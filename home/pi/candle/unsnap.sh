@@ -1,4 +1,4 @@
-#/bin/bash
+#!/bin/bash
 
 # This script helps fix "aw snap" browser crashes.
 # Thanks to: https://github.com/dubnom/awsnap
