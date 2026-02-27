@@ -9,6 +9,7 @@ OnActiveSec=30
 #AccuracySec=5s
 #Persistent=true
 Unit=candle_every_minute.service
+StandardOutput=null
 
 [Install]
 WantedBy=timers.target
