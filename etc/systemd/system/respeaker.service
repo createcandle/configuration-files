@@ -1,0 +1,14 @@
+[Unit]
+Description=Seeed Voicecard service
+After=alsa-restore.service
+ConditionPathExists=/boot/firmware/candle_respeaker.txt
+ConditionPathExists=/usr/bin/seeed-voicecard
+ 
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/bin/seeed-voicecard
+User=root
+ 
+[Install]
+WantedBy=sysinit.target
