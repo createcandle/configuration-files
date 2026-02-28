@@ -561,6 +561,13 @@ echo
 systemctl --no-pager status mosquitto.service 
 
 
+echo
+echo
+echo "--------------------------------------------- cups printers printing"
+echo
+cupsctl
+
+
 
 echo
 echo
