@@ -31,7 +31,6 @@ fi
 
 if [ ! -f $BOOT_DIR/candle_hotspot.txt ]; then
 	echo "hotspot.sh: no candle_hotspot.txt, aborting"
-	echo "hotspot.sh: no candle_hotspot.txt, aborting" >> /dev/kmsg
 	sleep 20
 	exit 0
 fi
