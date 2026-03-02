@@ -1,5 +1,10 @@
 #!/bin/bash
 
+if [ -f /boot/firmware/emergency.txt ]; then
+	sleep 10
+	exit 0
+fi
+
 # limit the size of the dnsmasq log
 if [ -f /home/pi/dnsmasq_log.txt ] && [ -s /home/pi/dnsmasq_log.txt ]; then
 	cp /home/pi/dnsmasq_log.txt /home/pi/dnsmasq_now.txt
