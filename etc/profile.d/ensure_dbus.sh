@@ -6,3 +6,7 @@ if [ -n "$DBUS_SESSION_BUS_ADDRESS"] ; then
     source "/home/pi/.dbus/session-bus/$SESSION_FILE"
   fi
 fi
+
+if [ -n "$DISPLAY"] ; then
+	export DISPLAY=:0
+fi
