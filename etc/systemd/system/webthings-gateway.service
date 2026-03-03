@@ -14,7 +14,7 @@ StandardError=journal
 User=pi
 WorkingDirectory=/home/pi/webthings/gateway
 # Edit this line, if needed, to set the correct path to node
-ExecStart=/home/pi/webthings/gateway/run-app.sh
+ExecStart=/home/pi/webthings/gateway/candle_controller.sh
 Restart=always
 RestartSec=10s
 
