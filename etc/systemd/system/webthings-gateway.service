@@ -5,6 +5,8 @@ After=network.target candle_early.service dbus.service
 Requires=dbus.service
 #OnFailure=webthings-gateway.update-rollback.service
 #ConditionPathExists=!/boot/bootup_actions.sh
+StartLimitInterval=0
+StartLimitBurst=0
 
 [Service]
 Type=simple
