@@ -4,6 +4,18 @@ if [ -f /boot/firmware/emergency.txt ]; then
 	exit 0
 fi
 
+if [ -d /home/pi/.dbus/session-bus ]; then
+	cd /home/pi/.dbus/session-bus
+	for filename in *; do 
+		if grep "'" -q $filename ; then
+			sed -i "s/'//g" $filename
+			echo "candle: every_few_seconds.sh: removed single quotes from dbus file"
+			echo "candle: every_few_seconds.sh: removed single quotes from dbus file" >> /dev/kmsg
+		fi
+    done
+fi
+cd /home/pi
+
 # limit the size of the dnsmasq log
 if [ -f /home/pi/dnsmasq_log.txt ] && [ -s /home/pi/dnsmasq_log.txt ]; then
 	cp /home/pi/dnsmasq_log.txt /home/pi/dnsmasq_now.txt
