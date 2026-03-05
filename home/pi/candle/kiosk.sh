@@ -87,8 +87,8 @@ if ls -l /dev/fb*; then
         #pkill x
         #sleep .2
 
-	    dbus-launch
-		sleep .2
+	    #dbus-launch
+		#sleep .2
 		
         if [ ! -f $BOOT_DIR/hide_mouse_pointer.txt ]; then
             echo "Candle: kiosk.sh:  spotted show_mouse_pointer.txt,  starting X and showing mouse pointer"
