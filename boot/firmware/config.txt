@@ -29,6 +29,7 @@ display_auto_detect=1
 #auto_initramfs=1
 
 # Enable DRM VC4 V3D driver
+dtoverlay=vc4-kms-v3d
 max_framebuffers=2
 
 [pi0]
@@ -43,6 +44,8 @@ dtoverlay=vc4-kms-v3d-pi4
 [pi5]
 dtoverlay=vc4-kms-v3d-pi5
 
+[pi6]
+dtoverlay=vc4-kms-v3d-pi6
 
 # Don't have the firmware create an initial video= setting in cmdline.txt.
 # Use the kernel's default instead.
@@ -63,6 +66,9 @@ arm_boost=1
 # (e.g. for USB device mode) or if USB support is not required.
 otg_mode=1
 
+[cm5]
+dtoverlay=dwc2,dr_mode=host
+
 [all]
 
 # Read only mode
@@ -70,7 +76,6 @@ initramfs initrd followkernel
 ramfsfile=initrd
 ramfsaddr=-1
 disable_splash=1
-max_usb_current=1
 
 
 
