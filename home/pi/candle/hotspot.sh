@@ -572,7 +572,7 @@ if ip link show | grep -q "uap0:"; then
 			# TODO: check if there is a normal wireless connection too, and if so, follow that connection's band (5G / 2.4G) to keep the radio happy
 			# TODO: maybe also explain that to the user, or automatically switch to a 5G/2.4G version of the SSID if available? That may be a security risk though..
 			
-			if [ -f $BOOT_DIR/candle_hotspot_5G.txt ]; then
+			if [ -f "$BOOT_DIR/candle_hotspot_5G.txt" ]; then
 				nmcli con modify Candle_hotspot 802-11-wireless.band a 802-11-wireless.channel 44
 			else
 				nmcli con modify Candle_hotspot 802-11-wireless.band bg 802-11-wireless.channel 1
