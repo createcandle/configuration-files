@@ -80,6 +80,7 @@ if [ -d /usr/local/lib/python3.11 ]; then
     fi
 fi
 
+
 # Files
 
 # /home/pi files
@@ -191,9 +192,7 @@ fi
 #if [ ! -f /usr/bin/bluealsa ]; then
 #  echo "/usr/bin/bluealsa is missing"
 #fi
-if [ ! -d /var/run/mosquitto ]; then
-  echo "/var/run/mosquitto dir is missing"
-fi
+
 
 
 # Backups
