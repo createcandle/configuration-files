@@ -10,7 +10,7 @@ AVAHI_HOSTNAME=$(systemctl status avahi-daemon.service | grep "avahi-daemon: run
 #if [ "$AVAHI_HOSTNAME" != "$HOSTNAME" ] && [ "$HOSTNAME" != "candle" ]; then
 if [ "$AVAHI_HOSTNAME" != "$HOSTNAME" ]; then
     echo "Candle: every_minute.sh: Hostname mismatch (hostname:$HOSTNAME, avahi:$AVAHI_HOSTNAME). Restarting avahi."
-	echo "Candle: every_minute.sh: hostname mismatch (hostname:$HOSTNAME, avahi:$AVAHI_HOSTNAME). Restarting avahi." >> /dev/kmsg
+	echo "$(date) - Candle: every_minute.sh: hostname mismatch (hostname:$HOSTNAME, avahi:$AVAHI_HOSTNAME). Restarting avahi." >> /dev/kmsg
     systemctl restart avahi-daemon.service
 fi
 
@@ -27,7 +27,7 @@ if cat /home/pi/.webthings/etc/wpa_supplicant/wpa_supplicant.conf | grep -q psk=
     current_ssid="$(cat /home/pi/.webthings/etc/wpa_supplicant/wpa_supplicant.conf | grep 'ssid=' | cut -d'"' -f 2 )"
     current_pass="$(cat /home/pi/.webthings/etc/wpa_supplicant/wpa_supplicant.conf | grep 'psk=' | cut -d'"' -f 2 )"
     if [ "$(echo -n $current_pass | wc -c)" -lt 64 ]; then
-        echo "Candle: every minute: upgrading wifi password security" >> /dev/kmsg
+        echo "Candle: every_minute.sh: upgrading wpa_supplicant wifi password security" >> /dev/kmsg
         echo "$current_pass" | wpa_passphrase "$current_ssid" > ./temporary
         phrase=$(cat ./temporary | grep -v '#psk=' | grep 'psk=' | cut -d'=' -f 2)
         rm ./temporary
