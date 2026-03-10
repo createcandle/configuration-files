@@ -45,7 +45,7 @@ NAME=otbr-web
 DAEMON=/home/pi/.webthings/addons/matter-adapter/thread/otbr-web
 PIDFILE=/var/run/otbr-web.pid
 
-OTBR_WEB_CONF=/etc/default/otbr-web
+OTBR_WEB_CONF=/home/pi/.webthings/data/matter-adapter/thread/otbr-web.conf
 
 . /lib/lsb/init-functions
 . /lib/init/vars.sh
