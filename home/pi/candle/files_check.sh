@@ -133,6 +133,31 @@ fi
 if [ ! -f /home/pi/candle/candle_requirements.txt ]; then
   echo "/home/pi/candle/candle_requirements.txt is missing"
 fi
+
+
+if [ ! -f /usr/bin/chromium ]; then
+  echo "/usr/bin/chromium is missing"
+fi
+if [ ! -f /usr/bin/containerd ]; then
+  echo "/usr/bin/containerd is missing"
+fi
+if [ ! -f /usr/bin/bluetoothctl ]; then
+  echo "/usr/bin/bluetoothctl is missing"
+fi
+if [ ! -f /usr/bin/avahi-browse ]; then
+  echo "/usr/bin/avahi-browse is missing"
+fi
+if [ ! -f /usr/bin/ro-root.sh ]; then
+  echo "/usr/bin/ro-root.sh is missing"
+fi
+if [ ! -f /usr/bin/sqlite3 ]; then
+  echo "/usr/bin/sqlite3 is missing"
+fi
+if [ ! -f /usr/bin/vlc ]; then
+  echo "/usr/bin/vlc is missing"
+fi
+
+
 #if [ ! -f /home/pi/candle/candle_packages.txt ]; then
 #  echo "/home/pi/candle/candle_packages.txt is missing"
 #fi
