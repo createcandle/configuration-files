@@ -4,6 +4,8 @@ After=network.target sound.target webthings-gateway.service
 Wants=sound.target
 ConditionPathExists=/home/pi/candle/silence.mp3
 ConditionPathExists=/usr/bin/pipewire
+StartLimitInterval=0
+StartLimitBurst=0
 
 [Service]
 Type=idle
@@ -12,8 +14,7 @@ Environment="XDG_RUNTIME_DIR=/run/user/1000"
 ExecStart=/usr/bin/pw-play --volume=0.1 /home/pi/candle/silence.mp3
 Restart=always
 RestartSec=10s
-StartLimitIntervalSec=0
-StartLimitBurst=0
+
 
 [Install]
 WantedBy=multi-user.target
