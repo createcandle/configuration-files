@@ -2,6 +2,7 @@
 Description=Candle every few seconds service
 After=candle_late.service
 ConditionPathExists=/home/pi/candle/every_few_seconds.sh
+ConditionPathExists=!/boot/firmware/emergency.txt
 StartLimitIntervalSec=0
 StartLimitBurst=0
 
