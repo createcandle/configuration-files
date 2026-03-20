@@ -18,6 +18,29 @@ echo "late.sh: initial hostname -i: "
 hostname -I
 echo
 
+if [ -f $BOOT_DIR/candle_set_wifi.txt ]; then
+	ssid="$(head -n 1 $BOOT_DIR/candle_set_wifi.txt)"
+	ssid=$(echo $ssid|tr -d '\n')
+	password="$( head -n 1 $BOOT_DIR/candle_set_wifi.txt)"
+	password=$(echo $password|tr -d '\n')
+
+	rfkill unblock wifi
+	nmcli networking on
+	nmcli radio wifi on
+	
+	if [[ -n "$ssid" ]] && [[ -n "$password" ]]; then 
+		echo "$(date) - Candle: late.sh: attempting to connect with a password to provided WiFi SSID: #ssid" >> /dev/kmsg
+		echo "$(date) - Candle: late.sh: attempting to connect with a password to provided WiFi SSID: #ssid" >> $BOOT_DIR/candle_log.txt
+		nmcli device wifi connect "$ssid" password "$password"
+	elif [[ -n "$ssid" ]]; then 
+		echo "$(date) - Candle: late.sh: attempting to connect without a password to provided WiFi SSID: #ssid" >> /dev/kmsg
+		echo "$(date) - Candle: late.sh: attempting to connect without a password to provided WiFi SSID: #ssid" >> $BOOT_DIR/candle_log.txt
+		nmcli device wifi connect "$ssid"
+	fi
+	rm $BOOT_DIR/candle_set_wifi.txt
+fi
+	
+
 # Wait for IP address for at most 30 seconds
 echo "Candle: late: waiting for IP address"
 for i in {1..30}
