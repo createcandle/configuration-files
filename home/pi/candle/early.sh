@@ -273,7 +273,12 @@ fi
 # Install and manage Github addons
 if [ -f $BOOT_DIR/candle_install_these_addons.txt ]; then
     echo "candle early: spotted candle_install_these_addons.txt" >> /dev/kmsg
-    if [ -d /home/pi/.webthings/addons ]; then
+    if [ ! -d /home/pi/.webthings/addons ]; then
+		mkdir -p /home/pi/.webthings/addons
+		chown pi:pi /home/pi/.webthings/addons
+	fi
+	
+	if [ -d /home/pi/.webthings/addons ]; then
         
         while read addon_git; do
             cd /home/pi/.webthings/addons
@@ -300,11 +305,22 @@ if [ -f $BOOT_DIR/candle_install_these_addons.txt ]; then
                         echo "candle: early: addon not found, installing via git clone: $addon_git" >> $BOOT_DIR/candle_log.txt
                         git clone "$addon_git"
                     fi
+
+					if [ -d "/home/pi/.webthings/addons/$addon" ]; then
+						cd /home/pi/.webthings/addons/$addon
+						chmod +x package.sh
+						echo "candle: early: starting build of addon: $addon_git" >> /dev/kmsg
+						echo "candle: early: starting build of addon: $addon_git" >> $BOOT_DIR/candle_log.txt
+						./package.sh
+						chown -R pi:pi /home/pi/.webthings/addons/$addon
+						echo "candle: early: completed build of addon: $addon_git" >> /dev/kmsg
+						echo "candle: early: completed build of addon: $addon_git" >> $BOOT_DIR/candle_log.txt
+					fi
                 fi
             fi
         done <$BOOT_DIR/candle_install_these_addons.txt
     else
-        echo "Error, the entire addons folder could not be found" >> $BOOT_DIR/candle_log.txt
+        echo "Error, the addons folder could not be found" >> $BOOT_DIR/candle_log.txt
     fi
 fi
 
