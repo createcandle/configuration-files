@@ -381,10 +381,6 @@ if [ -e $BOOT_DIR/candle_ssh_once.txt ]; then
 	rm $BOOT_DIR/candle_ssh_once.txt
 fi
 
-if [ -e $BOOT_DIR/candle_ssh.txt ] || [ -e $BOOT_DIR/candle_ssh_keep.txt ]; then
-    systemctl start ssh.service
-fi
-
 
 
 # If it's provided, copy a controller_backup.tar file from the boot partition into the system partition
