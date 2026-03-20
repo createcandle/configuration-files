@@ -23,20 +23,32 @@ if [ -f $BOOT_DIR/candle_set_wifi.txt ]; then
 	ssid=$(echo $ssid|tr -d '\n')
 	password="$( head -n 1 $BOOT_DIR/candle_set_wifi.txt)"
 	password=$(echo $password|tr -d '\n')
-
+	interface="wlan0"
+	if ip link show | grep -q "wlan1:" ; then
+		interface="wlan1"
+	elif ip link show | grep -q "wlan0:" ; then
+		interface="wlan0"
+	elif ip link show | grep -q "mlan0:" ; then
+		interface="mlan0"
+	fi
+	echo "$(date) - Candle: late.sh: will attempt to connect using WiFi interface: $interface" >> /dev/kmsg
+	echo "$(date) - Candle: late.sh: will attempt to connect using WiFi interface: $interface" >> $BOOT_DIR/candle_log.txt
+	
 	rfkill unblock wifi
 	nmcli networking on
 	nmcli radio wifi on
-	
+	#echo "$(date) - Candle: late.sh: detected WiFi: $interface" >> $BOOT_DIR/candle_set_wifi.txt
+	nmcli device wifi list ifname "$interface" > $BOOT_DIR/candle_set_wifi_detected_networks.txt
 	if [[ -n "$ssid" ]] && [[ -n "$password" ]]; then 
-		echo "$(date) - Candle: late.sh: attempting to connect with a password to provided WiFi SSID: #ssid" >> /dev/kmsg
-		echo "$(date) - Candle: late.sh: attempting to connect with a password to provided WiFi SSID: #ssid" >> $BOOT_DIR/candle_log.txt
-		nmcli device wifi connect "$ssid" password "$password"
+		echo "$(date) - Candle: late.sh: attempting to connect with a password to provided WiFi SSID: $ssid" >> /dev/kmsg
+		echo "$(date) - Candle: late.sh: attempting to connect with a password to provided WiFi SSID: $ssid" >> $BOOT_DIR/candle_log.txt
+		nmcli device wifi connect "$ssid" password "$password" ifname "$interface" >> $BOOT_DIR/candle_log.txt
 	elif [[ -n "$ssid" ]]; then 
-		echo "$(date) - Candle: late.sh: attempting to connect without a password to provided WiFi SSID: #ssid" >> /dev/kmsg
-		echo "$(date) - Candle: late.sh: attempting to connect without a password to provided WiFi SSID: #ssid" >> $BOOT_DIR/candle_log.txt
-		nmcli device wifi connect "$ssid"
+		echo "$(date) - Candle: late.sh: attempting to connect without a password to provided WiFi SSID: $ssid" >> /dev/kmsg
+		echo "$(date) - Candle: late.sh: attempting to connect without a password to provided WiFi SSID: $ssid" >> $BOOT_DIR/candle_log.txt
+		nmcli device wifi connect "$ssid" ifname "$interface" >> $BOOT_DIR/candle_log.txt
 	fi
+	
 	rm $BOOT_DIR/candle_set_wifi.txt
 fi
 	
