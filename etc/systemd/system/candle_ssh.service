@@ -1,0 +1,15 @@
+[Unit]
+Description=Candle SSH 
+After=home-pi-.webthings.mount network.target
+
+[Service]
+Type=oneshot
+User=root
+ExecStartPre=/bin/chmod +x /home/pi/candle/ssh.sh
+ExecStart=/bin/bash /home/pi/candle/ssh.sh
+
+RemainAfterExit=yes
+StandardOutput=journal
+
+[Install]
+WantedBy=multi-user.target
