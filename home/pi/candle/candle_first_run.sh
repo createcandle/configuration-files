@@ -202,6 +202,21 @@ else
     echo "FIRST_RUN: not expanding user partition: candle_user_partition_expanded.txt already exists" >> $BOOT_DIR/candle_log.txt
 fi
 
+
+if [ -d "$CANDLE_BASE/.webthings/addons/candleappstore" ] && [ ! -d "$CANDLE_BASE/.webthings/backups/addons/candleappstore" ]; then
+	cp -r  "$CANDLE_BASE/.webthings/addons/candleappstore" "$CANDLE_BASE/.webthings/backups/addons/candleappstore" 
+fi
+if [ -d "$CANDLE_BASE/.webthings/addons/power-settings" ] && [ ! -d "$CANDLE_BASE/.webthings/backups/addons/power-settings" ]; then
+	cp -r  "$CANDLE_BASE/.webthings/addons/power-settings" "$CANDLE_BASE/.webthings/backups/addons/power-settings" 
+fi
+if [ -d "$CANDLE_BASE/.webthings/addons/candle-theme" ] && [ ! -d "$CANDLE_BASE/.webthings/backups/addons/candle-theme" ]; then
+	cp -r  "$CANDLE_BASE/.webthings/addons/candle-theme" "$CANDLE_BASE/.webthings/backups/addons/candle-theme" 
+fi
+if [ -f "$CANDLE_BASE/.webthings/config/db.sqlite3" ]; then
+	cp "$CANDLE_BASE/.webthings/config/db.sqlite3" "$CANDLE_BASE/.webthings/backups/config/db.sqlite3" 
+fi
+
+
 echo "$(date) - first run done" >> $BOOT_DIR/candle_log.txt
 
 # Mark first run as complete and reboot
