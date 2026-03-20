@@ -1,6 +1,9 @@
 # CANDLE CONTROLLER
 This is the disk of a Candle Controller. Learn more at www.candlesmarthome.com
 
+- After the controller starts it will create a Candle WiFi hotspot. Connect to it using password 'smarthome'.
+- Then open a browser and go to "candle.local". You should then be greeted by page where you can create your user account, and go from there.
+
 If you are having trouble, visit: 
 www.candlesmarthome.com/troubleshooting
 
@@ -9,6 +12,13 @@ To attempt to create an emergency backup, place a textfile called "candle_make_e
 
 # SAFE MODE
 If you are experiencing issues with newly installed or updated addons, then you can try booting into 'safe mode'. While in safe mode only three addons will appear to be installed: Candle store, Candle theme and Power settings. You can then disable any addons that are causing trouble by opening the Troubleshooting page in Settings.
+
+# CONNECT TO WIFI
+Normally the Candle Controller will generate a hotspot, and you can then connect to your prefered WiFi after visiting candle.local in your browser. But you can also provide WiFi details in a text file that you place on the Candle Controller's SD card.
+- Create a new text file on the SD card called 'candle_set_wifi.txt'
+- As the first line set the WiFi name
+- As the second like set the password
+When the controller starts it will read that file and use it's settings to connect to WiFi.
 
 # OUTPUT TO DISPLAY
 Output to HDMI is normally only enabled for systems with more than 1Gb of memory, but this can be forced. See below.
