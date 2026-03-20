@@ -20,6 +20,11 @@ Normally the Candle Controller will generate a hotspot, and you can then connect
 - As the second like set the password
 When the controller starts it will read that file and use it's settings to connect to WiFi.
 
+# HOTSPOT
+To enable the hotpot, create a file called 'candle_hotspot.txt' on the SD card. To disable it, remove that file.
+The hotspot password is optional, and can be set by writing the desired password in a file called 'candle_hotspot_password.txt'.
+If you don't want the hotspot to have a password, delete the 'candle_hotspot_password.txt' file.
+
 # OUTPUT TO DISPLAY
 Output to HDMI is normally only enabled for systems with more than 1Gb of memory, but this can be forced. See below.
 
