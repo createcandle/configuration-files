@@ -4,10 +4,14 @@ This is the disk of a Candle Controller. Learn more at www.candlesmarthome.com
 If you are having trouble, visit: 
 www.candlesmarthome.com/troubleshooting
 
+# EMERGENCY BACKUP
 To attempt to create an emergency backup, place a textfile called "candle_make_emergency_backup.txt" on the SD card. Then boot the Candle Controller again with the SD card, and after a minute or two, turn it off again. You should now hopefully find a backup file on the SD card.
 
-- Output to HDMI is normally only enabled for systems with more than 1Gb of memory, but this can be forced. See below.
+# SAFE MODE
+If you are experiencing issues with newly installed or updated addons, then you can try booting into 'safe mode'. While in safe mode only three addons will appear to be installed: Candle store, Candle theme and Power settings. You can then disable any addons that are causing trouble by opening the Troubleshooting page in Settings.
 
+# OUTPUT TO DISPLAY
+Output to HDMI is normally only enabled for systems with more than 1Gb of memory, but this can be forced. See below.
 
 
 The information below is for advanced users.
@@ -32,10 +36,11 @@ Alternatively, you can connect a monitor and keyboard. Then pressing CTRL-ALT-F3
 
 
 # RECOVERY
-From Candle 2.0.2 onwards Candle has a built-in recovery partition. Booting into that will normally start a process which downloads and installs the latest version of Candle. It fully replaces the system partition with a downloaded disk image, and similarly copies files over the boot partition too. It does not change the recovery partition or user data partition. 
+Candle version 2.0 has a built-in recovery partition. Booting into that will normally start a process which downloads and installs the latest version of Candle. It fully replaces the system partition with a downloaded disk image, and similarly copies files over the boot partition too. It does not change the recovery partition or user data partition. 
 
 It is possible to boot into recovery without starting the update process; creating the file candle_recovery_type.txt with the string 'nothing' inside will cause the recovery to do nothing. It also won't copy the hostname, so (currently) you may login in to the recovery system with: ssh root@candleupdate.local and password 'smarthome'.
 
+Candle 3.0 has swiched to a new "A-B" updating system, so that feature will only be available until you install a sytem update. After that you can switch back to running an older version of Candle instead.
 
 # EMERGENCY RECOVERY
 Another last ditch attempt you could try if the recovery option doesn't work or is unavailable: using the recovery version of cmdline.txt. It will boot the system into a bash shell. Note that the filesystem will be in read-only mode, but you can remount it if you need to make changes:
