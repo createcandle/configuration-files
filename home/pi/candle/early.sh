@@ -26,9 +26,29 @@ fi
 # iptables -A INPUT -p tcp -m multiport --dports 1883,1884,1885 -j ACCEPT
 
 
+# SAFE MODE
+# This mounts the safe_mode directory over the addons directory, so it seems like only the essential three addons are installed
+# The user could then, for example, create a backup, fiddle with that backup, and restore it to solve any issues related to settings in persistent data
 
-
-
+if [ -f $BOOT_DIR/candle_safe_mode.txt ]; then
+	echo "candle: early.sh: detected candle_safe_mode.txt" >> /dev/kmsg
+	if [ ! -d /home/pi/.webthings/addons ] then
+		mkdir -p /home/pi/.webthings/addons
+	fi
+	if [ -d /home/pi/.webthings/addons ] && [ -d /home/pi/safe_mode/addons ] then
+		chown pi:pi /home/pi/.webthings/addons
+		sudo mount --bind /home/pi/safe_mode/addons /home/pi/.webthings/addons
+		echo "candle: early.sh: safe_mode enabled" >> /dev/kmsg
+	fi
+fi
+if [ -f $BOOT_DIR/candle_reset_database.txt ]; then
+	if [ -f /home/pi/safe_mode/config/db.sqlite3 ]; then
+		mkdir -p /home/pi/.webthings/config
+		cp /home/pi/safe_mode/config/db.sqlite3 /home/pi/.webthings/config/db.sqlite3
+		chown -R pi:pi /home/pi/.webthings/config
+	fi
+	rm $BOOT_DIR/candle_reset_database.txt
+fi
 
 if [ -f $BOOT_DIR/candle_wifi_country_code.txt ]; then
 	SPOTTED_WIFI_COUNTRY=$(cat $BOOT_DIR/candle_wifi_country_code.txt | tr -d '\n')
