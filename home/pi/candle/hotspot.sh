@@ -29,8 +29,8 @@ fi
 #sleep 1
 
 
-if [ ! -f $BOOT_DIR/candle_hotspot.txt ]; then
-	echo "hotspot.sh: no candle_hotspot.txt, aborting"
+if [ ! -f $BOOT_DIR/candle_hotspot.txt ] && [ ! -f $BOOT_DIR/candle_safe_mode.txt ]; then
+	echo "hotspot.sh: no candle_hotspot.txt, and not in safe mode, so aborting"
 	sleep 20
 	exit 0
 fi
