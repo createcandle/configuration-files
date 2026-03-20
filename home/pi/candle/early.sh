@@ -32,10 +32,10 @@ fi
 
 if [ -f $BOOT_DIR/candle_safe_mode.txt ]; then
 	echo "candle: early.sh: detected candle_safe_mode.txt" >> /dev/kmsg
-	if [ ! -d /home/pi/.webthings/addons ] then
+	if [ ! -d /home/pi/.webthings/addons ]; then
 		mkdir -p /home/pi/.webthings/addons
 	fi
-	if [ -d /home/pi/.webthings/addons ] && [ -d /home/pi/safe_mode/addons ] then
+	if [ -d /home/pi/.webthings/addons ] && [ -d /home/pi/safe_mode/addons ]; then
 		chown pi:pi /home/pi/.webthings/addons
 		sudo mount --bind /home/pi/safe_mode/addons /home/pi/.webthings/addons
 		echo "candle: early.sh: safe_mode enabled" >> /dev/kmsg
@@ -307,12 +307,12 @@ if [ -f $BOOT_DIR/candle_install_these_addons.txt ]; then
                     fi
 
 					if [ -d "/home/pi/.webthings/addons/$addon" ]; then
-						cd /home/pi/.webthings/addons/$addon
+						cd "/home/pi/.webthings/addons/$addon"
 						chmod +x package.sh
 						echo "candle: early: starting build of addon: $addon_git" >> /dev/kmsg
 						echo "candle: early: starting build of addon: $addon_git" >> $BOOT_DIR/candle_log.txt
 						./package.sh
-						chown -R pi:pi /home/pi/.webthings/addons/$addon
+						chown -R pi:pi "/home/pi/.webthings/addons/$addon"
 						echo "candle: early: completed build of addon: $addon_git" >> /dev/kmsg
 						echo "candle: early: completed build of addon: $addon_git" >> $BOOT_DIR/candle_log.txt
 					fi
