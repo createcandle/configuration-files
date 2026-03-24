@@ -5,6 +5,7 @@ set +e
 # It is also called by the script that creates the Candle disk image
 # $BOOT_DIR/candle_first_run.sh will only actually be run by a service if $BOOT_DIR/candle_first_run_complete does not exist.
 
+$CANDLE_BASE="/home/pi"
 
 # Check if script is being run as root
 if [ "$EUID" -ne 0 ]
