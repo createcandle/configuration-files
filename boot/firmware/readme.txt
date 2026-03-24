@@ -88,9 +88,8 @@ candle_wifi_power_save 	        # If present, wifi power saving will be enabled.
 candle_cutting_edge.txt 	# If present, any system update will attempt to get the very latest version of everything. Risky, For developers only.
 hostname.txt 			# The word inside this file will become the hostname. Must be one single word in lower case.
 
-# RECOVERY OPTIONS
+# RECOVERY OPTIONS - DEPRECATED
 By default booting into the recovery partition starts the update process, but this can be overridden:
-
 candle_update.txt		# If it exists, then this file will be renamed to candle_update.sh and run as a script. Also, the normal update process is not run.
 candle_recovery_type.txt        # The contents of this file overrides the recovery type. Set its contents to the word "nothing" to boot into recovery and do nothing.
 candle_stay_in_recovery.txt     #  The recovery system will normally automaticallty reboot after the update is done. It stays in recovery so you can inspect things.
@@ -103,7 +102,7 @@ candle_forget_wifi.txt		# Will clear the currently stored wifi details (ssid, pa
 candle_forget_users.txt		# Will delete all users on the next boot. Useful if you forgot your password.
 candle_delete_these_addons.txt	# Will delete all addons listed in this file. These must be the names of the addon directories. E.g. Voco -> voco
 candle_install_these_addons.txt	# Will install all addons listed in this file. These must be in the form of their GIT url's
-
+candle_reset_database.txt	# Factory-resets the main settings database (but not the logs database)
 
 # Factory reset related:
 keep_z2m.txt 			# Keep Zigbee2MQTT settings on factory reset.
