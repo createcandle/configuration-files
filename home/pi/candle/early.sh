@@ -14,7 +14,7 @@ if [ ! -f $BOOT_DIR/candle_log.txt ]; then
 	echo "$(date) - Candle early.sh: created missing log file" > $BOOT_DIR/candle_log.txt
 fi
 
-# NOT CURRENTLTY USED, BUT COULD BE USEFUL FOR A FUTURE FIREWALL THAT BLOCKS BY DEFAULT
+# NOT CURRENTLY USED, BUT COULD BE USEFUL FOR A FUTURE FIREWALL THAT BLOCKS BY DEFAULT
 
 # Allow mDNS (avahi)
 # iptables -I INPUT -p udp --dport 5353 -j ACCEPT
@@ -25,6 +25,8 @@ fi
 # Allow MQTT. Could be made to depend on external MQTT being allowed in the first place.
 # iptables -A INPUT -p tcp -m multiport --dports 1883,1884,1885 -j ACCEPT
 
+# Allow localsend
+# iptables -I INPUT --dport 53317 -j ACCEPT
 
 # SAFE MODE
 # This mounts the safe_mode directory over the addons directory, so it seems like only the essential three addons are installed
