@@ -207,7 +207,8 @@ fi
 
 
 if [ -d "$CANDLE_BASE/.webthings/addons/candleappstore" ] && [ ! -d "$CANDLE_BASE/.webthings/backups/addons/candleappstore" ]; then
-	cp -r  "$CANDLE_BASE/.webthings/addons" "$CANDLE_BASE/.webthings/backups/addons" 
+	cp -r  "$CANDLE_BASE/.webthings/addons" "$CANDLE_BASE/.webthings/backups/" 
+	chown -R pi:pi "$CANDLE_BASE/.webthings/backups" 
 fi
 #if [ -d "$CANDLE_BASE/.webthings/addons/power-settings" ] && [ ! -d "$CANDLE_BASE/.webthings/backups/addons/power-settings" ]; then
 #	cp -r  "$CANDLE_BASE/.webthings/addons/power-settings" "$CANDLE_BASE/.webthings/backups/addons/power-settings" 
