@@ -207,16 +207,29 @@ fi
 
 
 
-#if [ -d "$CANDLE_BASE/.webthings/addons/power-settings" ] && [ ! -d "$CANDLE_BASE/.webthings/backups/addons/power-settings" ]; then
-#	cp -r  "$CANDLE_BASE/.webthings/addons/power-settings" "$CANDLE_BASE/.webthings/backups/addons/power-settings" 
-#fi
-#if [ -d "$CANDLE_BASE/.webthings/addons/candle-theme" ] && [ ! -d "$CANDLE_BASE/.webthings/backups/addons/candle-theme" ]; then
-#	cp -r  "$CANDLE_BASE/.webthings/addons/candle-theme" "$CANDLE_BASE/.webthings/backups/addons/candle-theme" 
-#fi
-#if [ -f "$CANDLE_BASE/.webthings/config/db.sqlite3" ]; then
-#	cp "$CANDLE_BASE/.webthings/config/db.sqlite3" "$CANDLE_BASE/.webthings/backups/config/db.sqlite3" 
+mkdir -p "$CANDLE_BASE/.webthings/backups/addons" 
+mkdir -p "$CANDLE_BASE/.webthings/backups/config" 
+
+# This works, but takes too long
+#if [ -d "$CANDLE_BASE/.webthings/addons/candleappstore" ] && [ ! -d "$CANDLE_BASE/.webthings/backups/addons/candleappstore" ]; then
+#	cp -r  "$CANDLE_BASE/.webthings/addons" "$CANDLE_BASE/.webthings/backups/" 
+#	chown -R pi:pi "$CANDLE_BASE/.webthings/backups" 
 #fi
 
+# Copy the three most important addons. The rest will be handled by Power Settings later
+if [ -d "$CANDLE_BASE/.webthings/addons/candleappstore" ] && [ ! -d "$CANDLE_BASE/.webthings/backups/addons/candleappstore" ]; then
+	cp -r  "$CANDLE_BASE/.webthings/addons/candleappstore" "$CANDLE_BASE/.webthings/backups/addons/candleappstore" 
+fi
+if [ -d "$CANDLE_BASE/.webthings/addons/power-settings" ] && [ ! -d "$CANDLE_BASE/.webthings/backups/addons/power-settings" ]; then
+	cp -r  "$CANDLE_BASE/.webthings/addons/power-settings" "$CANDLE_BASE/.webthings/backups/addons/power-settings" 
+fi
+if [ -d "$CANDLE_BASE/.webthings/addons/candle-theme" ] && [ ! -d "$CANDLE_BASE/.webthings/backups/addons/candle-theme" ]; then
+	cp -r  "$CANDLE_BASE/.webthings/addons/candle-theme" "$CANDLE_BASE/.webthings/backups/addons/candle-theme" 
+fi
+if [ -f "$CANDLE_BASE/.webthings/config/db.sqlite3" ]; then
+	cp "$CANDLE_BASE/.webthings/config/db.sqlite3" "$CANDLE_BASE/.webthings/backups/config/db.sqlite3" 
+fi
+chown -R pi:pi "$CANDLE_BASE/.webthings/backups" 
 
 echo "$(date) - first run done" >> $BOOT_DIR/candle_log.txt
 
