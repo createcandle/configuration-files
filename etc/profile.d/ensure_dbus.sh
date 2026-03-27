@@ -8,10 +8,13 @@ if [ -n "$DBUS_SESSION_BUS_ADDRESS" ] ; then
   if [ -d /home/pi/.dbus/session-bus ] ; then
     SESSION_FILE=$(ls -tp /home/pi/.dbus/session-bus | grep -v /$ | head -1)
     if ps aux | grep -q '/dbus-daemon'; then
-	  if [ -n "$SESSION_FILE" ] && [ -f "/home/pi/.dbus/session-bus/$SESSION_FILE" ]; then
-	    source "/home/pi/.dbus/session-bus/$SESSION_FILE"
-	  fi
+      if [ -n "$SESSION_FILE" ] && [ -f "/home/pi/.dbus/session-bus/$SESSION_FILE" ]; then
+        source "/home/pi/.dbus/session-bus/$SESSION_FILE"
+      fi
     fi
+  else
+    echo "calling dbus-launch"
+    export $(dbus-launch)
   fi
 fi
 
