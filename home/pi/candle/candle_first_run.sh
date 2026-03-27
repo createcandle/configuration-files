@@ -127,7 +127,7 @@ fi
 
 
 
-openssl req -new -sha256 -key "${SSL_DIR}/privatekey.pem" -out "${SSL_DIR}/csr.pem" -subj '/CN=CandleSmartHome.com/O=Candle Controller/C=US'
+openssl req -new -sha256 -key "${SSL_DIR}/privatekey.pem" -out "${SSL_DIR}/csr.pem" -subj '/CN=candle.local/O=Candle Controller/C=US'
 openssl x509 -req -days 3650 -in "${SSL_DIR}/csr.pem" -signkey "${SSL_DIR}/privatekey.pem" -out "${SSL_DIR}/certificate.pem"
 openssl x509 -outform der -in "${SSL_DIR}/certificate.pem" -out "${SSL_DIR}/certificate.crt"
 
