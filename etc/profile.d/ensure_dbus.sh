@@ -15,7 +15,7 @@ if [ -n "$DBUS_SESSION_BUS_ADDRESS" ] ; then
   fi
 fi
 
-if [ -n "$DISPLAY"] ; then
+if [ -n "$DISPLAY" ] ; then
   export DISPLAY=:0
 fi
 
