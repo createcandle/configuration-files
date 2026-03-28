@@ -67,7 +67,6 @@ mount -o remount,rw /dev/mmcblk0p2 /
 The existence of these files can influence how the system operates:
 
 candle_ssh.txt 			# Start SSH server at every boot. Login with username 'pi' and password 'smarthome'.
-candle_ssh_once.txt             # Start SSH server after the next reboot.
 candle_rw_once.txt             # On the next reboot the system partition will be writable. On the reboot after that it will be restored to read-only.
 candle_rw_keep.txt             # After the next reboot the system partition will remain writeable until this file is removed (and another reboot)
 emergency.txt 			# Booting is mostly halted, and SSH access is activated.
@@ -75,25 +74,28 @@ candle_emergency_backup.txt 	# If possible, creates an emergency backup which wi
 candle_kiosk.txt 		# The URL inside this file will be shown in the browser. If it's empty the kiosk browser will not load.
 candle_kiosk_forced.txt 	# Force the kiosk mode to start on low memory systems (Pi Zero).
 candle_kiosk_require_login.txt 	# If this file exists it will force the user to log back into the kiosk browser after each reboot.
-cloudless.txt 			# Experimental, to launch the controller even if there is no network at all. Use with the Hotspot addon.
-candle_hotspot.txt 			# If present, Candle will start a guest WiFi network.
-candle_hotspot.txt 			# Change the password of the guest wifi network by writing it into this file.
-nohotspot.txt 			# Aborts hotspot addon launch. Useful if that feature somehow causes trouble.
 show_mouse_pointer.txt 		# Forces showing the mouse pointer on the HDMI output.
 hide_mouse_pointer.txt 		# Forces hiding the mouse pointer on the HDMI output.
 rotate180.txt 			# Rotates the display 180 degrees.
 exhibit_mode.txt		# Disables actions that can change the controller, such as installing and uninstalling addons.
 do_not_use_repeaker_hat.txt 	# Will stop ReSpeaker hat drivers from being loaded at boot.
-candle_wifi_power_save 	        # If present, wifi power saving will be enabled. This may cause connection issues.
-candle_cutting_edge.txt 	# If present, any system update will attempt to get the very latest version of everything. Risky, For developers only.
+candle_wifi_power_save.txt 	        # If present, wifi power saving will be enabled. This may cause connection issues.
+candle_cutting_edge.txt 	# This affects how the Candle install script is run during disk image creation
 hostname.txt 			# The word inside this file will become the hostname. Must be one single word in lower case.
 skip_candle_store_check.txt	# Disables a check that ensures the Candle Store addon is always (re-)enabled at boot
 
+# HOTSPOT
+candle_hotspot.txt 			# If present, Candle will start a guest WiFi network.
+candle_hotspot_password.txt 		# Change the password of the guest wifi network by writing it into this file.
+candle_hotspot_allow_access_to_main_network.txt
+
 # RECOVERY OPTIONS - DEPRECATED
 By default booting into the recovery partition starts the update process, but this can be overridden:
-candle_update.txt		# If it exists, then this file will be renamed to candle_update.sh and run as a script. Also, the normal update process is not run.
+candle_update.txt		# If it exists, then this file will be renamed to candle_update.sh and run as a script.
 candle_recovery_type.txt        # The contents of this file overrides the recovery type. Set its contents to the word "nothing" to boot into recovery and do nothing.
 candle_stay_in_recovery.txt     #  The recovery system will normally automaticallty reboot after the update is done. It stays in recovery so you can inspect things.
+candle_recovery_aborted.txt     # The recovery partition's system update script ran into a problem and aborted the update.
+candle_recovery_interupted.txt  # If this file exists, the recovery partition's system update process was unexpectedly interupted during the critical part of the update.
 
 # TOOLS
 candle_make_emergency_backup.txt $ Make an emergency backup, which will be placed on the boot partition of the SD card.
@@ -121,8 +123,7 @@ candle_last_known_ip_address.txt	# Contains the last known IP address the contro
 # FAILURE INDICATORS
 candle_log.txt 			# Upgrade processes and commands you give may output status and errors into this file.
 bootup_actions_failed.sh 	# If this file exists, it indicates that an upgrade process did not complete because it failed or was interupted. Deprecated.
-candle_recovery_aborted.txt     # The recovery partition's system update script ran into a problem and aborted the update.
-candle_recovery_interupted.txt  # If this file exists, the recovery partition's system update process was unexpectedly interupted during the critical part of the update.
+
 
 
 # Source code
