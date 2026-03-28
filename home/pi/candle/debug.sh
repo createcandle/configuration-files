@@ -295,10 +295,14 @@ echo
 echo
 lsof /dev/snd/*
 echo
-aplay -l
+echo "aplay -lL:"
+aplay -lL
 echo
-arecord -l
-
+echo "arecord -lL:"
+arecord -lL
+echo
+echo "strace pw-dump:"
+strace -e connect pw-dump >/dev/null
 
 
 
