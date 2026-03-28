@@ -206,6 +206,33 @@ else
 fi
 
 
+#
+# Set virtual sink as the default audio out device
+#
+
+VIRTUAL_SINK=$(wpctl status | grep '\[Audio/Sink\]' | grep "virtual_combine_all_sinks")
+
+if [ -n "$VIRTUAL_SINK" ]; then
+	if echo "$VIRTUAL_SINK" | grep -q '*'; then
+		echo "virtual audio sink already seems to be the default"
+	else
+		SINK_ID=$(wpctl status | grep '\[Audio/Sink\]' | grep "virtual_combine_all_sinks" | egrep '^ │( )*[0-9]*' -o | cut -c6-55 | egrep -o '[0-9]*')
+		if [[ $SINK_ID =~ ^[0-9]+$ ]]; then
+			echo "setting virtual sink as the default.  SINK_ID: $SINK_ID"
+			wpctl set-default "$SINK_ID"
+		else
+		    echo "ERROR, SINK_ID is not a number: $SINK_ID"
+		fi
+	fi
+fi
+
+
+
+
+
+#
+# Create minimal initial backups
+#
 
 mkdir -p "$CANDLE_BASE/.webthings/backups/addons" 
 mkdir -p "$CANDLE_BASE/.webthings/backups/config" 
