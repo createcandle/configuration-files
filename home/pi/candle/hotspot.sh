@@ -399,8 +399,12 @@ if ip link show | grep -q "uap0:"; then
 	echo "hotspot.sh: short mac address with _nomap: $SHORTMAC"
 	
 	SSID="Candle"
+	if [ -f $BOOT_DIR/webthings_gateway_version.txt ]; then
+		SSID="Gateway"
+	fi
+	
 	if [ -n "$SHORTMAC" ]; then
-		SSID="Candle $(echo $SHORTMAC)"
+		SSID="$SSID $(echo $SHORTMAC)"
 	fi
 	
 	# check if there is an existing SSID to re-use instead
