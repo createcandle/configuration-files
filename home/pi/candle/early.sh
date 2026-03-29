@@ -271,6 +271,12 @@ if [ -f $BOOT_DIR/candle_delete_these_addons.txt ]; then
     rm $BOOT_DIR/candle_delete_these_addons.txt
 fi
 
+if [ ! -d /home/pi/.webthings/work ]; then
+	mkdir -p /home/pi/.webthings/work
+fi
+chown -R pi:pi /home/pi/.webthings/work
+
+
 
 # Install and manage Github addons
 if [ -f $BOOT_DIR/candle_install_these_addons.txt ]; then
