@@ -14,7 +14,7 @@ if [ -f $BOOT_DIR/candle_emergency_hotspot.txt ]; then
 fi
 
 # most basc command to create a hotspot:
-# nmcli dev wifi hotspot ifname uap0 ssid "Candle" password "smarthome"
+# nmcli dev wifi hotspot ifname virbr ssid "Candle" password "smarthome"
 
 TOTAL_MEMORY=$(awk '/MemTotal/ {print $2}' /proc/meminfo)
 if [ "$TOTAL_MEMORY" -lt "800000" ] && [ -f $BOOT_DIR/candle_hotspot_5G.txt ]; then
@@ -89,11 +89,11 @@ start_dnsmasq () {
 		IP4S=$(hostname -I | sed -r 's/192.168.12.1//' | xargs)
 		echo "hotspot.sh: IPv4 address(es): $IP4S"
 	
-		if iptables -t nat -L -v | grep -q "uap0"; then
-			echo "uap0 already exists in iptables"
+		if iptables -t nat -L -v | grep -q "virbr"; then
+			echo "virbr already exists in iptables"
 		else
 	
-			echo "hotspot.sh: adding iptables for uap0"
+			echo "hotspot.sh: adding iptables for virbr"
 		
 			# optionally, drop DHCP requests to get an IPV6 address.
 			if [ -f $BOOT_DIR/candle_hotspot_no_ipv6.txt ]; then
@@ -103,23 +103,23 @@ start_dnsmasq () {
 			if [ ! -f $BOOT_DIR/candle_hotspot_allow_access_to_main_network.txt ]; then
 				echo "blocking access of hotspot network to main network"
 				#iptables -A FORWARD -d 192.168.2.2 -m iprange --src-range 192.168.12.2-192.168.12.255 -j DROP
-				#iptables -I INPUT -i uap0 -d <main_network_IP> -j DROP
+				#iptables -I INPUT -i virbr -d <main_network_IP> -j DROP
 			
-				#iptables -A FORWARD -i uap0 -m iprange --src-range 192.168.12.2-192.168.12.255 -o eth0 -d 192.168.0.0/16 -j DROP
-				#iptables -A FORWARD -i uap0 -m iprange --src-range 192.168.12.2-192.168.12.255 -o wlan0 -d 192.168.0.0/16 -j DROP
+				#iptables -A FORWARD -i virbr -m iprange --src-range 192.168.12.2-192.168.12.255 -o eth0 -d 192.168.0.0/16 -j DROP
+				#iptables -A FORWARD -i virbr -m iprange --src-range 192.168.12.2-192.168.12.255 -o wlan0 -d 192.168.0.0/16 -j DROP
 			fi
 		
 
 			# Force all DNS traffic on the hotspot network to go to/through the Candle Controller
-			iptables -t nat -A PREROUTING -i uap0 -s 192.168.12.0/24 -p udp --dport 53 -j DNAT --to-destination 192.168.12.1:53
-			#ip6tables -t nat -A PREROUTING -i uap0 -s fd00:12::/8 -p udp --dport 53 -j DNAT --to-destination fd00:12::1
-			ip6tables -t nat -A PREROUTING -i uap0 -p udp --dport 53 -j DNAT --to-destination fd00:12::1
+			iptables -t nat -A PREROUTING -i virbr -s 192.168.12.0/24 -p udp --dport 53 -j DNAT --to-destination 192.168.12.1:53
+			#ip6tables -t nat -A PREROUTING -i virbr -s fd00:12::/8 -p udp --dport 53 -j DNAT --to-destination fd00:12::1
+			ip6tables -t nat -A PREROUTING -i virbr -p udp --dport 53 -j DNAT --to-destination fd00:12::1
 		
 			echo "candle: hotspot.sh: adding iptables forwarding rules"
-			iptables -A FORWARD -i uap0 -j ACCEPT
-			ip6tables -A FORWARD -i uap0 -j ACCEPT
-			iptables -A FORWARD -o uap0 -m state --state ESTABLISHED,RELATED -j ACCEPT
-			ip6tables -A FORWARD -d ff02::1 -o uap0 -m state --state ESTABLISHED,RELATED -j ACCEPT
+			iptables -A FORWARD -i virbr -j ACCEPT
+			ip6tables -A FORWARD -i virbr -j ACCEPT
+			iptables -A FORWARD -o virbr -m state --state ESTABLISHED,RELATED -j ACCEPT
+			ip6tables -A FORWARD -d ff02::1 -o virbr -m state --state ESTABLISHED,RELATED -j ACCEPT
 			#iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
 			#iptables -t nat -A POSTROUTING -o wlan0 -j MASQUERADE
 
@@ -129,21 +129,21 @@ start_dnsmasq () {
 
 
 			echo "candle: hotspot.sh: step 1 of adding port redirect rules on hotspot side"
-			iptables -I PREROUTING -p tcp -i uap0 -s 192.168.12.0/24 -d 192.168.12.1/32 --dport 80 -j REDIRECT --to-port 8080
-			iptables -I PREROUTING -p tcp -i uap0 -s 192.168.12.0/24 -d 192.168.12.1/32 --dport 443 -j REDIRECT --to-port 4443
+			iptables -I PREROUTING -p tcp -i virbr -s 192.168.12.0/24 -d 192.168.12.1/32 --dport 80 -j REDIRECT --to-port 8080
+			iptables -I PREROUTING -p tcp -i virbr -s 192.168.12.0/24 -d 192.168.12.1/32 --dport 443 -j REDIRECT --to-port 4443
 
-			ip6tables -I PREROUTING -p tcp -i uap0 -s fd00:12::/8 -d fd00:12::1 --dport 80 -j REDIRECT --to-port 8080
-			ip6tables -I PREROUTING -p tcp -i uap0 -s fd00:12::/8 -d fd00:12::1 --dport 443 -j REDIRECT --to-port 4443
+			ip6tables -I PREROUTING -p tcp -i virbr -s fd00:12::/8 -d fd00:12::1 --dport 80 -j REDIRECT --to-port 8080
+			ip6tables -I PREROUTING -p tcp -i virbr -s fd00:12::/8 -d fd00:12::1 --dport 443 -j REDIRECT --to-port 4443
 		
 	
 			# Block access to parent local networks
 			if [ ! -f $BOOT_DIR/candle_hotspot_allow_traversal.txt ]; then
 				echo "candle: hotspot.sh: blocking traversal to local network"
-				iptables -I FORWARD -i uap0 -d 192.168.0.0/16 -m iprange --src-range 192.168.12.2-192.168.12.255 -j DROP
-				iptables -I FORWARD -i uap0 -d 172.16.0.0/12 -m iprange --src-range 192.168.12.2-192.168.12.255 -j DROP
-				iptables -I FORWARD -i uap0 -d 10.0.0.0/8 -m iprange --src-range 192.168.12.2-192.168.12.255 -j DROP
+				iptables -I FORWARD -i virbr -d 192.168.0.0/16 -m iprange --src-range 192.168.12.2-192.168.12.255 -j DROP
+				iptables -I FORWARD -i virbr -d 172.16.0.0/12 -m iprange --src-range 192.168.12.2-192.168.12.255 -j DROP
+				iptables -I FORWARD -i virbr -d 10.0.0.0/8 -m iprange --src-range 192.168.12.2-192.168.12.255 -j DROP
 
-				ip6tables -I FORWARD -i uap0 -d fe80::/10 -s fd00:12::/8 -j DROP
+				ip6tables -I FORWARD -i virbr -d fe80::/10 -s fd00:12::/8 -j DROP
 			
 			fi
 
@@ -189,14 +189,14 @@ start_dnsmasq () {
 		if nmcli connection show --active | grep -q Candle_hotspot; then
 			
 			echo "IPv6 address(es):"
-			ip -6 addr show uap0
+			ip -6 addr show virbr
 	
 			# Start NTP time server
 			if [ -f $BOOT_DIR/candle_no_time_server.txt ]; then
 				echo "candle: hotspot.sh: not starting time server"
 			elif [ -f /home/pi/candle/time_server.py ]; then
 
-				if ip addr show uap0 | grep -q '192.168.12.1'; then
+				if ip addr show virbr | grep -q '192.168.12.1'; then
 					if ps aux | grep 'python3 /home/pi/candle/time_server.py' | grep -q '192.168.12.1 123'; then
 						echo "timeserver is already running"
 					else
@@ -206,14 +206,14 @@ start_dnsmasq () {
 							echo "NTP server iptables rule seems to already exist"
 						else
 							echo "adding NTP server iptables rule"
-							iptables -t nat -A PREROUTING -i uap0 -p udp --dport 123 -j DNAT --to-destination 192.168.12.1:123
+							iptables -t nat -A PREROUTING -i virbr -p udp --dport 123 -j DNAT --to-destination 192.168.12.1:123
 						fi
 						python3 /home/pi/candle/time_server.py 192.168.12.1 123 &
 					fi
 
 
 				else
-					echo "ERROR, uap0 interface does not have 192.168.12.1 ip address (yet). Cannot start NTP server. ifconfig:"
+					echo "ERROR, virbr interface does not have 192.168.12.1 ip address (yet). Cannot start NTP server. ifconfig:"
 				fi
 				
 				
@@ -260,7 +260,7 @@ if rfkill | grep -q ' blocked '; then
 fi
 
 
-# Create virtual UAP0 interface for hotspot
+# Create virtual virbr interface for hotspot
 if ip link show | grep -q "mlan0:" ; then
 	echo "hotspot.sh: spotted mlan0"
 	if ip link show | grep -q "uap0:" ; then
@@ -269,10 +269,10 @@ if ip link show | grep -q "mlan0:" ; then
 		echo "uap0 does not exist yet"
 		/sbin/iw dev mlan0 interface add uap0 type __ap
 		sleep 1
-		#ip address add 192.168.12.1/24 dev uap0
-		#ifconfig uap0 192.168.12.1 netmask 255.255.255.0
-		#ip -6 addr add fd00:12::1 dev uap0
-		#iw dev uap0 set power_save off
+		#ip address add 192.168.12.1/24 dev virbr
+		#ifconfig virbr 192.168.12.1 netmask 255.255.255.0
+		#ip -6 addr add fd00:12::1 dev virbr
+		#iw dev virbr set power_save off
 		#sleep 1
 	fi
         
@@ -284,17 +284,17 @@ elif ip link show | grep -q "wlan0:" ; then
 		echo "uap0 does not exist yet"
 		/sbin/iw dev wlan0 interface add uap0 type __ap
 		sleep 1
-		#ip address add 192.168.12.1/24 dev uap0
-		#ifconfig uap0 192.168.12.1 netmask 255.255.255.0
-		#ip -6 addr add fd00:12::1 dev uap0
-		#iw dev uap0 set power_save off
+		#ip address add 192.168.12.1/24 dev virbr
+		#ifconfig virbr 192.168.12.1 netmask 255.255.255.0
+		#ip -6 addr add fd00:12::1 dev virbr
+		#iw dev virbr set power_save off
 		#sleep 1
 	fi
 fi
 
 
 
-# Purge any connections, other than Candle_hotspot, that are set to use uap0
+# Purge any connections, other than Candle_hotspot, that are set to use virbr
 
 
 nmcli -t -f NAME connection | while read name; do
@@ -316,8 +316,8 @@ nmcli -t -f NAME connection | while read name; do
 							echo "hotspot.sh: connection pruning: want to bring up the modified connection, but another connection is already using wlan0"
 						else
 							nmcli connection up "$name"
-							echo "hotspot.sh: connection pruning: succesfully moved active connection from uap0 to wlan0 interface"
-							echo "hotspot.sh: connection pruning: succesfully moved active connection from uap0 to wlan0 interface" >> /dev/kmsg
+							echo "hotspot.sh: connection pruning: succesfully moved active connection from virbr to wlan0 interface"
+							echo "hotspot.sh: connection pruning: succesfully moved active connection from virbr to wlan0 interface" >> /dev/kmsg
 						fi
 					fi
 				else
@@ -329,9 +329,9 @@ nmcli -t -f NAME connection | while read name; do
 				#echo "hotspot.sh: connection pruning:  REMAINING_ACTIVE_CONNECTIONS: $REMAINING_ACTIVE_CONNECTIONS"
 				#if [ -n "$REMAINING_ACTIVE_CONNECTIONS" ] ; then
 				#	nmcli connection delete "$name"
-				#	echo "hotspot.sh: had to delete a connection that was set to use uap0: $name" >> /dev/kmsg
+				#	echo "hotspot.sh: had to delete a connection that was set to use virbr: $name" >> /dev/kmsg
 				#else:
-				#	echo "hotspot.sh: a connection is already using uap0, and it can't be moved to wlan0, and there is no other connection either. So it will have to remain this way." >> /dev/kmsg
+				#	echo "hotspot.sh: a connection is already using virbr, and it can't be moved to wlan0, and there is no other connection either. So it will have to remain this way." >> /dev/kmsg
 				#fi
 			fi
 		fi
@@ -342,15 +342,15 @@ done
 
 
 
-#if ip link show | grep "uap0:" | grep -q "state UP"; then
+#if ip link show | grep "virbr:" | grep -q "state UP"; then
 if ip link show | grep -q "uap0:"; then
 	
 	echo
-	echo "ifconfig uap0:"
+	echo "ifconfig virbr:"
 	ifconfig uap0
 	echo
 	
-	# Generate a slightly different MAC address for UAP0. Ending it with zero might even help creating a hotspot.
+	# Generate a slightly different MAC address for virbr. Ending it with zero might even help creating a hotspot.
 	MAC=$(nmcli device show wlan0 | grep HWADDR | awk '{print $2}')
 	if [[ "$MAC" =~ 0$ ]]; then
     	ZEROMAC=${MAC%?}1
@@ -360,15 +360,15 @@ if ip link show | grep -q "uap0:"; then
 	ip link set dev uap0 address "$ZEROMAC"
 	
 	if ip link show uap0 | grep -q DORMANT; then
-		echo "hotspot.sh: uap0 was in DORMANT mode, setting to DEFAULT instead" >> /dev/kmsg
+		echo "hotspot.sh: virbr was in DORMANT mode, setting to DEFAULT instead" >> /dev/kmsg
 		ip link set uap0 mode default
 	fi
 	
 	sleep 1
 	
 	#echo
-	#echo "ifconfig uap0:"
-	#ifconfig uap0
+	#echo "ifconfig virbr:"
+	#ifconfig virbr
 	#echo
 	
 	
@@ -457,17 +457,17 @@ if ip link show | grep -q "uap0:"; then
 		ifconfig uap0
 		echo
 		
-		#if ifconfig uap0 | grep -q '192.168.12.1'; then
-		#	echo "OK, uap0 still has the correct IP address"
+		#if ifconfig virbr | grep -q '192.168.12.1'; then
+		#	echo "OK, virbr still has the correct IP address"
 		#else
-		#	echo "forcing ip address for uap0 again"
-		#	ip address add 192.168.12.1/24 dev uap0
+		#	echo "forcing ip address for virbr again"
+		#	ip address add 192.168.12.1/24 dev virbr
 		#fi	
 		
 		
 		#echo
-		#echo "ifconfig uap0:"
-		#ifconfig uap0
+		#echo "ifconfig virbr:"
+		#ifconfig virbr
 		#echo
 		
 		if nmcli connection show | grep -q 'Candle_hotspot'; then
@@ -479,7 +479,7 @@ if ip link show | grep -q "uap0:"; then
 
 		else
 			#nmcli connection add con-name "Candle_hotspot" \
-			#    ifname uap0 wifi.mode ap wifi.ssid "$SSID" \
+			#    ifname virbr wifi.mode ap wifi.ssid "$SSID" \
 			#	wifi-sec.key-mgmt wpa-psk \
 			#    wifi-sec.proto rsn wifi-sec.pairwise ccmp \
 			#    wifi-sec.psk "$PASSWORD" \
@@ -491,7 +491,7 @@ if ip link show | grep -q "uap0:"; then
                     con-name Candle_hotspot \
                     ifname uap0 \
                     type wifi \
-                    autoconnect yes \
+                    autoconnect no \
                     ipv4.method manual ipv4.addresses "192.168.12.1/24" \
                     802-11-wireless.band bg \
                     802-11-wireless.channel 1 \
@@ -511,7 +511,7 @@ if ip link show | grep -q "uap0:"; then
                     con-name Candle_hotspot \
                     ifname uap0 \
                     type wifi \
-                    autoconnect yes \
+                    autoconnect no \
                     ipv4.method manual ipv4.addresses "192.168.12.1/24" \
                     802-11-wireless.band bg \
                     802-11-wireless.channel 1 \
@@ -540,7 +540,7 @@ if ip link show | grep -q "uap0:"; then
 		
 			nmcli connection modify Candle_hotspot wifi.powersave 2
 		
-			nmcli connection modify Candle_hotspot connection.autoconnect yes
+			nmcli connection modify Candle_hotspot connection.autoconnect no
 			
 		fi
 	
@@ -550,10 +550,10 @@ if ip link show | grep -q "uap0:"; then
 			echo " - PASS: $PASSWORD"
 		fi
 		
-		#nmcli connection add type wifi ifname uap0 con-name Candle_hotspot
+		#nmcli connection add type wifi ifname virbr con-name Candle_hotspot
 	
-		#nmcli con add con-name Candle_hotspot ifname uap0 type dummy
-		#nmcli con add con-name Candle_hotspot ifname uap0 type wifi connection.autoconnect yes 802-11-wireless.ssid "$SSID" ipv4.method manual ipv4.addresses "192.168.12.1/24" ipv6.method manual ipv6.addresses 'fd00::/8' 802-11-wireless.band bg 802-11-wireless.channel 1
+		#nmcli con add con-name Candle_hotspot ifname virbr type dummy
+		#nmcli con add con-name Candle_hotspot ifname virbr type wifi connection.autoconnect yes 802-11-wireless.ssid "$SSID" ipv4.method manual ipv4.addresses "192.168.12.1/24" ipv6.method manual ipv6.addresses 'fd00::/8' 802-11-wireless.band bg 802-11-wireless.channel 1
 		#nmcli con add type wifi ifname wlan0 con-name <your_hotspot_name> autoconnect yes ssid <your_ssid>
 		
 		
@@ -565,7 +565,7 @@ if ip link show | grep -q "uap0:"; then
 		#nmcli connection modify Candle_hotspot ipv4.addresses "192.168.12.1/24" ipv4.method manual 
 		
 		
-		#nmcli connection modify Candle_hotspot connection.interface-name uap0
+		#nmcli connection modify Candle_hotspot connection.interface-name virbr
 		
 		if nmcli connection show | grep -q Candle_hotspot; then
 			
@@ -596,7 +596,7 @@ if ip link show | grep -q "uap0:"; then
 
 					# wifi-sec.pairwise ccmp \
 			
-				#nmcli dev wifi hotspot ifname uap0 ssid "$SSID" password "$PASSWORD" 
+				#nmcli dev wifi hotspot ifname virbr ssid "$SSID" password "$PASSWORD" 
 				#sleep 1
 				#echo "Basic hotspot command run, with basic security. Did it work?"
 				echo
@@ -625,7 +625,7 @@ if ip link show | grep -q "uap0:"; then
 	                802-11-wireless-security.pairwise "" \
 	                802-11-wireless-security.psk ""
 				echo "Warning, creating open hotspot without any security"
-				#nmcli dev wifi hotspot ifname uap0 ssid "$SSID"
+				#nmcli dev wifi hotspot ifname virbr ssid "$SSID"
 			fi
 	
 		
@@ -637,6 +637,36 @@ if ip link show | grep -q "uap0:"; then
 				#nmcli connection modify candle_hotspot wifi.powersave 1
 				nmcli con modify Candle_hotspot wifi-sec.pmf disable
 			fi
+
+
+			# UAP0 configuration should now be OK. Next: adding it to the bridge.
+
+
+			if ip link show| grep -q "virbr"; then
+		    	echo "OK, virbr already exists"
+			else
+    			echo "hotspot.sh: bridge is missing. Creating it now."
+				nmcli connection add type bridge ifname virbr con-name CandleBridge -- ipv4.method disabled ipv6.method disabled connection.autoconnect yes stp no
+				nmcli con add type dummy ifname virdummy0 con-name 'CandleDummy0';
+				nmcli con add type dummy ifname virdummy0 master CandleBridge connection.autoconnect yes;
+				nmcli con add type dummy ifname virdummy1 con-name 'CandleDummy1';
+				nmcli con add type dummy ifname virdummy1 master CandleBridge connection.autoconnect yes;
+				
+				nmcli con mod CandleBridge ipv4.addresses "192.168.12.1/24"
+				nmcli con mod CandleBridge ipv4.gateway "192.168.12.1" 
+				nmcli con mod CandleBridge ipv4.dns "192.168.12.1" ipv4.dns-priority 1000
+				nmcli con mod CandleBridge ipv4.never-default true
+				
+				nmcli con mod CandleBridge ipv6.gateway 'fd00:12::1' 
+				nmcli con mod CandleBridge ipv6.dns 'fd00:12::1' ipv6.dns-priority 1000
+				nmcli con mod CandleBridge ipv6.never-default true
+			fi
+			
+			
+
+
+
+
 			
 			
 			
@@ -668,10 +698,10 @@ if ip link show | grep -q "uap0:"; then
 			
 			
 
-			# Make sure no other connection is using the UAP0 interface
-			# nmcli dev dis uap0
+			# Make sure no other connection is using the virbr interface
+			# nmcli dev dis virbr
 		
-			if nmcli connection show --active | grep -q uap0; then
+			if nmcli connection show --active | grep -q uap; then
 				echo "Strange, the Candle_hotspot was already active?"
 				start_dnsmasq
 				
@@ -680,13 +710,13 @@ if ip link show | grep -q "uap0:"; then
 					
 					
 					if ip link show uap0 | grep -q DORMANT; then
-						echo "hotspot.sh: uap0 was in DORMANT mode, setting to DEFAULT instead" >> /dev/kmsg
+						echo "hotspot.sh: virbr was in DORMANT mode, setting to DEFAULT instead" >> /dev/kmsg
 						ip link set uap0 mode default
 					fi
 					
 					if ip link show uap0 | grep -q 'state DOWN'; then
-						if nmcli device status | grep uap0 | grep -q unmanaged ; then
-							nmcli device set uap0 managed true
+						if nmcli device status | grep uap | grep -q unmanaged ; then
+							nmcli device set uap managed true
 						fi
 					fi
 					
@@ -707,7 +737,7 @@ if ip link show | grep -q "uap0:"; then
 						echo "candle: hotspot.sh: ERROR, starting Candle_hotspot connection failed. Try rebooting." >> /dev/kmsg
 					fi
 				else
-					echo "ERROR, uap0 has disappeared..."
+					echo "ERROR, virbr has disappeared..."
 					exit 1
 					
 				fi
@@ -728,8 +758,8 @@ if ip link show | grep -q "uap0:"; then
 	
 
 else
-	echo "ERROR, no uap0 after it was just created"
-	echo "candle: hotspot.sh: ERROR, no uap0 after it was just created" >> /dev/kmsg
+	echo "ERROR, no virbr after it was just created"
+	echo "candle: hotspot.sh: ERROR, no virbr after it was just created" >> /dev/kmsg
 fi
 
 echo "Sleeping 15 seconds..."
