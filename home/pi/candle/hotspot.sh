@@ -404,7 +404,7 @@ if ip link show | grep -q "uap0:"; then
 	fi
 	
 	if [ -n "$SHORTMAC" ]; then
-		SSID="$SSID $(echo $SHORTMAC)"
+		SSID="$SSID_$(echo $SHORTMAC)"
 	fi
 	
 	# check if there is an existing SSID to re-use instead
