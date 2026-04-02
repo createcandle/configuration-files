@@ -88,18 +88,18 @@ fi
 
 
 
-if ip link show | grep -q "virbr:" ; then
-	echo "OK, virbr exists"
-else
-	if [ -f $BOOT_DIR/candle_skip_virbr_check.txt ]; then
-		echo "Warning, virbr was missing, but will not create it because candle_skip_virbr_check.txt was spotted"
-		echo "candle: early.sh: Warning, virbr was missing, but will not create it because candle_skip_virbr_check.txt was spotted" >> /dev/kmsg
-	else
-		echo "Warning, virbr was missing, creating it now"
-		echo "candle: early.sh: Warning, virbr was missing, creating it now" >> /dev/kmsg
-		nmcli connection add type bridge ifname virbr con-name CandleBridge -- ipv4.method disabled ipv6.method disabled
-	fi
-fi
+#if ip link show | grep -q "virbr:" ; then
+#	echo "OK, virbr exists"
+#else
+#	if [ -f $BOOT_DIR/candle_skip_virbr_check.txt ]; then
+#		echo "Warning, virbr was missing, but will not create it because candle_skip_virbr_check.txt was spotted"
+#		echo "candle: early.sh: Warning, virbr was missing, but will not create it because candle_skip_virbr_check.txt was spotted" >> /dev/kmsg
+#	else
+#		echo "Warning, virbr was missing, creating it now"
+#		echo "candle: early.sh: Warning, virbr was missing, creating it now" >> /dev/kmsg
+#		nmcli connection add type bridge ifname virbr con-name CandleBridge -- ipv4.method disabled ipv6.method disabled
+#	fi
+#fi
 
 
 
