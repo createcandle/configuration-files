@@ -5,11 +5,11 @@ if [ -n "$XDG_RUNTIME_DIR" ] ; then
 fi
 
 if [ -n "$DBUS_SESSION_BUS_ADDRESS" ] ; then
-  if [ -d /home/pi/.dbus/session-bus ] ; then
-    SESSION_FILE=$(ls -tp /home/pi/.dbus/session-bus | grep -v /$ | head -1)
+  if [ -d "/home/$(id -u)/.dbus/session-bus" ] ; then
+    SESSION_FILE=$(ls -tp "/home/$(id -u)/.dbus/session-bus" | grep -v /$ | head -1)
     if ps aux | grep -q '/dbus-daemon'; then
-      if [ -n "$SESSION_FILE" ] && [ -f "/home/pi/.dbus/session-bus/$SESSION_FILE" ]; then
-        source "/home/pi/.dbus/session-bus/$SESSION_FILE"
+      if [ -n "$SESSION_FILE" ] && [ -f "/home/$(id -u)/.dbus/session-bus/$SESSION_FILE" ]; then
+        source "/home/$(id -u)/.dbus/session-bus/$SESSION_FILE"
       fi
     fi
   else
