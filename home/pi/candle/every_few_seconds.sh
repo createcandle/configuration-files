@@ -67,7 +67,8 @@ while true; do
 	
 	
 	#IP4=$(hostname -I | awk '{print $1}')
-	IP4S=$(hostname -I | sed -r 's/192.168.12.1//' | xargs)
+	#IP4S=$(hostname -I | sed -r 's/192.168.12.1//' | xargs)
+	IP4S=$(hostname -I | sed -r 's/172.16.[0-9]\+.1//' | xargs)
 	
 	if [ -n "$IP4S" ]; then
 		for IP4 in $IP4S; do
