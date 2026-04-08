@@ -58,7 +58,9 @@ echo "Candle: late: waiting for IP address"
 for i in {1..30}
 do
     #echo "current hostname: $(hostname -I)"
-	IPS=$(hostname -I | sed -r 's/192.168.12.1//' | xargs)
+	
+	# filter out the IP address of the hotspot
+	IPS=$(hostname -I | sed -r 's/172.16.[0-9]\+.1//' | xargs)
 	if echo "$IPS" | grep -q "." ; then
 		echo "Candle: late.sh: IP address detected: $(hostname -I)" >> /dev/kmsg
 		break
