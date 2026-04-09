@@ -10,8 +10,13 @@ fi
 
 echo "in Candle early"
 
+if [ -f $BOOT_DIR/developer.txt ]; 
+then
+  chvt 3
+fi
+
 if [ ! -f $BOOT_DIR/candle_log.txt ]; then
-	echo "$(date) - Candle early.sh: created missing log file" > $BOOT_DIR/candle_log.txt
+	echo "$(date) - Candle early.sh: created missing candle_log.txt file" > $BOOT_DIR/candle_log.txt
 fi
 
 # NOT CURRENTLY USED, BUT COULD BE USEFUL FOR A FUTURE FIREWALL THAT BLOCKS BY DEFAULT
@@ -43,6 +48,7 @@ if [ -f $BOOT_DIR/candle_safe_mode.txt ]; then
 		echo "candle: early.sh: safe_mode enabled" >> /dev/kmsg
 	fi
 fi
+
 if [ -f $BOOT_DIR/candle_reset_database.txt ]; then
 	if [ -f /home/pi/safe_mode/config/db.sqlite3 ]; then
 		mkdir -p /home/pi/.webthings/config
@@ -112,15 +118,20 @@ if ip link show | grep -q "mlan0:" ; then
 	if ip link show | grep -q "uap0:" ; then
 		echo "mlan0 and uap0 exist"
 	else
-		echo "uap0 does not exist yet"
-		echo "candle: early.sh: creating uap0" >> /dev/kmsg
-		/sbin/iw dev mlan0 interface add uap0 type __ap
-		nmcli device set uap0 managed false
-		sleep 1
-		#ip address add 192.168.12.1/24 dev uap0
-		#ifconfig uap0 192.168.12.1 netmask 255.255.255.0
-		#iw dev uap0 set power_save off
-		#sleep 1
+		if iwconfig mlan1 | grep -q "Access Point: Not-Associated"  && [ ! -f $BOOT_DIR/candle_hotspot_force_uap0.txt ]; then
+			echo "It seems there is a second wireless interface with access point capability. Hotspot should use that instead of creating uap0."
+		else
+			echo "uap0 does not exist yet, and neither does mlan0. Creating uap0."
+			echo "candle: early.sh: creating uap0" >> /dev/kmsg
+			/sbin/iw dev mlan0 interface add uap0 type __ap
+			nmcli device set uap0 managed false
+			sleep 1
+			#ip address add 192.168.12.1/24 dev uap0
+			#ifconfig uap0 192.168.12.1 netmask 255.255.255.0
+			#iw dev uap0 set power_save off
+			#sleep 1
+		fi
+		
 	fi
         
 elif ip link show | grep -q "wlan0:" ; then
@@ -129,15 +140,19 @@ elif ip link show | grep -q "wlan0:" ; then
 	if ip link show | grep -q "uap0:"; then
 		echo "wlan0 and uap0 exist"
 	else
-		echo "uap0 does not exist yet"
-		echo "candle: early.sh: creating uap0" >> /dev/kmsg
-		/sbin/iw dev wlan0 interface add uap0 type __ap
-		nmcli device set uap0 managed false
-		sleep 1
-		#ip address add 192.168.12.1/24 dev uap0
-		#ifconfig uap0 192.168.12.1 netmask 255.255.255.0
-		#iw dev uap0 set power_save off
-		#sleep 1
+		if iwconfig wlan1 | grep -q "Access Point: Not-Associated" && [ ! -f $BOOT_DIR/candle_hotspot_force_uap0.txt ]; then
+			echo "It seems there is a second wireless interface with access point capability. Hotspot should use that instead of creating uap0."
+		else
+			echo "uap0 does not exist yet"
+			echo "candle: early.sh: creating uap0" >> /dev/kmsg
+			/sbin/iw dev wlan0 interface add uap0 type __ap
+			nmcli device set uap0 managed false
+			sleep 1
+			#ip address add 192.168.12.1/24 dev uap0
+			#ifconfig uap0 192.168.12.1 netmask 255.255.255.0
+			#iw dev uap0 set power_save off
+			#sleep 1
+		fi
 	fi
 fi
 
@@ -148,6 +163,20 @@ fi
 
 
 if [ ! -f /boot/firmware/candle_hotspot.txt ] && nmcli c show --active | grep 'uap0' | grep -q 'Hotspot' ; then
+	#nmcli connection delete candle_hotspot
+	nmcli connection down Hotspot
+	nmcli connection modify Hotspot connection.autoconnect no
+	echo "$(date) - Candle early. Disabled candle_hotspot because candle_hotspot.txt was missing from boot partition" >> /dev/kmsg
+fi
+
+if [ ! -f /boot/firmware/candle_hotspot.txt ] && nmcli c show --active | grep 'mlan1' | grep -q 'Hotspot' ; then
+	#nmcli connection delete candle_hotspot
+	nmcli connection down Hotspot
+	nmcli connection modify Hotspot connection.autoconnect no
+	echo "$(date) - Candle early. Disabled candle_hotspot because candle_hotspot.txt was missing from boot partition" >> /dev/kmsg
+fi
+
+if [ ! -f /boot/firmware/candle_hotspot.txt ] && nmcli c show --active | grep 'wlan1' | grep -q 'Hotspot' ; then
 	#nmcli connection delete candle_hotspot
 	nmcli connection down Hotspot
 	nmcli connection modify Hotspot connection.autoconnect no
@@ -172,11 +201,19 @@ fi
 if ip link show | grep -q "mlan0:" ; then
 	echo "Candle: early.sh: spotted mlan0"
 	if ! ip link show | grep -q "wlan0:" ; then
-			echo "Candle: early.sh: adding wifi wlan0 alias for mlan0" >> /dev/kmsg
-			ip link property add dev mlan0 altname wlan0
+		echo "Candle: early.sh: adding wifi wlan0 alias for mlan0" >> /dev/kmsg
+		ip link property add dev mlan0 altname wlan0
 	fi
 fi
 
+# Create an alias for 'mlan1' wifi to 'wlan1' if needed
+if ip link show | grep -q "mlan1:" ; then
+	echo "Candle: early.sh: spotted mlan1"
+	if ! ip link show | grep -q "wlan1:" ; then
+		echo "Candle: early.sh: adding wifi wlan1 alias for mlan1" >> /dev/kmsg
+		ip link property add dev mlan1 altname wlan1
+	fi
+fi
 
 
 # If a hostname.txt file exists, use its contents to set the hostname, then remove the file
@@ -348,19 +385,38 @@ fi
 if [ -f $BOOT_DIR/candle_wifi_power_save.txt ] && [ ! -d /home/pi/.webthings/addons/hotspot ] ;
 then
   if [ -f /sbin/iw ]; then
-  	echo "Candle: early: enabling wifi power saving" >> /dev/kmsg
-  	/sbin/iw dev wlan0 set power_save on
+
+	if ip link show | grep -q "mlan0:" ; then
+  		if /sbin/iw dev mlan0 get power_save | grep -q "Power save: off"; then
+			echo "Candle: early: enabling wifi power saving for mlan0" >> /dev/kmsg
+	    	/sbin/iw dev mlan0 set power_save on
+		fi
+	fi
+	if ip link show | grep -q "wlan0:" ; then
+  		if /sbin/iw dev wlan0 get power_save | grep -q "Power save: off"; then
+			echo "Candle: early: enabling wifi power saving for wlan0" >> /dev/kmsg
+	    	/sbin/iw dev wlan0 set power_save on
+		fi
+	fi
+  	
+
   fi
 else
   if [ -f /sbin/iw ]; then
-    echo "Candle: early: disabling wifi power saving" >> /dev/kmsg
+    
 
     if ip link show | grep -q "mlan0:" ; then
-      /sbin/iw dev mlan0 set power_save off
+		if /sbin/iw dev mlan0 get power_save | grep -q "Power save: on"; then
+			echo "Candle: early: disabling wifi power saving for mlan0" >> /dev/kmsg
+	    	/sbin/iw dev mlan0 set power_save off
+		fi
     fi
     
     if ip link show | grep -q "wlan0:" ; then
-      /sbin/iw dev wlan0 set power_save off
+		if /sbin/iw dev wlan0 get power_save | grep -q "Power save: on"; then
+			echo "Candle: early: disabling wifi power saving for wlan0" >> /dev/kmsg
+	    	/sbin/iw dev wlan0 set power_save off
+		fi
     fi
 	
   fi
@@ -381,12 +437,13 @@ then
 fi
 
 
+
 # If the emergency file is detected, stop here.
 if [ -e $BOOT_DIR/emergency.txt ]; 
 then
   systemctl start ssh.service
   chvt 3
-  echo "Emergency file detected. Stopping (120 minutes sleep)" >> /dev/kmsg
+  echo "candle: early.sh: emergency file detected. Stopping (120 minutes sleep)" >> /dev/kmsg
   sleep 7200
   exit 0
 fi
