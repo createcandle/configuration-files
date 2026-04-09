@@ -518,6 +518,7 @@ fi
 if [ -f $BOOT_DIR/candle_forget_wifi.txt ]; then
   rm $BOOT_DIR/candle_forget_wifi.txt
   echo -e 'ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev\nupdate_config=1\ncountry=NL\n' > /home/pi/.webthings/etc/wpa_supplicant/wpa_supplicant.conf
+  nmcli --terse connection show | grep 802-11-wireless | cut -d : -f 1 | while read name; do nmcli connection delete "$name"; done
 fi
 
 # Forget all users
