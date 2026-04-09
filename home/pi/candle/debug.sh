@@ -429,14 +429,17 @@ echo "nmcli overview:"
 nmcli -o | cat
 
 echo
-echo "Wi-Fi:"
+echo "Wi-Fi: wlan0:"
 wpa_cli -i wlan0 status | grep wpa_state
 wpa_cli -i wlan0 status | grep mode
+echo
+echo "wpa_cli dump:"
+wpa_cli dump
 echo
 rfkill list
 echo
 iwconfig
-echo "wifi power save?"
+echo "wifi wlan0 power save?"
 iw wlan0 get power_save
 echo
 echo "WiFi regulatory country settings:"
