@@ -26,7 +26,7 @@ fi
 echo "hotspot: hopefully unique random NETID: $NETID"
 
 # most basc command to create a hotspot:
-# nmcli dev wifi hotspot ifname uap0 ssid "Candle" password "smarthome"
+# nmcli dev wifi hotspot ifname $IFNAME ssid "Candle" password "smarthome"
 
 TOTAL_MEMORY=$(awk '/MemTotal/ {print $2}' /proc/meminfo)
 if [ "$TOTAL_MEMORY" -lt "800000" ] && [ -f $BOOT_DIR/candle_hotspot_5G.txt ]; then
@@ -35,7 +35,10 @@ if [ "$TOTAL_MEMORY" -lt "800000" ] && [ -f $BOOT_DIR/candle_hotspot_5G.txt ]; t
 	rm "$BOOT_DIR/candle_hotspot_5G.txt"
 fi
 
-IFNAME=uap0
+IFNAME="uap0"
+if ip link show | grep -q "wlan1:" ; then
+	IFNAME="wlan1"
+fi
 
 
 # Setting it (again) seems to solve issues with starting the hotspot with iwd
@@ -81,14 +84,14 @@ fi
 #systemctl status iwd.service | cat
 
 if [ -f /usr/sbin/wpa_cli ] ; then
-	if wpa_cli interface_list | grep -q "Selected interface 'uap0'" ; then
+	if wpa_cli interface_list | grep -q "Selected interface '$IFNAME'" ; then
 		wpa_cli interface wlan0
 	fi
-	if [ -f /var/run/wpa_supplicant/uap0 ] ; then
-		rm /var/run/wpa_supplicant/uap0
+	if [ -f "/var/run/wpa_supplicant/$IFNAME" ] ; then
+		rm ""/var/run/wpa_supplicant/$IFNAME""
 	fi
-	if [ -f run/wpa_supplicant/uap0 ] ; then
-		rm /run/wpa_supplicant/uap0
+	if [ -f "run/wpa_supplicant/$IFNAME" ] ; then
+		rm "/run/wpa_supplicant/$IFNAME"
 	fi
 fi
 
@@ -106,11 +109,11 @@ start_dnsmasq () {
 		IPS=$(hostname -I | sed -r 's/172.16.[0-9]\+.1//' | xargs)
 		echo "hotspot.sh: IP address(es): $IPS"
 	
-		if iptables -t nat -L -v | grep -q "uap0"; then
-			echo "uap0 already exists in iptables"
+		if iptables -t nat -L -v | grep -q "$IFNAME"; then
+			echo "$IFNAME already exists in iptables"
 		else
 	
-			echo "hotspot.sh: adding iptables for uap0"
+			echo "hotspot.sh: adding iptables for $IFNAME"
 		
 			# optionally, drop DHCP requests to get an IPV6 address.
 			if [ -f $BOOT_DIR/candle_hotspot_no_ipv6.txt ]; then
@@ -120,47 +123,47 @@ start_dnsmasq () {
 			if [ ! -f $BOOT_DIR/candle_hotspot_allow_access_to_main_network.txt ]; then
 				echo "blocking access of hotspot network to main network"
 				#iptables -A FORWARD -d 172.16.2.2 -m iprange --src-range 172.16.12.2-172.16.12.255 -j DROP
-				#iptables -I INPUT -i uap0 -d <main_network_IP> -j DROP
+				#iptables -I INPUT -i $IFNAME -d <main_network_IP> -j DROP
 			
-				#iptables -A FORWARD -i uap0 -m iprange --src-range 172.16.12.2-172.16.12.255 -o eth0 -d 172.16.0.0/16 -j DROP
-				#iptables -A FORWARD -i uap0 -m iprange --src-range 172.16.12.2-172.16.12.255 -o wlan0 -d 172.16.0.0/16 -j DROP
+				#iptables -A FORWARD -i $IFNAME -m iprange --src-range 172.16.12.2-172.16.12.255 -o eth0 -d 172.16.0.0/16 -j DROP
+				#iptables -A FORWARD -i $IFNAME -m iprange --src-range 172.16.12.2-172.16.12.255 -o wlan0 -d 172.16.0.0/16 -j DROP
 			fi
 		
 
 			# Force all DNS traffic on the hotspot network to go to/through the Candle Controller
-			iptables -t nat -A PREROUTING -i uap0 -s 172.16.12.0/24 -p udp --dport 53 -j DNAT --to-destination 172.16.$NETID.1:53
-			#ip6tables -t nat -A PREROUTING -i uap0 -s fd00:12::/8 -p udp --dport 53 -j DNAT --to-destination fd00:12::1
-			ip6tables -t nat -A PREROUTING -i uap0 -p udp --dport 53 -j DNAT --to-destination fd00:12::1
+			iptables -t nat -A PREROUTING -i "$IFNAME" -s "172.16.$NETID.0/24" -p udp --dport 53 -j DNAT --to-destination "172.16.$NETID.1:53"
+			#ip6tables -t nat -A PREROUTING -i $IFNAME -s fd00:12::/8 -p udp --dport 53 -j DNAT --to-destination fd00:12::1
+			ip6tables -t nat -A PREROUTING -i "$IFNAME" -p udp --dport 53 -j DNAT --to-destination "fd00:$NETID::1"
 		
 			echo "candle: hotspot.sh: adding iptables forwarding rules"
-			iptables -A FORWARD -i uap0 -j ACCEPT
-			ip6tables -A FORWARD -i uap0 -j ACCEPT
-			iptables -A FORWARD -o uap0 -m state --state ESTABLISHED,RELATED -j ACCEPT
-			ip6tables -A FORWARD -d ff02::1 -o uap0 -m state --state ESTABLISHED,RELATED -j ACCEPT
+			iptables -A FORWARD -i "$IFNAME" -j ACCEPT
+			ip6tables -A FORWARD -i "$IFNAME" -j ACCEPT
+			iptables -A FORWARD -o "$IFNAME" -m state --state ESTABLISHED,RELATED -j ACCEPT
+			ip6tables -A FORWARD -d ff02::1 -o "$IFNAME" -m state --state ESTABLISHED,RELATED -j ACCEPT
 			#iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
 			#iptables -t nat -A POSTROUTING -o wlan0 -j MASQUERADE
 
 			echo "candle: hotspot.sh: enablng masquerade"
-			iptables -t nat -A POSTROUTING -s 172.16.12.0/24 ! -d 172.16.12.0/24  -j MASQUERADE
-			ip6tables -t nat -A POSTROUTING -s ff02::1 ! -d ff02::1  -j MASQUERADE
+			iptables -t nat -A POSTROUTING -s "172.16.$NETID.0/24" ! -d "172.16.$NETID.0/24"  -j MASQUERADE
+			ip6tables -t nat -A POSTROUTING -s "ff02:$NETID::1" ! -d "ff02:$NETID::1"  -j MASQUERADE
 
 
 			echo "candle: hotspot.sh: step 1 of adding port redirect rules on hotspot side"
-			iptables -I PREROUTING -p tcp -i uap0 -s 172.16.12.0/24 -d 172.16.$NETID.1/32 --dport 80 -j REDIRECT --to-port 8080
-			iptables -I PREROUTING -p tcp -i uap0 -s 172.16.12.0/24 -d 172.16.$NETID.1/32 --dport 443 -j REDIRECT --to-port 4443
+			iptables -I PREROUTING -p tcp -i "$IFNAME" -s "172.16.$NETID.0/24" -d "172.16.$NETID.1/32" --dport 80 -j REDIRECT --to-port 8080
+			iptables -I PREROUTING -p tcp -i "$IFNAME" -s "172.16.$NETID.0/24" -d "172.16.$NETID.1/32" --dport 443 -j REDIRECT --to-port 4443
 
-			ip6tables -I PREROUTING -p tcp -i uap0 -s "fd00:$NETID::/8" -d "fd00:$NETID::1" --dport 80 -j REDIRECT --to-port 8080
-			ip6tables -I PREROUTING -p tcp -i uap0 -s "fd00:$NETID::/8" -d "fd00:$NETID::1" --dport 443 -j REDIRECT --to-port 4443
+			ip6tables -I PREROUTING -p tcp -i $IFNAME -s "fd00:$NETID::/8" -d "fd00:$NETID::1" --dport 80 -j REDIRECT --to-port 8080
+			ip6tables -I PREROUTING -p tcp -i $IFNAME -s "fd00:$NETID::/8" -d "fd00:$NETID::1" --dport 443 -j REDIRECT --to-port 4443
 		
 	
 			# Block access to parent local networks
 			if [ ! -f $BOOT_DIR/candle_hotspot_allow_access_to_main_network.txt ]; then
 				echo "candle: hotspot.sh: blocking traversal to local network"
-				iptables -I FORWARD -i uap0 -d 172.16.0.0/16 -m iprange --src-range "172.16.$NETID.2-172.16.$NETID.255" -j DROP
-				iptables -I FORWARD -i uap0 -d 172.16.0.0/12 -m iprange --src-range "172.16.$NETID.2-172.16.$NETID.255" -j DROP
-				iptables -I FORWARD -i uap0 -d 10.0.0.0/8 -m iprange --src-range "172.16.$NETID.2-172.16.$NETID.255" -j DROP
+				iptables -I FORWARD -i $IFNAME -d 172.16.0.0/16 -m iprange --src-range "172.16.$NETID.2-172.16.$NETID.255" -j DROP
+				iptables -I FORWARD -i $IFNAME -d 172.16.0.0/12 -m iprange --src-range "172.16.$NETID.2-172.16.$NETID.255" -j DROP
+				iptables -I FORWARD -i $IFNAME -d 10.0.0.0/8 -m iprange --src-range "172.16.$NETID.2-172.16.$NETID.255" -j DROP
 
-				ip6tables -I FORWARD -i uap0 -d fe80::/10 -s "fd00:$NETID::/8" -j DROP
+				ip6tables -I FORWARD -i $IFNAME -d "fe80:$NETID::/10" -s "fd00:$NETID::/8" -j DROP
 			
 			fi
 
@@ -206,14 +209,14 @@ start_dnsmasq () {
 		if nmcli connection show --active | grep -q Candle_hotspot; then
 			
 			echo "IPv6 address(es):"
-			ip -6 addr show uap0
+			ip -6 addr show "$IFNAME"
 	
 			# Start NTP time server
 			if [ -f $BOOT_DIR/candle_no_time_server.txt ]; then
 				echo "candle: hotspot.sh: not starting time server"
 			elif [ -f /home/pi/candle/time_server.py ]; then
 
-				if ip addr show uap0 | grep -q '172.16.$NETID.1'; then
+				if ip addr show $IFNAME | grep -q "172.16.$NETID.1"; then
 					if ps aux | grep 'python3 /home/pi/candle/time_server.py' | grep -q "172.16.$NETID.1 123"; then
 						echo "timeserver is already running"
 					else
@@ -223,14 +226,14 @@ start_dnsmasq () {
 							echo "NTP server iptables rule seems to already exist"
 						else
 							echo "adding NTP server iptables rule"
-							iptables -t nat -A PREROUTING -i uap0 -p udp --dport 123 -j DNAT --to-destination "172.16.$NETID.1:123"
+							iptables -t nat -A PREROUTING -i "$IFNAME" -p udp --dport 123 -j DNAT --to-destination "172.16.$NETID.1:123"
 						fi
 						python3 /home/pi/candle/time_server.py "172.16.$NETID.1" 123 &
 					fi
 
 
 				else
-					echo "ERROR, uap0 interface does not have 172.16.$NETID.1 ip address (yet). Cannot start NTP server. ifconfig:"
+					echo "ERROR, $IFNAME interface does not have 172.16.$NETID.1 ip address (yet). Cannot start NTP server. ifconfig:"
 				fi
 				
 				
@@ -300,50 +303,51 @@ if rfkill | grep -q ' blocked '; then
 fi
 
 
-# Create virtual UAP0 interface for hotspot
+# TODO: supporting mlan0 is dubious, since that implies this script is not running on a Raspberry Pi
+# Create virtual $IFNAME interface for hotspot
 if ip link show | grep -q "mlan0:" ; then
 	echo "hotspot.sh: spotted mlan0"
-	if ip link show | grep -q "uap0:" ; then
-		echo "mlan0 and uap0 exist"
+	if ip link show | grep -q "$IFNAME:" ; then
+		echo "mlan0 and $IFNAME exist"
 	else
-		echo "uap0 does not exist yet"
-		/sbin/iw dev mlan0 interface add uap0 type __ap
+		echo "$IFNAME does not exist yet"
+		/sbin/iw dev mlan0 interface add "$IFNAME" type __ap
 		sleep 1
-		#ip address add 172.16.$NETID.1/24 dev uap0
-		#ifconfig uap0 172.16.$NETID.1 netmask 255.255.255.0
-		#ip -6 addr add fd00:12::1 dev uap0
-		#iw dev uap0 set power_save off
+		#ip address add 172.16.$NETID.1/24 dev $IFNAME
+		#ifconfig $IFNAME 172.16.$NETID.1 netmask 255.255.255.0
+		#ip -6 addr add fd00:12::1 dev $IFNAME
+		#iw dev $IFNAME set power_save off
 		#sleep 1
 	fi
         
 elif ip link show | grep -q "wlan0:" ; then
     echo "wlan0 exists"
-	if ip link show | grep -q "uap0:"; then
-		echo "wlan0 and uap0 exist"
+	if ip link show | grep -q "$IFNAME:"; then
+		echo "wlan0 and $IFNAME exist"
 	else
-		echo "uap0 does not exist yet"
-		/sbin/iw dev wlan0 interface add uap0 type __ap
+		echo "$IFNAME does not exist yet"
+		/sbin/iw dev wlan0 interface add "$IFNAME" type __ap
 		sleep 1
-		#ip address add 172.16.$NETID.1/24 dev uap0
-		#ifconfig uap0 172.16.$NETID.1 netmask 255.255.255.0
-		#ip -6 addr add fd00:12::1 dev uap0
-		#iw dev uap0 set power_save off
+		#ip address add 172.16.$NETID.1/24 dev $IFNAME
+		#ifconfig $IFNAME 172.16.$NETID.1 netmask 255.255.255.0
+		#ip -6 addr add fd00:12::1 dev $IFNAME
+		#iw dev $IFNAME set power_save off
 		#sleep 1
 	fi
 fi
 
 
 
-# Purge any connections, other than Candle_hotspot, that are set to use uap0
+# Purge any connections, other than Candle_hotspot, that are set to use $IFNAME
 
 
 nmcli -t -f NAME connection | while read name; do
 	if [[ "$name" != "Candle_hotspot" ]] ; then
-		if nmcli -t connection show "$name" | grep -q "connection.interface-name:uap0" ; then
+		if nmcli -t connection show "$name" | grep -q "connection.interface-name:$IFNAME" ; then
 			WASUP="false"
 			if nmcli -f GENERAL.STATE con show "$name" | grep -q activated ; then
-				echo "hotspot.sh: bringing down a connection that was using uap0, but was not Candle_hotspot: $name"
-				echo "hotspot.sh: bringing down a connection that was using uap0, but was not Candle_hotspot: $name" >> /dev/kmsg
+				echo "hotspot.sh: bringing down a connection that was using $IFNAME, but was not Candle_hotspot: $name"
+				echo "hotspot.sh: bringing down a connection that was using $IFNAME, but was not Candle_hotspot: $name" >> /dev/kmsg
 				nmcli connection down "$name"
 				WASUP="true"
 			fi
@@ -356,8 +360,8 @@ nmcli -t -f NAME connection | while read name; do
 							echo "hotspot.sh: connection pruning: want to bring up the modified connection, but another connection is already using wlan0"
 						else
 							nmcli connection up "$name"
-							echo "hotspot.sh: connection pruning: succesfully moved active connection from uap0 to wlan0 interface"
-							echo "hotspot.sh: connection pruning: succesfully moved active connection from uap0 to wlan0 interface" >> /dev/kmsg
+							echo "hotspot.sh: connection pruning: succesfully moved active connection from $IFNAME to wlan0 interface"
+							echo "hotspot.sh: connection pruning: succesfully moved active connection from $IFNAME to wlan0 interface" >> /dev/kmsg
 						fi
 					fi
 				else
@@ -369,9 +373,9 @@ nmcli -t -f NAME connection | while read name; do
 				#echo "hotspot.sh: connection pruning:  REMAINING_ACTIVE_CONNECTIONS: $REMAINING_ACTIVE_CONNECTIONS"
 				#if [ -n "$REMAINING_ACTIVE_CONNECTIONS" ] ; then
 				#	nmcli connection delete "$name"
-				#	echo "hotspot.sh: had to delete a connection that was set to use uap0: $name" >> /dev/kmsg
+				#	echo "hotspot.sh: had to delete a connection that was set to use $IFNAME: $name" >> /dev/kmsg
 				#else:
-				#	echo "hotspot.sh: a connection is already using uap0, and it can't be moved to wlan0, and there is no other connection either. So it will have to remain this way." >> /dev/kmsg
+				#	echo "hotspot.sh: a connection is already using $IFNAME, and it can't be moved to wlan0, and there is no other connection either. So it will have to remain this way." >> /dev/kmsg
 				#fi
 			fi
 		fi
@@ -382,33 +386,42 @@ done
 
 
 
-#if ip link show | grep "uap0:" | grep -q "state UP"; then
-if ip link show | grep -q "uap0:"; then
+#if ip link show | grep "$IFNAME:" | grep -q "state UP"; then
+if ip link show | grep -q "$IFNAME:"; then
 	
 	echo
-	echo "ifconfig uap0:"
-	ifconfig uap0
+	#echo "ifconfig $IFNAME:"
+	#ifconfig $IFNAME
 	echo
+	ZEROMAC=""
 	
-	# Generate a slightly different MAC address for UAP0. Ending it with zero might even help creating a hotspot.
-	MAC=$(nmcli device show wlan0 | grep HWADDR | awk '{print $2}')
-	if [[ "$MAC" =~ 0$ ]]; then
-    	ZEROMAC=${MAC%?}1
-	else
-		ZEROMAC=${MAC%?}0
+	# TODO: support for MLAN0 is not fully implemented at the moment.
+	
+	
+	MAC=$(nmcli device show "$IFNAME" | grep HWADDR | awk '{print $2}')
+	
+	
+	if [ "$IFNAME" == "uap0" ]; then
+		# Generate a slightly different MAC address for $IFNAME. Ending it with zero might even help creating a hotspot.
+		
+		if [[ "$MAC" =~ 0$ ]]; then
+	    	ZEROMAC=${MAC%?}1
+		else
+			ZEROMAC=${MAC%?}0
+		fi
+		ip link set dev $IFNAME address "$ZEROMAC"
 	fi
-	ip link set dev uap0 address "$ZEROMAC"
 	
-	if ip link show uap0 | grep -q DORMANT; then
-		echo "hotspot.sh: uap0 was in DORMANT mode, setting to DEFAULT instead" >> /dev/kmsg
-		ip link set uap0 mode default
+	if ip link show $IFNAME | grep -q DORMANT; then
+		echo "hotspot.sh: $IFNAME was in DORMANT mode, setting to DEFAULT instead" >> /dev/kmsg
+		ip link set $IFNAME mode default
 	fi
 	
 	sleep 1
 	
 	#echo
-	#echo "ifconfig uap0:"
-	#ifconfig uap0
+	#echo "ifconfig $IFNAME:"
+	#ifconfig $IFNAME
 	#echo
 	
 	
@@ -481,7 +494,7 @@ if ip link show | grep -q "uap0:"; then
 	
 
 	if nmcli connection show --active | grep -q Candle_hotspot; then
-		echo "hotspot.sh: WARNING, the Candle_hotspot connection is already up. Did dnsmasq crash?"
+		echo "hotspot.sh: WARNING, the Candle_hotspot connection is already up. Either auto-connect did it's job, or DNSmasq crashed"
 		echo "candle: hotspot.sh: WARNING, the Candle_hotspot connection is already up. Did dnsmasq crash?" >> /dev/kmsg
 		start_dnsmasq
 		exit 1
@@ -489,33 +502,43 @@ if ip link show | grep -q "uap0:"; then
 		
 		
 		echo
-		echo "ifconfig uap0:"
-		ifconfig uap0
+		echo "ifconfig $IFNAME:"
+		ifconfig "$IFNAME"
 		echo
 		
-		#if ifconfig uap0 | grep -q '172.16.$NETID.1'; then
-		#	echo "OK, uap0 still has the correct IP address"
+		#if ifconfig $IFNAME | grep -q '172.16.$NETID.1'; then
+		#	echo "OK, $IFNAME still has the correct IP address"
 		#else
-		#	echo "forcing ip address for uap0 again"
-		#	ip address add 172.16.$NETID.1/24 dev uap0
+		#	echo "forcing ip address for $IFNAME again"
+		#	ip address add 172.16.$NETID.1/24 dev $IFNAME
 		#fi	
 		
 		
 		#echo
-		#echo "ifconfig uap0:"
-		#ifconfig uap0
+		#echo "ifconfig $IFNAME:"
+		#ifconfig $IFNAME
 		#echo
 		
 		if nmcli connection show | grep -q 'Candle_hotspot'; then
 			echo "Candle_hotspot connection already exists"
 			
 			echo "What is the interface name of the not-active Candle_hotspot connection? (0)"
-			nmcli connection show Candle_hotspot | grep connection.interface-name
+			THEORETICAL_INTERFACE=$(nmcli connection show Candle_hotspot | grep connection.interface-name | awk '{print $NF}')
+			
+			if [ "$THEORETICAL_INTERFACE" == "$IFNAME" ]; then
+				echo "OK, interface defined in Candle_hotspot connection is the correct one"
+			else
+				echo "candle hotspot.sh: WARNING, updating WiFi interface in Candle_hotspot connection from $THEORETICAL_INTERFACE to $IFNAME" >> /dev/kmsg
+				nmcli connection modify Candle_hotspot ifname "$IFNAME"
+			fi
 			
 
 		else
+			echo "candle hotspot.sh: Creating initial Candle_hotspot connection"
+			echo "candle hotspot.sh: Creating initial Candle_hotspot connection" >> /dev/kmsg
+			
 			#nmcli connection add con-name "Candle_hotspot" \
-			#    ifname uap0 wifi.mode ap wifi.ssid "$SSID" \
+			#    ifname $IFNAME wifi.mode ap wifi.ssid "$SSID" \
 			#	wifi-sec.key-mgmt wpa-psk \
 			#    wifi-sec.proto rsn wifi-sec.pairwise ccmp \
 			#    wifi-sec.psk "$PASSWORD" \
@@ -525,7 +548,7 @@ if ip link show | grep -q "uap0:"; then
 				
                 nmcli connection add \
                     con-name Candle_hotspot \
-                    ifname uap0 \
+                    ifname "$IFNAME" \
                     type wifi \
                     autoconnect yes \
                     ipv4.method manual ipv4.addresses "172.16.$NETID.1/24" \
@@ -537,7 +560,7 @@ if ip link show | grep -q "uap0:"; then
                     802-11-wireless-security.proto rsn \
                     802-11-wireless-security.pairwise ccmp \
                     802-11-wireless-security.psk "$PASSWORD" \
-                    ipv6.method manual ipv6.addresses 'fd00:12::1/8'
+                    ipv6.method manual ipv6.addresses "fd00:$NETID::1/8"
 
 					#wifi-sec.pairwise ccmp \
 			
@@ -545,7 +568,7 @@ if ip link show | grep -q "uap0:"; then
 			else
                 nmcli connection add \
                     con-name Candle_hotspot \
-                    ifname uap0 \
+                    ifname $IFNAME \
                     type wifi \
                     autoconnect yes \
                     ipv4.method manual ipv4.addresses "172.16.$NETID.1/24" \
@@ -558,7 +581,9 @@ if ip link show | grep -q "uap0:"; then
 			fi
 			
 			nmcli con modify Candle_hotspot 802-11-wireless.mode ap
-			nmcli con modify Candle_hotspot wifi.cloned-mac-address "$ZEROMAC"
+			if [ -z "$ZEROMAC" ]; then
+				nmcli con modify Candle_hotspot wifi.cloned-mac-address "$ZEROMAC"
+			fi
 			nmcli con modify Candle_hotspot connection.autoconnect-priority 10
 
 			#nmcli con modify Candle_hotspot wifi-sec.pmf disable
@@ -586,10 +611,10 @@ if ip link show | grep -q "uap0:"; then
 			echo " - PASS: $PASSWORD"
 		fi
 		
-		#nmcli connection add type wifi ifname uap0 con-name Candle_hotspot
+		#nmcli connection add type wifi ifname $IFNAME con-name Candle_hotspot
 	
-		#nmcli con add con-name Candle_hotspot ifname uap0 type dummy
-		#nmcli con add con-name Candle_hotspot ifname uap0 type wifi connection.autoconnect yes 802-11-wireless.ssid "$SSID" ipv4.method manual ipv4.addresses "172.16.$NETID.1/24" ipv6.method manual ipv6.addresses 'fd00::/8' 802-11-wireless.band bg 802-11-wireless.channel 1
+		#nmcli con add con-name Candle_hotspot ifname $IFNAME type dummy
+		#nmcli con add con-name Candle_hotspot ifname $IFNAME type wifi connection.autoconnect yes 802-11-wireless.ssid "$SSID" ipv4.method manual ipv4.addresses "172.16.$NETID.1/24" ipv6.method manual ipv6.addresses 'fd00::/8' 802-11-wireless.band bg 802-11-wireless.channel 1
 		#nmcli con add type wifi ifname wlan0 con-name <your_hotspot_name> autoconnect yes ssid <your_ssid>
 		
 		
@@ -601,7 +626,7 @@ if ip link show | grep -q "uap0:"; then
 		#nmcli connection modify Candle_hotspot ipv4.addresses "172.16.$NETID.1/24" ipv4.method manual 
 		
 		
-		#nmcli connection modify Candle_hotspot connection.interface-name uap0
+		#nmcli connection modify Candle_hotspot connection.interface-name $IFNAME
 		
 		if nmcli connection show | grep -q Candle_hotspot; then
 			
@@ -632,7 +657,7 @@ if ip link show | grep -q "uap0:"; then
 
 					# wifi-sec.pairwise ccmp \
 			
-				#nmcli dev wifi hotspot ifname uap0 ssid "$SSID" password "$PASSWORD" 
+				#nmcli dev wifi hotspot ifname $IFNAME ssid "$SSID" password "$PASSWORD" 
 				#sleep 1
 				#echo "Basic hotspot command run, with basic security. Did it work?"
 				echo
@@ -661,7 +686,8 @@ if ip link show | grep -q "uap0:"; then
 	                802-11-wireless-security.pairwise "" \
 	                802-11-wireless-security.psk ""
 				echo "Warning, creating open hotspot without any security"
-				#nmcli dev wifi hotspot ifname uap0 ssid "$SSID"
+				echo "candle hotspot.sh: Warning, creating open hotspot without any security" >> /dev/kmng
+				#nmcli dev wifi hotspot ifname $IFNAME ssid "$SSID"
 			fi
 	
 		
@@ -704,25 +730,25 @@ if ip link show | grep -q "uap0:"; then
 			
 			
 
-			# Make sure no other connection is using the UAP0 interface
-			# nmcli dev dis uap0
+			# Make sure no other connection is using the $IFNAME interface
+			# nmcli dev dis $IFNAME
 		
-			if nmcli connection show --active | grep -q uap0; then
+			if nmcli connection show --active | grep -q $IFNAME; then
 				echo "Strange, the Candle_hotspot was already active?"
 				start_dnsmasq
 				
 			else
-				if ip link show | grep -q "uap0:"; then
+				if ip link show | grep -q "$IFNAME:"; then
 					
 					
-					if ip link show uap0 | grep -q DORMANT; then
-						echo "hotspot.sh: uap0 was in DORMANT mode, setting to DEFAULT instead" >> /dev/kmsg
-						ip link set uap0 mode default
+					if ip link show $IFNAME | grep -q DORMANT; then
+						echo "hotspot.sh: $IFNAME was in DORMANT mode, setting to DEFAULT instead" >> /dev/kmsg
+						ip link set $IFNAME mode default
 					fi
 					
-					if ip link show uap0 | grep -q 'state DOWN'; then
-						if nmcli device status | grep uap0 | grep -q unmanaged ; then
-							nmcli device set uap0 managed true
+					if ip link show $IFNAME | grep -q 'state DOWN'; then
+						if nmcli device status | grep $IFNAME | grep -q unmanaged ; then
+							nmcli device set $IFNAME managed true
 						fi
 					fi
 					
@@ -743,7 +769,7 @@ if ip link show | grep -q "uap0:"; then
 						echo "candle: hotspot.sh: ERROR, starting Candle_hotspot connection failed. Try rebooting." >> /dev/kmsg
 					fi
 				else
-					echo "ERROR, uap0 has disappeared..."
+					echo "ERROR, $IFNAME has disappeared..."
 					exit 1
 					
 				fi
@@ -761,8 +787,8 @@ if ip link show | grep -q "uap0:"; then
 	
 
 else
-	echo "ERROR, no uap0 after it was just created"
-	echo "candle: hotspot.sh: ERROR, no uap0 after it was just created" >> /dev/kmsg
+	echo "ERROR, no $IFNAME after it was just created"
+	echo "candle: hotspot.sh: ERROR, no $IFNAME after it was just created" >> /dev/kmsg
 fi
 
 echo "Sleeping 15 seconds..."
