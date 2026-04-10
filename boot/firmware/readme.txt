@@ -125,7 +125,7 @@ candle_last_known_ip_address.txt	# Contains the last known IP address the contro
 # FAILURE INDICATORS
 candle_log.txt 			# Upgrade processes and commands you give may output status and errors into this file.
 bootup_actions_failed.sh 	# If this file exists, it indicates that an upgrade process did not complete because it failed or was interupted. Deprecated.
-
+candle_ran_out_of_memory.txt	# If this file exists, it indicates that the system ran out of memory at some point. Tip: use candle_delete_these_addons.txt
 
 
 # Source code
