@@ -35,6 +35,8 @@ if [ "$TOTAL_MEMORY" -lt "800000" ] && [ -f $BOOT_DIR/candle_hotspot_5G.txt ]; t
 	rm "$BOOT_DIR/candle_hotspot_5G.txt"
 fi
 
+IFNAME=uap0
+
 
 # Setting it (again) seems to solve issues with starting the hotspot with iwd
 #iw reg set "$WIFI_COUNTRY"
@@ -55,8 +57,10 @@ echo "$(date) - Candle hotspot.sh: starting" >> /dev/kmsg
 #	exit 0
 #fi
 
-sysctl -w net.ipv4.ip_forward=1
-sysctl -w net.ipv6.conf.all.forwarding=1
+if [ -f $BOOT_DIR/candle_hotspot_disable_forwarding.txt ]; then
+	sysctl -w net.ipv4.ip_forward=1
+	sysctl -w net.ipv6.conf.all.forwarding=1
+fi
 
 PASSWORD=""
 if [ -f $BOOT_DIR/candle_hotspot_password.txt ]; then
@@ -243,7 +247,10 @@ start_dnsmasq () {
 							echo "local-DNS.conf seems to already have been updated with the current NETID: $NETID"
 						else
 							echo "local-DNS.conf needs to be updated to use the current NETID: $NETID"
-							cat /home/pi/.webthings/etc/NetworkManager/dnsmasq.d/local-DNS.conf | sed -E "s/172.16.([0-9]+)./172.16.$NETID./g" > /home/pi/.webthings/etc/NetworkManager/dnsmasq.d/local-DNS.conf.updated
+							cat /home/pi/.webthings/etc/NetworkManager/dnsmasq.d/local-DNS.conf | sed -E "s/172.16.([0-9]+)./172.16.$NETID./g" > /home/pi/.webthings/etc/NetworkManager/dnsmasq.d/local-DNS.conf.partial
+							if [ -f /home/pi/.webthings/etc/NetworkManager/dnsmasq.d/local-DNS.conf.partial ]; then
+								cat /home/pi/.webthings/etc/NetworkManager/dnsmasq.d/local-DNS.conf.partial | sed -E "s/fd00:([0-9]+)::/fd00:$NETID::/g" > /home/pi/.webthings/etc/NetworkManager/dnsmasq.d/local-DNS.conf.updated
+							fi
 							if [ -f /home/pi/.webthings/etc/NetworkManager/dnsmasq.d/local-DNS.conf.updated ]; then
 								if [ -s /home/pi/.webthings/etc/NetworkManager/dnsmasq.d/local-DNS.conf.updated ]; then
 									echo "copying updated local-DNS.conf over the old version"
@@ -252,6 +259,7 @@ start_dnsmasq () {
 								rm /home/pi/.webthings/etc/NetworkManager/dnsmasq.d/local-DNS.conf.updated
 							else
 								echo "ERROR, home/pi/.webthings/etc/NetworkManager/dnsmasq.d/local-DNS.conf.updated did not exist"
+								echo "ERROR, home/pi/.webthings/etc/NetworkManager/dnsmasq.d/local-DNS.conf.updated did not exist" >> /dev/kmsg
 							fi
 						fi
 					fi
