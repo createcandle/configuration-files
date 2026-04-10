@@ -83,7 +83,8 @@ do_not_use_repeaker_hat.txt 	# Will stop ReSpeaker hat drivers from being loaded
 candle_wifi_power_save.txt 	        # If present, wifi power saving will be enabled. This may cause connection issues.
 candle_cutting_edge.txt 	# This affects how the Candle install script is run during disk image creation
 hostname.txt 			# The word inside this file will become the hostname. Must be one single word in lower case.
-skip_candle_store_check.txt	# Disables a check that ensures the Candle Store addon is always (re-)enabled at boot
+candle_skip_store_check.txt	# Disables a check that ensures the Candle Store addon is always (re-)enabled at boot
+candle_skip_out_of_memory_check.txt	# Disables a check that automatically enables safe-boot if the system completely runs out of memory at some point.
 
 # HOTSPOT
 candle_hotspot.txt 			# If present, Candle will start a guest WiFi network.
