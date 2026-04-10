@@ -117,22 +117,22 @@ start_dnsmasq () {
 		
 			# optionally, drop DHCP requests to get an IPV6 address.
 			if [ -f $BOOT_DIR/candle_hotspot_no_ipv6.txt ]; then
-				ip6tables -A INPUT -m state --state NEW -m udp -p udp -s fd00:12::/8 --dport 546 -j DROP
+				ip6tables -A INPUT -m state --state NEW -m udp -p udp -s "fd00:$NETID::/8" --dport 546 -j DROP
 			fi
 		
-			if [ ! -f $BOOT_DIR/candle_hotspot_allow_access_to_main_network.txt ]; then
-				echo "blocking access of hotspot network to main network"
-				#iptables -A FORWARD -d 172.16.2.2 -m iprange --src-range 172.16.12.2-172.16.12.255 -j DROP
+			#if [ ! -f $BOOT_DIR/candle_hotspot_allow_access_to_main_network.txt ]; then
+			#	echo "blocking access of hotspot network to main network"
+				#iptables -A FORWARD -d "172.16.$NETID.2" -m iprange --src-range "172.16.$NETID.2-172.16.$NETID.255" -j DROP
 				#iptables -I INPUT -i $IFNAME -d <main_network_IP> -j DROP
 			
-				#iptables -A FORWARD -i $IFNAME -m iprange --src-range 172.16.12.2-172.16.12.255 -o eth0 -d 172.16.0.0/16 -j DROP
-				#iptables -A FORWARD -i $IFNAME -m iprange --src-range 172.16.12.2-172.16.12.255 -o wlan0 -d 172.16.0.0/16 -j DROP
-			fi
+				#iptables -A FORWARD -i $IFNAME -m iprange --src-range "172.16.$NETID.2-172.16.$NETID.255" -o eth0 -d 172.16.0.0/16 -j DROP
+				#iptables -A FORWARD -i $IFNAME -m iprange --src-range "172.16.$NETID.2-172.16.$NETID.255" -o wlan0 -d 172.16.0.0/16 -j DROP
+			#fi
 		
 
 			# Force all DNS traffic on the hotspot network to go to/through the Candle Controller
 			iptables -t nat -A PREROUTING -i "$IFNAME" -s "172.16.$NETID.0/24" -p udp --dport 53 -j DNAT --to-destination "172.16.$NETID.1:53"
-			#ip6tables -t nat -A PREROUTING -i $IFNAME -s fd00:12::/8 -p udp --dport 53 -j DNAT --to-destination fd00:12::1
+			#ip6tables -t nat -A PREROUTING -i $IFNAME -s "fd00:$NETID::/8" -p udp --dport 53 -j DNAT --to-destination "fd00:$NETID::1"
 			ip6tables -t nat -A PREROUTING -i "$IFNAME" -p udp --dport 53 -j DNAT --to-destination "fd00:$NETID::1"
 		
 			echo "candle: hotspot.sh: adding iptables forwarding rules"
@@ -243,7 +243,7 @@ start_dnsmasq () {
 				
 				if nmcli connection show --active | grep -q Candle_hotspot; then
 					echo "FINAL STEP: STARTING DNSMASQ"
-					# 172.16.12.
+
 					#sed -i -E -e "s|127\.0\.1\.1[ \t]+.*|127\.0\.1\.1 \t$hostname|" /home/pi/.webthings/etc/hosts
 					if [ -f /home/pi/.webthings/etc/NetworkManager/dnsmasq.d/local-DNS.conf ]; then
 						if cat /home/pi/.webthings/etc/NetworkManager/dnsmasq.d/local-DNS.conf | grep -q "172.16.$NETID."; then
@@ -315,7 +315,7 @@ if ip link show | grep -q "mlan0:" ; then
 		sleep 1
 		#ip address add 172.16.$NETID.1/24 dev $IFNAME
 		#ifconfig $IFNAME 172.16.$NETID.1 netmask 255.255.255.0
-		#ip -6 addr add fd00:12::1 dev $IFNAME
+		#ip -6 addr add fd00:$NETID::1 dev $IFNAME
 		#iw dev $IFNAME set power_save off
 		#sleep 1
 	fi
@@ -328,10 +328,10 @@ elif ip link show | grep -q "wlan0:" ; then
 		echo "$IFNAME does not exist yet"
 		/sbin/iw dev wlan0 interface add "$IFNAME" type __ap
 		sleep 1
-		#ip address add 172.16.$NETID.1/24 dev $IFNAME
-		#ifconfig $IFNAME 172.16.$NETID.1 netmask 255.255.255.0
-		#ip -6 addr add fd00:12::1 dev $IFNAME
-		#iw dev $IFNAME set power_save off
+		#ip address add "172.16.$NETID.1/24" dev "$IFNAME"
+		#ifconfig "$IFNAME" "172.16.$NETID.1" netmask 255.255.255.0
+		#ip -6 addr add "fd00:$NETID::1" dev "$IFNAME"
+		#iw dev "$IFNAME" set power_save off
 		#sleep 1
 	fi
 fi
