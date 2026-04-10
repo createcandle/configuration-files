@@ -91,6 +91,7 @@ candle_hotspot.txt 			# If present, Candle will start a guest WiFi network.
 candle_hotspot_password.txt 		# Change the password of the guest wifi network by writing it into this file.
 candle_hotspot_allow_access_to_main_network.txt
 candle_hotspot_force_uap0.txt	# Force the Hotspot to ignore any plugged in WiFI USB sticks, and create virtual interface UAP0.
+candle_disable_wifi_pmf.txt # Disable protected management frames. This trades some security for compatibility.
 
 # RECOVERY OPTIONS - DEPRECATED
 By default booting into the recovery partition starts the update process, but this can be overridden:
