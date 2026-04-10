@@ -12,6 +12,7 @@ To attempt to create an emergency backup, place a textfile called "candle_make_e
 
 # SAFE MODE
 If you are experiencing issues with newly installed or updated addons, then you can try booting into 'safe mode'. While in safe mode only three addons will appear to be installed: Candle store, Candle theme and Power settings. You can then disable any addons that are causing trouble by opening the Troubleshooting page in Settings.
+Candle will automatically enable safe-mode for the next boot if it detects that the system ran out of memory. This will then allow you to disable some addons to resolve this issue. When this occurs a file called "candle_ran_out_of_memory.txt" will be created on the boot partition.
 
 # CONNECT TO WIFI
 Normally the Candle Controller will generate a hotspot, and you can then connect to your prefered WiFi after visiting candle.local in your browser. But you can also provide WiFi details in a text file that you place on the Candle Controller's SD card.
