@@ -43,7 +43,7 @@ fi
 export NVM_DIR="/home/pi/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-npm cache clean --force # already done in install_candle_controller script
+#npm cache clean --force # already done in install_candle_controller script
 #rm /home/pi/.npm/anonymous-cli-metrics.json 
 
 if [ -f /home/pi/candle/candle_first_run.sh ]; then
@@ -63,7 +63,7 @@ rm -rf /home/pi/.pki
 find /tmp -type f -atime +10 -delete
 
 if [ -f /home/pi/.webthings/addons/power-settings/factory_reset.sh ] ; then
-  touch $BOOT_DIR/developer.txt # will cause the real factory_reset script to also write zeroes to empty space. That script also calls SHUTDOWN, so nothing can be done after this.
+  touch $BOOT_DIR/candle_zero_fill.txt # will cause the real factory_reset script to also write zeroes to empty space. That script also calls SHUTDOWN, so nothing can be done after this.
   chmod +x /home/pi/.webthings/addons/power-settings/factory_reset.sh
   /home/pi/.webthings/addons/power-settings/factory_reset.sh
 fi
