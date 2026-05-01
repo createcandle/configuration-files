@@ -44,10 +44,13 @@ do
 	SIZEMB=$((SIZE/1024))
 	echo "Process id = $procId Size = $SIZEMB MB"
 	if [ $SIZEMB -gt 4000 ]; then
+		echo "Candle: every_minute.sh: restarting kiosk because Chromium was is using too much memory: $SIZEMB MB" >> /dev/kmsg
 		#printf "Chromium SIZE has exceeded.\nKilling the process......"
 		#kill -9 "$procId"
 		#echo "Killed the process"
+		splash_video.sh &
 		systemctl restart candle_kiosk.service
+		
 	fi
 done
 
