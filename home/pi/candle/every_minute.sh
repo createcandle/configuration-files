@@ -44,9 +44,10 @@ do
 	SIZEMB=$((SIZE/1024))
 	echo "Process id = $procId Size = $SIZEMB MB"
 	if [ $SIZEMB -gt 4000 ]; then
-		printf "Chromium SIZE has exceeded.\nKilling the process......"
-		kill -9 "$procId"
-		echo "Killed the process"
+		#printf "Chromium SIZE has exceeded.\nKilling the process......"
+		#kill -9 "$procId"
+		#echo "Killed the process"
+		systemctl restart candle_kiosk.service
 	fi
 done
 
