@@ -37,22 +37,19 @@ if cat /home/pi/.webthings/etc/wpa_supplicant/wpa_supplicant.conf | grep -q psk=
 fi
 
 # Kill Chromium if it uses too much memory
-pgrep chrom | while read -r procId;
-do
-	SIZE=$(pmap $procId | grep total | grep -o "[0-9]*")
-	SIZE=${SIZE%%K*}
-	SIZEMB=$((SIZE/1024))
-	echo "Process id = $procId Size = $SIZEMB MB"
-	if [ $SIZEMB -gt 4000 ]; then
-		echo "Candle: every_minute.sh: restarting kiosk because Chromium was is using too much memory: $SIZEMB MB" >> /dev/kmsg
+if [ -f /boot/firmware/candle_kiosk.txt ]; then
+	CHROMIUM_MEMORY_USE=$(ps -eo size,pid,user,command --sort -size | awk '{ hr=$1/1024 ; printf("%13.2f Mb ",hr) } { for ( x=4 ; x<=NF ; x++ ) { printf("%s ",$x) } print "" }' |    cut -d "" -f2 | cut -d "-" -f1 | grep bin/chrom | cut -d. -f1 | xargs)
+	echo "CHROMIUM_MEMORY_USE: $CHROMIUM_MEMORY_USE"
+	if [ $CHROMIUM_MEMORY_USE -gt 2000 ]; then
+		echo "Candle: every_minute.sh: restarting kiosk because Chromium is using too much memory: $CHROMIUM_MEMORY_USE MB" >> /dev/kmsg
 		#printf "Chromium SIZE has exceeded.\nKilling the process......"
 		#kill -9 "$procId"
 		#echo "Killed the process"
 		splash_video.sh &
 		systemctl restart candle_kiosk.service
-		
 	fi
-done
+fi
+
 
 
 #if ip link show wlan0 | grep -q DORMANT; then
