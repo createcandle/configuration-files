@@ -36,6 +36,21 @@ if cat /home/pi/.webthings/etc/wpa_supplicant/wpa_supplicant.conf | grep -q psk=
     fi
 fi
 
+# Kill Chromium if it uses too much memory
+pgrep chrom | while read -r procId;
+do
+	SIZE=$(pmap $procId | grep total | grep -o "[0-9]*")
+	SIZE=${SIZE%%K*}
+	SIZEMB=$((SIZE/1024))
+	echo "Process id = $procId Size = $SIZEMB MB"
+	if [ $SIZEMB -gt 4000 ]; then
+		printf "Chromium SIZE has exceeded.\nKilling the process......"
+		kill -9 "$procId"
+		echo "Killed the process"
+	fi
+done
+
+
 #if ip link show wlan0 | grep -q DORMANT; then
 #	echo "Candle: every minute: wlan0 was in DORMANT mode, setting to DEFAULT instead" >> /dev/kmsg
 #	ip link set wlan0 mode default
