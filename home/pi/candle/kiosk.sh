@@ -90,11 +90,11 @@ if ls -l /dev/fb*; then
 	    #dbus-launch
 		#sleep .2
 		
-        if [ ! -f $BOOT_DIR/hide_mouse_pointer.txt ]; then
-            echo "Candle: kiosk.sh:  spotted show_mouse_pointer.txt,  starting X and showing mouse pointer"
-			if which unclutter; then
-                unclutter -idle 5 -root -display :0
-            fi
+        if [ ! -f $BOOT_DIR/candle_show_mouse_pointer.txt ]; then
+            echo "Candle: kiosk.sh:  spotted candle_show_mouse_pointer.txt,  starting X and showing mouse pointer"
+			#if which unclutter; then
+            #    unclutter -idle 5 -root -display :0
+            #fi
             startx
 
         elif [ -f $BOOT_DIR/candle_hide_mouse_pointer.txt ]; then
@@ -113,7 +113,8 @@ if ls -l /dev/fb*; then
             echo "Candle: kiosk.sh:  detected a touchscreen, starting X and hiding mouse pointer"
             startx -- -nocursor
 
-        elif [ -n "$(ls /dev/input/by-id/*-mouse 2>/dev/null)" ]; then
+		# A mouse is plugged in
+        elif [ -n "$(ls /dev/input/by-id/*-mouse | grep -v ILITEK  2>/dev/null)" ]; then
             echo "Candle: kiosk.sh:  detected mouse, starting X and allowing mouse pointer to be shown"
             startx
 
@@ -121,7 +122,7 @@ if ls -l /dev/fb*; then
             if which unclutter; then
                 unclutter -idle 5 -root -display :0
             fi
-            echo "Candle: kiosk.sh:l starting X and allowing mouse pointer to be shown"
+            echo "Candle: kiosk.sh: starting X and allowing mouse pointer to be shown, but with auto-hide after 5 seconds"
             startx
         fi
 
