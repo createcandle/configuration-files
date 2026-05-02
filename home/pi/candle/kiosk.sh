@@ -137,7 +137,7 @@ if ls -l /dev/fb*; then
 											
 											rm /tmp/kiosk_photo.png
 										fi
-										sleep 1
+										sleep 30
 									done
 								fi
 							fi
