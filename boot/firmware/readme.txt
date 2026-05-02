@@ -75,8 +75,8 @@ candle_emergency_backup.txt 	# If possible, creates an emergency backup which wi
 candle_kiosk.txt 		# The URL inside this file will be shown in the browser. If it's empty the kiosk browser will not load.
 candle_kiosk_forced.txt 	# Force the kiosk mode to start on low memory systems (Pi Zero).
 candle_kiosk_require_login.txt 	# If this file exists it will force the user to log back into the kiosk browser after each reboot.
-show_mouse_pointer.txt 		# Forces showing the mouse pointer on the HDMI output.
-hide_mouse_pointer.txt 		# Forces hiding the mouse pointer on the HDMI output.
+candle_show_mouse_pointer.txt 		# Forces showing the mouse pointer on the HDMI output.
+candle_hide_mouse_pointer.txt 		# Forces hiding the mouse pointer on the HDMI output.
 rotate180.txt 			# Rotates the display 180 degrees.
 exhibit_mode.txt		# Disables actions that can change the controller, such as installing and uninstalling addons.
 do_not_use_repeaker_hat.txt 	# Will stop ReSpeaker hat drivers from being loaded at boot.
