@@ -111,7 +111,7 @@ if ls -l /dev/fb*; then
 										#echo "- photo width: -->$PHOTO_WIDTH<--"
 										#echo "- photo height: -->$PHOTO_HEIGHT<--"
 										BIG_PHOTO_WIDTH=$((PHOTO_WIDTH * 1000))
-										PHOTO_RATIO=$((BIG_PHOTO_WIDTH / PHOTO_HEIGHT)
+										PHOTO_RATIO=$((BIG_PHOTO_WIDTH / PHOTO_HEIGHT))
 										#echo "PHOTO_RATIO: $PHOTO_RATIO"
 										
 										if [[ "$PHOTO_RATIO" -eq "$DISPLAY_RATIO"  ]]; then
