@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# This script is run as normal user
+
 #echo "Candle: in kiosk.sh" >> /dev/kmsg
 
 
@@ -36,19 +38,6 @@ kiosk_txt_file="$BOOT_DIR/candle_kiosk.txt"
 CANDLE_URL=$(cat "$kiosk_txt_file")
 
 
-if [ -z "$CANDLE_URL" ]; then
-    #echo "Candle: kiosk.sh: CANDLE_URL: $CANDLE_URL" >> /dev/kmsg
-
-    #echo "Candle: kiosk.sh: doing curl until server is up: $CANDLE_URL" >> /dev/kmsg
-    #CURL_TEST="$(curl -s -o /dev/null -m 3 -L -w ''%{http_code}'' $CANDLE_URL)"
-    #echo "CURL_TEST: 200?: $CURL_TEST"
-
-    timeout --foreground -s TERM 30s bash -c \
-       'while [[ "$(curl -s -o /dev/null -m 3 -L -w ''%{http_code}'' $CANDLE_URL)" != "200" ]];\
-       do echo "Candle: kiosk: waiting for url" >> /dev/kmsg && sleep 2;\
-       done;\
-       echo "Candle: kiosk: server seems to be up: $CANDLE_URL"'
-fi
 
 # candle_kiosk_forced.txt
 
@@ -57,9 +46,26 @@ fi
 
 if ls -l /dev/fb*; then
 
+
+	if [ -z "$CANDLE_URL" ]; then
+	    #echo "Candle: kiosk.sh: CANDLE_URL: $CANDLE_URL" >> /dev/kmsg
+	
+	    #echo "Candle: kiosk.sh: doing curl until server is up: $CANDLE_URL" >> /dev/kmsg
+	    #CURL_TEST="$(curl -s -o /dev/null -m 3 -L -w ''%{http_code}'' $CANDLE_URL)"
+	    #echo "CURL_TEST: 200?: $CURL_TEST"
+	
+	    timeout --foreground -s TERM 30s bash -c \
+	       'while [[ "$(curl -s -o /dev/null -m 3 -L -w ''%{http_code}'' $CANDLE_URL)" != "200" ]];\
+	       do echo "Candle: kiosk.sh: waiting for url" && sleep 2;\
+	       done;\
+	       echo "Candle: kiosk.sh: server seems to be up: $CANDLE_URL"'
+	fi
+
+
+
 	if [ -f /usr/bin/labwc ] && [ -f /home/pi/candle/wayland_kiosk.sh ]; then 
 		while true; do
-    		XDG_RUNTIME_DIR=/run/user/1000 labwc -s '/home/pi/candle/wayland_kiosk.sh'
+    		"XDG_RUNTIME_DIR=/run/user/$(d -u)" labwc -s '/home/pi/candle/wayland_kiosk.sh'
 			sleep 1
 		done
    		
