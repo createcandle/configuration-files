@@ -117,7 +117,7 @@ if ls -l /dev/fb*; then
 						if [ -e /sys/class/graphics/fb0/virtual_size ]; then
 							DISPLAY_SIZE=$(cat /sys/class/graphics/fb0/virtual_size)
 						
-							if [ -n "$DISPLAY_SIZE" ]; then
+							if [ -n "$DISPLAY_SIZE" ] && [[ "$DISPLAY_SIZE" == *","* ]]; then
 								#echo "DISPLAY_SIZE: $DISPLAY_SIZE"
 								if [[ "$DISPLAY_SIZE" == *","* ]]; then
 								
@@ -130,7 +130,13 @@ if ls -l /dev/fb*; then
 									#BIG_DISPLAY_HEIGHT=$((DISPLAY_HEIGHT * 100))
 									#echo "BIG_DISPLAY_WIDTH: $BIG_DISPLAY_WIDTH"
 									#echo "BIG_DISPLAY_HEIGHT $BIG_DISPLAY_HEIGHT"
-									DISPLAY_RATIO=$((BIG_DISPLAY_WIDTH / DISPLAY_HEIGHT))
+									if [[ -z "$DISPLAY_HEIGHT" ]]; then
+										DISPLAY_HEIGHT=720
+									fi
+									if [ "$DISPLAY_HEIGHT" -eq 0 ]; then
+										DISPLAY_HEIGHT=720
+									fi
+									DISPLAY_RATIO=$((BIG_DISPLAY_WIDTH / DISPLAY_HEIGHT + 1))
 									#echo "DISPLAY_RATIO: $DISPLAY_RATIO"
 								
 									for photo_filename in /home/pi/.webthings/data/photo-frame/photos/*.*
@@ -140,42 +146,52 @@ if ls -l /dev/fb*; then
 										#echo "photo_filename: $photo_filename"
 										#file "$photo_filename"
 										#echo ""
+
+
+										file "$photo_filename" | sed 's/+1x/x/'
 										RESOLUTION=$(file "$photo_filename" | sed 's/+1x/x/' | grep -Eo "[[:digit:]]+ *x *[[:digit:]]+" | tail -n 1)
 										#echo "- photo resolution: $RESOLUTION"
-										PHOTO_WIDTH=$(echo "$RESOLUTION" | awk -F 'x' '{print $1}')
-										PHOTO_HEIGHT=$(echo "$RESOLUTION" | awk -F 'x' '{print $2}')
-										#echo "- photo width: -->$PHOTO_WIDTH<--"
-										#echo "- photo height: -->$PHOTO_HEIGHT<--"
-										BIG_PHOTO_WIDTH=$((PHOTO_WIDTH * 1000))
-										PHOTO_RATIO=$((BIG_PHOTO_WIDTH / PHOTO_HEIGHT))
-										#echo "PHOTO_RATIO: $PHOTO_RATIO"
-										
-										if [[ "$PHOTO_RATIO" -eq "$DISPLAY_RATIO"  ]]; then
-											#echo "same ratio, so only scaling the image"
-											ffmpeg -y -hide_banner -loglevel error -i "$photo_filename" -vframes 1 -vf "scale=$DISPLAY_WIDTH:-1" /tmp/kiosk_photo.png
-										else
-											if [ "$PHOTO_RATIO" -gt "$DISPLAY_RATIO" ]; then
-												ffmpeg -y -hide_banner -loglevel error -i "$photo_filename" -vframes 1 -vf "scale=-1:$DISPLAY_HEIGHT,crop=$DISPLAY_WIDTH:$DISPLAY_HEIGHT:0:0" /tmp/kiosk_photo.png
-											else
-												ffmpeg -y -hide_banner -loglevel error -i "$photo_filename" -vframes 1 -vf "scale=$DISPLAY_WIDTH:-1,crop=$DISPLAY_WIDTH:$DISPLAY_HEIGHT:0:0" /tmp/kiosk_photo.png
+										if [ -n "$RESOLUTION" ] && [[ "$RESOLUTION" == *"x"* ]]; then
+											PHOTO_WIDTH=$(echo "$RESOLUTION" | awk -F 'x' '{print $1}' | xargs)
+											PHOTO_HEIGHT=$(echo "$RESOLUTION" | awk -F 'x' '{print $2}' | xargs)
+											#echo "- photo width: -->$PHOTO_WIDTH<--"
+											#echo "- photo height: -->$PHOTO_HEIGHT<--"
+											BIG_PHOTO_WIDTH=$((PHOTO_WIDTH * 1000))
+											if [ "$PHOTO_HEIGHT" -eq 0 ]; then
+												PHOTO_HEIGHT=720
 											fi
-										fi
-										if [ -f /tmp/kiosk_photo.png ]; then
-											# Rotating is done in a separate step on purpose
-											if [ -f "$BOOT_DIR/rotate180.txt" ]; then
-												#echo "rotating the photo too"
-												ffmpeg -y -hide_banner -loglevel error -i /tmp/kiosk_photo.png -vf "transpose=2,transpose=2" /tmp/kiosk_photo180.png
-												/bin/ply-image /tmp/kiosk_photo180.png
-												rm /tmp/kiosk_photo180.png
-											else
-												/bin/ply-image /tmp/kiosk_photo.png
-											fi
+											PHOTO_RATIO=$((BIG_PHOTO_WIDTH / PHOTO_HEIGHT))
+											#echo "PHOTO_RATIO: $PHOTO_RATIO"
 											
-											rm /tmp/kiosk_photo.png
+											if [[ "$PHOTO_RATIO" -eq "$DISPLAY_RATIO"  ]]; then
+												#echo "same ratio, so only scaling the image"
+												ffmpeg -y -hide_banner -loglevel error -i "$photo_filename" -vframes 1 -vf "scale=$DISPLAY_WIDTH:-1" /tmp/kiosk_photo.png
+											else
+												if [ "$PHOTO_RATIO" -gt "$DISPLAY_RATIO" ]; then
+													ffmpeg -y -hide_banner -loglevel error -i "$photo_filename" -vframes 1 -vf "scale=-1:$DISPLAY_HEIGHT,crop=$DISPLAY_WIDTH:$DISPLAY_HEIGHT:0:0" /tmp/kiosk_photo.png
+												else
+													ffmpeg -y -hide_banner -loglevel error -i "$photo_filename" -vframes 1 -vf "scale=$DISPLAY_WIDTH:-1,crop=$DISPLAY_WIDTH:$DISPLAY_HEIGHT:0:0" /tmp/kiosk_photo.png
+												fi
+											fi
+											if [ -f /tmp/kiosk_photo.png ]; then
+												# Rotating is done in a separate step on purpose
+												if [ -f "$BOOT_DIR/rotate180.txt" ]; then
+													#echo "rotating the photo too"
+													ffmpeg -y -hide_banner -loglevel error -i /tmp/kiosk_photo.png -vf "transpose=2,transpose=2" /tmp/kiosk_photo180.png
+													/bin/ply-image /tmp/kiosk_photo180.png
+													rm /tmp/kiosk_photo180.png
+												else
+													/bin/ply-image /tmp/kiosk_photo.png
+												fi
+												
+												rm /tmp/kiosk_photo.png
+											fi
+											sleep 3
 										fi
-										sleep 30
 									done
 								fi
+							else
+								sleep 10
 							fi
 						fi
 						
