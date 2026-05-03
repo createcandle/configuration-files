@@ -4,6 +4,7 @@ After=network.target systemd-user-sessions.service rc-local.service candle_early
 ConditionPathExists=/home/pi/candle/kiosk.sh
 ConditionPathExists=/boot/firmware/candle_kiosk.txt
 #Conflicts=getty@tty3.service
+StartLimitIntervalSec=0
 
 
 [Service]
@@ -17,8 +18,8 @@ User=pi
 #ExecStartPre=chmod 0660 /dev/tty2
 #ExecStart=/usr/bin/startx -- -nocursor
 ExecStart=/bin/bash /home/pi/candle/kiosk.sh
-Restart=on-failure
-RestartSec=5
+Restart=always
+RestartSec=10
 StandardOutput=journal+console
 StandardError=journal+console
 
