@@ -6,6 +6,7 @@ Requires=dbus.service
 #OnFailure=webthings-gateway.update-rollback.service
 #ConditionPathExists=!/boot/bootup_actions.sh
 StartLimitInterval=0
+StartLimitIntervalSec=0
 StartLimitBurst=0
 
 [Service]
