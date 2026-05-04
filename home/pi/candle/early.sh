@@ -430,8 +430,9 @@ then
     if [ -d /home/pi/.webthings/data ] && [ -d /home/pi/.webthings/config ]; then
         echo "$(date) - creating candle_emergency_backup.tar"
         cd /home/pi/.webthings
-        find ./config ./data ./hasdata -maxdepth 2 -name "*.json" -o -name "*.yaml" -o -name "*.sqlite3" -o -name "*.ini" -o -name "*.data" | tar -cf $BOOT_DIR/candle_emergency_backup.tar -T -
-    else
+        find ./config ./data ./hasdata -maxdepth 2 -name "*.json" -o -name "*.xtt" -o -name "*.yaml" -o -name "*.xml" -o -name "*.sqlite3" -o -name "*.blacklisted_devices" -o -name "*.trusted_devices" -o -name "*.ignored_devices" -o -name "*.db" -o -name "*.txt" -o -name "*.ini" -o -name "*.backup" -o -name "*.data" -o -name "chip*" -o -name "thread" -o -name "hasdata" | grep -v "/._" | tar -cf $BOOT_DIR/candle_emergency_backup.tar -T -
+    	
+	else
         echo "$(date) - ERROR, could not create emergency backup, config and data directories did not exist?"
     fi
 fi
