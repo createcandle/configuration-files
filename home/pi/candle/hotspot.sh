@@ -591,7 +591,13 @@ if ip link show | grep -q "$IFNAME:"; then
 			
 			nmcli connection modify Candle_hotspot ipv4.gateway "172.16.$NETID.1" 
 			nmcli connection modify Candle_hotspot ipv4.dns "172.16.$NETID.1" ipv4.dns-priority 1000
+			
+			# Not the default route out of the network
 			nmcli connection modify Candle_hotspot ipv4.never-default true
+
+			# Infinite retries
+			nmcli connection modify Candle_hotspot connection.autoconnect.retries 0
+			
 		
 			#nmcli connection modify Candle_hotspot ipv6.addresses 'fd00::/8' ipv6.method manual 
 			nmcli connection modify Candle_hotspot ipv6.gateway "fd00:$NETID::1"
