@@ -643,8 +643,11 @@ then
   fi
  
   sleep 1
-  
-  
+fi
+
+
+if [ -d $HOME/.local/share/xorg ]; then
+	rm $HOME/.local/share/xorg/*.log
 fi
 
 # make tty accessible for startx
