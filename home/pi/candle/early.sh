@@ -222,6 +222,13 @@ if [ -n "$WLAN0_CONNECTION"]; then
 	nmcli connection modify "$WLAN0_CONNECTION" connection.autoconnect.retries 0
 fi
 
+# Ensure that any wireless connection will always attempt to reconnect
+WLAN1_CONNECTION=$(nmcli -g DEVICE,NAME con | grep 'wlan1:' | sed  's/wlan1://' | tr -d '\n')
+if [ -n "$WLAN1_CONNECTION"]; then
+	nmcli connection modify "$WLAN1_CONNECTION" connection.autoconnect.retries 0
+fi
+
+
 
 
 # If a hostname.txt file exists, use its contents to set the hostname, then remove the file
