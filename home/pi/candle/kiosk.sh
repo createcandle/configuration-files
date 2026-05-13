@@ -14,6 +14,10 @@ if [ -f $BOOT_DIR/emergency.txt ]; then
 	exit 0
 fi
 
+if [[ -z "$HOME" ]]; then 
+HOME="/home/pi"
+fi
+
 
 
 #if [ -e "/bin/ply-image" ] && [ -e /dev/fb0 ] && [ -f "$BOOT_DIR/splash.png" ] && [ -f "$BOOT_DIR/splash180.png" ]; then
@@ -67,8 +71,7 @@ if ls -l /dev/fb*; then
 			fi
 			while [ -e "$BOOT_DIR/candle_kiosk_disabled.txt" ]; do 
 
-				
-				if [ -f "/home/pi/.webthings/data/photo-frame/persistence.json" ] && cat /home/pi/.webthings/data/photo-frame/persistence.json | grep -q '"night_mode": true,'; then
+				if [ -f "$HOME/.webthings/data/photo-frame/persistence.json" ] && cat "$HOME/.webthings/data/photo-frame/persistence.json" | grep -q '"night_mode": true,'; then
 
 					if [ -e /dev/fb0 ] && [ -e /sys/class/graphics/fb0/virtual_size ]; then
 						DISPLAY_SIZE=$(cat /sys/class/graphics/fb0/virtual_size)
@@ -85,7 +88,7 @@ if ls -l /dev/fb*; then
 							FONT=$(echo $FONT | tr -d '\n')
 							# shadowcolor=black:shadowx=2:shadowy=1:text='%Y-%m-%d\ %H\\\\:%M\\\\:%S'"
 							if [ -f /tmp/clock_bg.svg ] && [ -n "$FONT" ]; then
-								ffmpeg -re -stream_loop -1 \
+								timeout 60 ffmpeg -re -stream_loop -1 \
 									-i /tmp/clock_bg.svg \
 									-vf "drawtext=expansion=strftime:\
 										text='%H\:%M':\
@@ -99,12 +102,14 @@ if ls -l /dev/fb*; then
 									-f fbdev /dev/fb0
 									
 							fi
+						else
+							sleep 1
 						fi
 					fi
 						
-				elif [ -d "/home/pi/.webthings/data/photo-frame/photos" ]; then
+				elif [ -d "$HOME/.webthings/data/photo-frame/photos" ]; then
 				
-					if [ -z "$(ls -A /home/pi/.webthings/data/photo-frame/photos)" ]; then
+					if [ -z "$(ls -A $HOME/.webthings/data/photo-frame/photos)" ]; then
 						#echo "There are no photos"
 						if [ -f color_clock ]; then
 							timeout 1m ./color_clock
@@ -139,7 +144,7 @@ if ls -l /dev/fb*; then
 									DISPLAY_RATIO=$((BIG_DISPLAY_WIDTH / DISPLAY_HEIGHT + 1))
 									#echo "DISPLAY_RATIO: $DISPLAY_RATIO"
 								
-									for photo_filename in /home/pi/.webthings/data/photo-frame/photos/*.*
+									for photo_filename in $HOME/.webthings/data/photo-frame/photos/*.*
 									do 
 										#echo ""
 										#echo "-"
@@ -186,7 +191,15 @@ if ls -l /dev/fb*; then
 												
 												rm /tmp/kiosk_photo.png
 											fi
-											sleep 3
+											
+											PHOTO_DELAY=10
+											for i in $(seq $PHOTO_DELAY); do
+												sleep 3
+												if [ ! -f "$BOOT_DIR/candle_kiosk_disabled.txt" ]; then
+													break
+												fi
+											done
+											
 										fi
 									done
 								fi
@@ -199,13 +212,17 @@ if ls -l /dev/fb*; then
 					sleep 1
 					
 				elif [ -f color_clock ]; then
-					timeout 60m ./color_clock
+					timeout 10m ./color_clock
 				fi
 				
 			done
 			sleep 1
+
+			if [ ! -f "$BOOT_DIR/candle_kiosk_disabled.txt" ]; then
+				break
+			fi
+
 		fi
-		
 		
 	else
 		if [ -z "$CANDLE_URL" ]; then
@@ -224,10 +241,10 @@ if ls -l /dev/fb*; then
 	
 	
 	
-		if [ -f /usr/bin/labwc ] && [ -f /home/pi/candle/wayland_kiosk.sh ]; then 
-			while true; do
+		if [ -f /usr/bin/labwc ] && [ -f "$HOME/candle/wayland_kiosk.sh" ]; then 
+			while [ ! -f "$BOOT_DIR/candle_kiosk_disabled.txt" ]; do
 	    		"XDG_RUNTIME_DIR=/run/user/$(d -u)" labwc -s '/home/pi/candle/wayland_kiosk.sh'
-				sleep 1
+				sleep 3
 			done
 	   		
 	   
