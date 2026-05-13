@@ -197,6 +197,10 @@ if ls -l /dev/fb*; then
 												sleep 3
 												if [ ! -f "$BOOT_DIR/candle_kiosk_disabled.txt" ]; then
 													break
+												else
+													if [ -f "$HOME/.webthings/data/photo-frame/persistence.json" ] && cat "$HOME/.webthings/data/photo-frame/persistence.json" | grep -q '"night_mode": true,'; then
+														break
+													fi
 												fi
 											done
 											
