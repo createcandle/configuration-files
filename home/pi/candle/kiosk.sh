@@ -218,7 +218,7 @@ if ls -l /dev/fb*; then
 				elif [ -f color_clock ]; then
 					timeout 10m ./color_clock
 				fi
-				
+				sleep 1
 			done
 			sleep 1
 
