@@ -102,7 +102,7 @@ fi
 #feh --bg-fill $BOOT_DIR/splash.png
 #windowsize=$(xdpyinfo | awk '/dimensions/{print $2}')
 
-if [ ! -f $BOOT_DIR/hide_mouse_pointer.txt ]
+if [ ! -f $BOOT_DIR/candle_hide_mouse_pointer.txt ]
 then
     unclutter -idle 0.2 -root -display :0 &
 fi
