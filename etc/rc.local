@@ -295,7 +295,7 @@ then
         su - pi -c startx &
         #su - pi -c 'unclutter -idle 10 -root -display :0 &'
       else
-        if [ ! -f $BOOT_DIR/hide_mouse_pointer.txt ]
+        if [ ! -f $BOOT_DIR/candle_hide_mouse_pointer.txt ]
         then
           su - pi    startx &
         else
