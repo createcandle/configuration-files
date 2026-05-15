@@ -286,7 +286,7 @@ if ls -l /dev/fb*; then
 	            startx
 	
 	        elif [ -f $BOOT_DIR/candle_hide_mouse_pointer.txt ]; then
-	            echo "Candle: kiosk.sh:  spotted hide_mouse_pointer.txt,  starting X and hiding mouse pointer"
+	            echo "Candle: kiosk.sh:  spotted candle_hide_mouse_pointer.txt,  starting X and hiding mouse pointer"
 	            startx -- -nocursor
 	
 	        # Auto-detect
