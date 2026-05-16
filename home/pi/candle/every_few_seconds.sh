@@ -121,6 +121,38 @@ while true; do
 		done
 	fi
 
+	IP4_FORWARDING=$(cat /proc/sys/net/ipv4/ip_forward)
+	if [ "$IP4_FORWARDING" -eq 0 ]; then
+		if [ -f $BOOT_DIR/candle_hotspot.txt ]; then
+			if [ ! -f $BOOT_DIR/candle_hotspot_block_ip4_internet.txt ]; then
+				sysctl -w net.ipv4.ip_forward=1
+				echo "candle: every_few_seconds.sh: enabled IPv4 forwarding" >> /dev/kmsg
+			fi
+		fi
+	fi
+	if [ "$IP4_FORWARDING" -eq 1 ]; then
+		if [ -f $BOOT_DIR/candle_hotspot_block_ip4_internet.txt ]; then
+			sysctl -w net.ipv4.ip_forward=1
+			echo "candle: every_few_seconds.sh: enabled IPv4 forwarding" >> /dev/kmsg
+		fi
+	fi
+
+	IP6_FORWARDING=$(cat /proc/sys/net/ipv6/conf/all/forwarding)
+	if [ "$IP6_FORWARDING" -eq 0 ]; then
+		if [ -f $BOOT_DIR/candle_hotspot.txt ]; then
+			if [ ! -f $BOOT_DIR/candle_hotspot_block_ip6_internet.txt ]; then
+				sysctl -w net.ipv6.conf.all.forwarding=1
+				echo "candle: every_few_seconds.sh: enabled IPv6 forwarding" >> /dev/kmsg
+			fi
+		fi
+	fi
+	if [ "$IP6_FORWARDING" -eq 1 ]; then
+		if [ -f $BOOT_DIR/candle_hotspot_block_ip6_internet.txt ]; then
+			sysctl -w net.ipv6.conf.all.forwarding=0
+			echo "candle: every_few_seconds.sh: disabled IPv6 forwarding" >> /dev/kmsg
+		fi
+	fi
+
 	sleep 2
 
 done
