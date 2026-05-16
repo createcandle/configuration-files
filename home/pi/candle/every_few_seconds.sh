@@ -40,21 +40,30 @@ while true; do
 		
 		DNSMASQ_PID=$(pidof dnsmasq | tr -d '\n')
 		if [ -n "$DNSMASQ_PID" ]; then
-			cp /run/dnsmasq_log.txt /run/dnsmasq_now.txt
-			chown pi:pi /run/dnsmasq_now.txt
-			chmod 755 /run/dnsmasq_now.txt
-			rm /run/dnsmasq_log.txt
-			kill -USR2 $DNSMASQ_PID &> /dev/null
+
+			if ps aux| grep hotspot | grep -q addons/hotspot/main.py; then
+				cp /run/dnsmasq_log.txt /run/dnsmasq_now.txt
+				chown pi:pi /run/dnsmasq_now.txt
+				chmod 755 /run/dnsmasq_now.txt
+				rm /run/dnsmasq_log.txt
+				kill -USR2 $DNSMASQ_PID &> /dev/null
+			elif [ -d /home/pi/.webthings/addons/hotspot ]; then
+				# allow the log file to keep growing until the hotspot addon starts
+				maximumsize=100
+				logsize=$(du -b /run/dnsmasq_log.txt | cut -f 1)
+				if [ $logsize -ge $maximumsize ]; then
+				    tail -c 80K /run/dnsmasq_log.txt > /tmp/dzqxH4ZMiSQb91uMMMgPhsgmpncE && rm /run/dnsmasq_log.txt && mv /tmp/dzqxH4ZMiSQb91uMMMgPhsgmpncE /run/dnsmasq_log.txt
+				fi
+			else
+				rm /run/dnsmasq_log.txt
+				kill -USR2 $DNSMASQ_PID &> /dev/null
+			fi
 		else
 			rm /run/dnsmasq_log.txt
 			if [ -f /run/dnsmasq_now.txt ]; then
 				rm /run/dnsmasq_now.txt
 			fi
-			#maximumsize=100
-			#logsize=$(du -b /run/dnsmasq_log.txt | cut -f 1")
-			#if [ $logsize -ge $maximumsize ]; then
-			#    tail -c 80K /run/dnsmasq_log.txt > /tmp/dzqxH4ZMiSQb91uMMMgPhsgmpncE && rm /run/dnsmasq_log.txt && mv /tmp/dzqxH4ZMiSQb91uMMMgPhsgmpncE /run/dnsmasq_log.txt
-			#fi
+			
 		fi
 	fi
 	
