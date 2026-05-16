@@ -37,6 +37,11 @@ fi
 # This mounts the safe_mode directory over the addons directory, so it seems like only the essential three addons are installed
 # The user could then, for example, create a backup, fiddle with that backup, and restore it to solve any issues related to settings in persistent data
 
+if [ -d /run ]; then
+	touch /run/ble_advertisements.json
+	chown pi:pi /run/ble_advertisements.json
+fi
+
 if [ -f $BOOT_DIR/candle_safe_mode.txt ]; then
 	echo "candle: early.sh: detected candle_safe_mode.txt" >> /dev/kmsg
 	if [ ! -d /home/pi/.webthings/addons ]; then
