@@ -36,14 +36,25 @@ while true; do
 	cd /home/pi
 	
 	# limit the size of the dnsmasq log
-	if [ -f /home/pi/dnsmasq_log.txt ] && [ -s /home/pi/dnsmasq_log.txt ]; then
-		cp /home/pi/dnsmasq_log.txt /home/pi/dnsmasq_now.txt
-		chown pi:pi /home/pi/dnsmasq_now.txt
-		chmod 755 /home/pi/dnsmasq_now.txt
-		rm /home/pi/dnsmasq_log.txt
+	if [ -f /run/dnsmasq_log.txt ] && [ -s /run/dnsmasq_log.txt ]; then
+		
 		DNSMASQ_PID=$(pidof dnsmasq | tr -d '\n')
 		if [ -n "$DNSMASQ_PID" ]; then
+			cp /run/dnsmasq_log.txt /run/dnsmasq_now.txt
+			chown pi:pi /run/dnsmasq_now.txt
+			chmod 755 /run/dnsmasq_now.txt
+			rm /run/dnsmasq_log.txt
 			kill -USR2 $DNSMASQ_PID &> /dev/null
+		else
+			rm /run/dnsmasq_log.txt
+			if [ -f /run/dnsmasq_now.txt ]; then
+				rm /run/dnsmasq_now.txt
+			fi
+			#maximumsize=100
+			#logsize=$(du -b /run/dnsmasq_log.txt | cut -f 1")
+			#if [ $logsize -ge $maximumsize ]; then
+			#    tail -c 80K /run/dnsmasq_log.txt > /tmp/dzqxH4ZMiSQb91uMMMgPhsgmpncE && rm /run/dnsmasq_log.txt && mv /tmp/dzqxH4ZMiSQb91uMMMgPhsgmpncE /run/dnsmasq_log.txt
+			#fi
 		fi
 	fi
 	
