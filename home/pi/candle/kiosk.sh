@@ -324,4 +324,12 @@ if ls -l /dev/fb*; then
 else
     echo "Candle: kiosk.sh: no display detected, not starting kiosk mode" 
     #echo "Candle: kiosk.sh: no display detected, not starting kiosk mode" >> /dev/kmsg
+	DISPLAY_DETECTED=""
+	while [[ -z "$DISPLAY_DETECTED" ]]; do
+		sleep 5
+		if ls -l /dev/fb*; then
+			DISPLAY_DETECTED="true"
+			echo "Candle: kiosk.sh: finally detected a display. Allowing kiosk.sh to restart."
+		fi
+	done
 fi
