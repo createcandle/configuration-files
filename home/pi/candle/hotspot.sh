@@ -495,7 +495,7 @@ if ip link show | grep -q "$IFNAME:"; then
 
 	if nmcli connection show --active | grep -q Candle_hotspot; then
 		echo "hotspot.sh: WARNING, the Candle_hotspot connection is already up. Either auto-connect did it's job, or DNSmasq crashed"
-		echo "candle: hotspot.sh: WARNING, the Candle_hotspot connection is already up. Did dnsmasq crash?" >> /dev/kmsg
+		echo "candle: hotspot.sh: the hotspot connection is already up" >> /dev/kmsg
 		start_dnsmasq
 		exit 1
 	else
