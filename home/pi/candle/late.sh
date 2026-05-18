@@ -183,13 +183,43 @@ if [ ! -f $BOOT_DIR/developer.txt ]; then
   journalctl --vacuum-size=100K
 fi
 
-
-
 # After booting it's not longer necessary to keep triggerhappy running
 if [ -f /usr/sbin/thd ]; then
 	systemctl stop triggerhappy.socket
 	systemctl stop triggerhappy.service
 fi
+
+# Wait a bit more so that all connections should be up
+sleep 20
+
+# Prune connections with duplicate names, sorting them by the last time they connected
+SEEN_NAMES=()
+nmcli -t -f TIMESTAMP,TYPE,NAME,STATE connection show | grep '802-11-wireless' | grep -v 'Candle_hotspot' | sort -r -t ":" | while read li>
+    echo "line: $line"
+        connection_name=$(echo "$line" | cut -d ':' -f 3)
+        echo "connection_name: $connection_name"
+    if [[ "${SEEN_NAMES[@]}" =~ "$connection_name" ]]; then 
+		if echo "$line" | grep -q ':activated'; then
+			echo "ERROR, almnost deleted an activated connection (that is not the newest one?). Skipping it."
+		else
+			echo "already seen this connection name before, and it's not active, so deleting this older version: $connection_name"
+			echo "pruning an nmcli connection duplicate: $connection_name" >> /dev/kmsg
+		fi
+    else
+		echo ""
+		echo "fresh connection_name, adding to SEEN_NAMES: $connection_name"
+		SEEN_NAMES+=("$connection_name")
+		echo "SEEN_NAMES is now: $SEEN_NAMES"
+    fi
+done
+
+
+# Force wireless connections to keep retrying to connect.
+nmcli -t -f NAME,TYPE connection show --active | grep '802-11-wireless' | cut -d ':' -f 1 | while read connection_name ; do
+	nmcli con modify "$connection_name" connection.autoconnect-retries 0
+done
+
+
 
 # Stop the serial console once the system is safely up and running
 #if [ ! -f $BOOT_DIR/developer.txt ]; then
