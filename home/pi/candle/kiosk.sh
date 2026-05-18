@@ -278,7 +278,7 @@ if ls -l /dev/fb*; then
 		    #dbus-launch
 			#sleep .2
 			
-	        if [ ! -f $BOOT_DIR/candle_show_mouse_pointer.txt ]; then
+	        if [ -f $BOOT_DIR/candle_show_mouse_pointer.txt ]; then
 	            echo "Candle: kiosk.sh:  spotted candle_show_mouse_pointer.txt,  starting X and showing mouse pointer"
 				#if which unclutter; then
 	            #    unclutter -idle 5 -root -display :0
@@ -307,8 +307,8 @@ if ls -l /dev/fb*; then
 	            startx
 	
 	        else
-	            if which unclutter; then
-	                unclutter -idle 5 -root -display :0
+	            if [ -f /usr/bin/unclutter ]; then
+	                /usr/bin/unclutter -idle 5 -root -display :0
 	            fi
 	            echo "Candle: kiosk.sh: starting X and allowing mouse pointer to be shown, but with auto-hide after 5 seconds"
 	            startx
