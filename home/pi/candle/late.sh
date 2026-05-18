@@ -205,7 +205,7 @@ nmcli -t -f TIMESTAMP,TYPE,UUID,NAME,STATE connection show | grep ':802-11-wirel
 		else
 			echo "already seen this connection name before, and it's not active, so deleting this older version: $connection_name"
 			nmcli connection delete "$connection_uuid"
-			echo "pruned an nmcli connection duplicate: $connection_name" >> /dev/kmsg
+			echo "candle: late.sh: pruned an nmcli connection duplicate: $connection_name" >> /dev/kmsg
 		fi
     else
 		echo ""
