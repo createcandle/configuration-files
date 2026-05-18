@@ -585,7 +585,7 @@ if ip link show | grep -q "$IFNAME:"; then
 				nmcli con modify Candle_hotspot wifi.cloned-mac-address "$ZEROMAC"
 			fi
 			nmcli con modify Candle_hotspot connection.autoconnect-priority 10
-
+			nmcli con modify Candle_hotspot connection.autoconnect-retries 0
 			#nmcli con modify Candle_hotspot wifi-sec.pmf disable
 			nmcli con modify Candle_hotspot 802-11-wireless-security.pmf optional
 			
