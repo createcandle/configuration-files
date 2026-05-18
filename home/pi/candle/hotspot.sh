@@ -722,7 +722,7 @@ if ip link show | grep -q "$IFNAME:"; then
 			echo
 			echo
 			echo "HERE WE GO, turning on the hotspot"
-			echo "HERE WE GO, turning on the hotspot" >> /dev/kmsg
+			echo "candle: hotspot.sh: using interface: $IFNAME" >> /dev/kmsg
 			echo
 			echo
 
