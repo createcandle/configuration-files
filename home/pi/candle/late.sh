@@ -190,20 +190,22 @@ if [ -f /usr/sbin/thd ]; then
 fi
 
 # Wait a bit more so that all connections should be up
-sleep 20
+sleep 60
 
 # Prune connections with duplicate names, sorting them by the last time they connected
 SEEN_NAMES=()
-nmcli -t -f TIMESTAMP,TYPE,NAME,STATE connection show | grep '802-11-wireless' | grep -v 'Candle_hotspot' | sort -r -t ":" | while read li>
+nmcli -t -f TIMESTAMP,TYPE,UUID,NAME,STATE connection show | grep ':802-11-wireless:' | grep -v ':Candle_hotspot:' | sort -r -t ":" | while read line ; do
     echo "line: $line"
-        connection_name=$(echo "$line" | cut -d ':' -f 3)
-        echo "connection_name: $connection_name"
-    if [[ "${SEEN_NAMES[@]}" =~ "$connection_name" ]]; then 
+	connection_uuid=$(echo "$line" | cut -d ':' -f 3)
+	connection_name=$(echo "$line" | cut -d ':' -f 4)
+    echo "connection_name and uuid: $connection_name  -  $connection_uuid"
+    if [[ "${SEEN_NAMES[@]}" =~ "$connection_name" ]]; then
 		if echo "$line" | grep -q ':activated'; then
 			echo "ERROR, almnost deleted an activated connection (that is not the newest one?). Skipping it."
 		else
 			echo "already seen this connection name before, and it's not active, so deleting this older version: $connection_name"
-			echo "pruning an nmcli connection duplicate: $connection_name" >> /dev/kmsg
+			nmcli connection delete "$connection_uuid"
+			echo "pruned an nmcli connection duplicate: $connection_name" >> /dev/kmsg
 		fi
     else
 		echo ""
@@ -218,7 +220,6 @@ done
 nmcli -t -f NAME,TYPE connection show --active | grep '802-11-wireless' | cut -d ':' -f 1 | while read connection_name ; do
 	nmcli con modify "$connection_name" connection.autoconnect-retries 0
 done
-
 
 
 # Stop the serial console once the system is safely up and running
