@@ -55,7 +55,7 @@ CANDLE_URL=$(cat "$kiosk_txt_file")
 #totalk=$(awk '/^MemTotal:/{print $2}' /proc/meminfo)
 #logger total memory: $totalk
 
-if ls -l /dev/fb*; then
+if [ -e /dev/fb0 ] || [ -e /dev/fb1 ]; then
 
 	if [ -f "$BOOT_DIR/candle_kiosk_disabled.txt" ]; then
 
@@ -327,7 +327,7 @@ else
 	DISPLAY_DETECTED=""
 	while [[ -z "$DISPLAY_DETECTED" ]]; do
 		sleep 5
-		if ls -l /dev/fb*; then
+		if [ -e /dev/fb0 ] || [ -e /dev/fb1 ]; then
 			DISPLAY_DETECTED="true"
 			echo "Candle: kiosk.sh: finally detected a display. Allowing kiosk.sh to restart."
 		fi
