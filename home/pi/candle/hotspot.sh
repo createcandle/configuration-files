@@ -772,7 +772,7 @@ if ip link show | grep -q "$IFNAME:"; then
 						fi
 					else
 						echo "ERROR, bringing Candle_hotspot connection up failed"
-						echo "candle: hotspot.sh: ERROR, starting Candle_hotspot connection failed. Try rebooting." >> /dev/kmsg
+						echo "candle: hotspot.sh: unexpected output from nmcli con up Candle_hotspot: $HOTSPOT_UP_OUTPUT" >> /dev/kmsg
 					fi
 				else
 					echo "ERROR, $IFNAME has disappeared..."
