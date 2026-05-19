@@ -32,6 +32,9 @@ fi
 if iw reg get | grep -q 'country 00'; then
 	iw reg set NL
 fi
+if iw reg get | grep -q 'country 98'; then
+	iw reg set NL
+fi
 
 # Just to be sure..
 echo "Deleting NetworkManager Wifi connections"
