@@ -152,8 +152,8 @@ while true; do
 	fi
 	if [ "$IP4_FORWARDING" -eq 1 ]; then
 		if [ -f $BOOT_DIR/candle_hotspot_block_ip4_internet.txt ]; then
-			sysctl -w net.ipv4.ip_forward=1
-			echo "candle: every_few_seconds.sh: enabled IPv4 forwarding" >> /dev/kmsg
+			sysctl -w net.ipv4.ip_forward=0
+			echo "candle: every_few_seconds.sh: disabled IPv4 forwarding" >> /dev/kmsg
 		fi
 	fi
 
