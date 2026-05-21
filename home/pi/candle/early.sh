@@ -87,6 +87,31 @@ if [ -f $BOOT_DIR/candle_wifi_country_code.txt ]; then
 	fi
 fi
 
+# if wifi country is not set, use NL
+if iw reg get | grep -q 'country 00'; then
+	echo "Candle: early.sh: wifi regulatory country was invalid (00). It should now be back to the default, NL" >> /dev/kmsg
+	if grep -q "country=NL" /home/pi/.webthings/etc/wpa_supplicant/wpa_supplicant.conf; then
+		echo "wpa-supplicant country code is already NL"
+	else
+		sed -i 's/country=.*/country=NL/g' /home/pi/.webthings/etc/wpa_supplicant/wpa_supplicant.conf
+	fi
+	raspi-config nonint do_wifi_country NL
+	iw reg set NL
+	echo "Candle: early.sh: Country code check: $(iw reg get)" >> /dev/kmsg
+fi
+sleep 1
+if iw reg get | grep -q 'country 98'; then
+	echo "Candle: early.sh: wifi regulatory country was invalid (98). It should now be back to the default, NL" >> /dev/kmsg
+	if grep -q "country=NL" /home/pi/.webthings/etc/wpa_supplicant/wpa_supplicant.conf; then
+		echo "wpa-supplicant country code is already NL"
+	else
+		sed -i 's/country=.*/country=NL/g' /home/pi/.webthings/etc/wpa_supplicant/wpa_supplicant.conf
+	fi
+	raspi-config nonint do_wifi_country NL
+	iw reg set NL
+	echo "Candle: early.sh: Country code check: $(iw reg get)" >> /dev/kmsg
+fi
+
 if iw reg get | grep -q "country 00" ; then
 	iw reg set NL
 	echo "$(date) - Candle early.sh: wifi regulatory country was invalid, it has been set back to the default, NL" >> $BOOT_DIR/candle_log.txt
