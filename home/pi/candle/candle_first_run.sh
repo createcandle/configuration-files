@@ -30,10 +30,23 @@ fi
 
 # if wifi country is not set, use NL
 if iw reg get | grep -q 'country 00'; then
+	raspi-config nonint do_wifi_country NL
 	iw reg set NL
+	if grep -q "country=NL" /home/pi/.webthings/etc/wpa_supplicant/wpa_supplicant.conf; then
+		echo "wpa-supplicant country code is already NL"
+	else
+		sed -i 's/country=.*/country=NL/g' /home/pi/.webthings/etc/wpa_supplicant/wpa_supplicant.conf
+	fi
 fi
+sleep 1
 if iw reg get | grep -q 'country 98'; then
+	raspi-config nonint do_wifi_country NL
 	iw reg set NL
+	if grep -q "country=NL" /home/pi/.webthings/etc/wpa_supplicant/wpa_supplicant.conf; then
+		echo "wpa-supplicant country code is already NL"
+	else
+		sed -i 's/country=.*/country=NL/g' /home/pi/.webthings/etc/wpa_supplicant/wpa_supplicant.conf
+	fi
 fi
 
 # Just to be sure..
