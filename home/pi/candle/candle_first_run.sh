@@ -29,6 +29,7 @@ then
 fi
 
 # if wifi country is not set, use NL
+# https://forums.raspberrypi.com/viewtopic.php?t=393931
 if iw reg get | grep -q 'country 00'; then
 	if grep -q "country=NL" /home/pi/.webthings/etc/wpa_supplicant/wpa_supplicant.conf; then
 		echo "wpa-supplicant country code is already NL"
