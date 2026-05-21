@@ -89,7 +89,7 @@ candle_skip_out_of_memory_check.txt	# Disables a check that automatically enable
 # HOTSPOT
 candle_hotspot.txt 			# If present, Candle will start a guest WiFi network for your wifi-based smart home devices.
 candle_hotspot_password.txt 		# Change the password of the guest wifi network by writing it into this file.
-candle_hotspot_allow_access_to_main_network.txt	# Allowd devices on the hotspot network to see and reach devices on your home network
+candle_hotspot_allow_access_to_main_network.txt	# Allow devices on the hotspot network to see and reach devices on your home network
 candle_hotspot_block_ip4_internet.txt	# Block devices on the Hotspot network from reaching the internet
 candle_hotspot_block_ip6_internet.txt	# Block devices on the Hotspot network from reaching the internet
 candle_hotspot_force_uap0.txt	# Force the Hotspot to ignore any plugged in WiFI USB sticks, and create virtual interface UAP0.
