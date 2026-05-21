@@ -60,8 +60,19 @@ echo "$(date) - Candle hotspot.sh: starting" >> /dev/kmsg
 #	exit 0
 #fi
 
-if [ -f $BOOT_DIR/candle_hotspot_disable_forwarding.txt ]; then
+if [ -f $BOOT_DIR/candle_hotspot_block_ip4_internet.txt ]; then
+	echo "Candle: hotspot.sh: ensuring ip4 forwarding is disabled" >> /dev/kmsg
+	sysctl -w net.ipv4.ip_forward=0
+else
+	echo "Candle: hotspot.sh: ensuring ip4 forwarding is enabled" >> /dev/kmsg
 	sysctl -w net.ipv4.ip_forward=1
+fi
+
+if [ -f $BOOT_DIR/candle_hotspot_block_ip6_internet.txt ]; then
+	echo "Candle: hotspot.sh: ensuring ip6 forwarding is disabled" >> /dev/kmsg
+	sysctl -w net.ipv6.conf.all.forwarding=0
+else
+	echo "Candle: hotspot.sh: ensuring ip6 forwarding is enabled" >> /dev/kmsg
 	sysctl -w net.ipv6.conf.all.forwarding=1
 fi
 
