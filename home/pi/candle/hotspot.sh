@@ -13,6 +13,8 @@ if [ -f $BOOT_DIR/candle_emergency_hotspot.txt ]; then
 	exit 0
 fi
 
+journalctl -b | grep REGDOM >> /dev/kmsg
+
 # Generate a random ip4/16 octet. The aim is that each hotspot has a separate range.
 # In the future they could more easily be meshed together in a virtual private network between the Cnadle COntrollers
 # As a way to create a larger wifi network with multiple access points that is still walled off from the rest of the network
