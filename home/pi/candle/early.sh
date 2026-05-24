@@ -122,8 +122,9 @@ if [ -d /home/pi/.cipd-cache-dir ]; then
 	rm -rf /home/pi/.cipd-cache-dir
 fi
 
-
-
+if [ -f /usr/sbin/rfkill ]; then
+	/usr/sbin/rfkill unblock wifi
+fi
 #if ip link show | grep -q "virbr:" ; then
 #	echo "OK, virbr exists"
 #else
