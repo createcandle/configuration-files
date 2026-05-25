@@ -93,7 +93,7 @@ candle_hotspot_allow_access_to_main_network.txt	# Allow devices on the hotspot n
 candle_hotspot_block_ip4_internet.txt	# Block devices on the Hotspot network from reaching the internet
 candle_hotspot_block_ip6_internet.txt	# Block devices on the Hotspot network from reaching the internet
 candle_hotspot_force_uap0.txt	# Force the Hotspot to ignore any plugged in WiFI USB sticks, and create virtual interface UAP0.
-candle_disable_wifi_pmf.txt # Disable protected management frames. This trades some security for compatibility.
+candle_hotspot_disable_wifi_pmf.txt # Disable protected management frames. This trades some security for compatibility.
 candle_emergency_hotspot.txt	# Starts an unprotected WiFi hotspot called "Candle emergency"
 
 # RECOVERY OPTIONS - DEPRECATED
