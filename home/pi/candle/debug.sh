@@ -94,6 +94,14 @@ fi
 #    echo "OS string is not Raspbian, it is: $(lsb_release -i -s)" 
 #fi
 
+echo
+echo
+echo "--------------------------------------------- user"
+echo 
+
+loginctl show-session $XDG_SESSION_ID
+
+
 
 
 echo
