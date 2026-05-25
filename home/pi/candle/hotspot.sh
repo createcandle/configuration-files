@@ -509,6 +509,23 @@ if ip link show | grep -q "$IFNAME:"; then
 	if nmcli connection show --active | grep -q Candle_hotspot; then
 		echo "hotspot.sh: WARNING, the Candle_hotspot connection is already up. Either auto-connect did it's job, or DNSmasq crashed"
 		echo "candle: hotspot.sh: the hotspot connection is already up" >> /dev/kmsg
+		
+		if [[ $PASSWORD =~ ^........+ ]]; then
+			echo "Setting hotspot password"
+
+			nmcli connection down 
+			sleep 1
+		
+			nmcli con modify Candle_hotspot \
+				802-11-wireless-security.key-mgmt wpa-psk \
+				802-11-wireless-security.proto rsn \
+				802-11-wireless-security.pairwise ccmp \
+				802-11-wireless-security.psk "$PASSWORD"
+			sleep 1
+
+			nmcli connection up
+		fi
+		
 		start_dnsmasq
 		exit 1
 	else
@@ -543,6 +560,16 @@ if ip link show | grep -q "$IFNAME:"; then
 			else
 				echo "candle hotspot.sh: WARNING, updating WiFi interface in Candle_hotspot connection from $THEORETICAL_INTERFACE to $IFNAME" >> /dev/kmsg
 				nmcli connection modify Candle_hotspot ifname "$IFNAME"
+			fi
+
+			if [[ $PASSWORD =~ ^........+ ]]; then
+				echo "Setting hotspot password"
+			
+				nmcli con modify Candle_hotspot \
+	                802-11-wireless-security.key-mgmt wpa-psk \
+	                802-11-wireless-security.proto rsn \
+	                802-11-wireless-security.pairwise ccmp \
+	                802-11-wireless-security.psk "$PASSWORD"
 			fi
 			
 
@@ -713,10 +740,10 @@ if ip link show | grep -q "$IFNAME:"; then
 		
 	
 			# Protected Management Frames can lead to connectivity issues with some WiFi devices
-			if [ -f $BOOT_DIR/candle_disable_wifi_pmf.txt ]; then
+			if [ -f $BOOT_DIR/candle_hotspot_disable_wifi_pmf.txt ]; then
 				echo "candle: hotspot.sh: spotted candle_disable_wifi_pmf.txt -> disabling wifi protected management frames"
 				#nmcli connection modify candle_hotspot wifi.powersave 1
-				nmcli con modify Candle_hotspot wifi-sec.pmf disable
+				nmcli con modify Candle_hotspot 802-11-wireless-security.pmf disable
 			fi
 			
 			
