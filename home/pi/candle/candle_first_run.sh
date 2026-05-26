@@ -252,6 +252,24 @@ if [ -f "$CANDLE_BASE/.webthings/config/db.sqlite3" ]; then
 fi
 chown -R pi:pi "$CANDLE_BASE/.webthings/backups" 
 
+
+
+#An attempt to fix the hotspot not working on first boot
+systemctl stop NetworkManager.service
+sleep 1
+
+rm -rf /etc/NetworkManager/system-connections/*
+rm -rf /var/lib/NetworkManager/*
+
+echo "[main]" > /var/lib/NetworkManager/NetworkManager.state
+echo "NetworkingEnabled=true" >> /var/lib/NetworkManager/NetworkManager.state
+echo "WirelessEnabled=true" >> /var/lib/NetworkManager/NetworkManager.state
+echo "WWANEnabled=false" >> /var/lib/NetworkManager/NetworkManager.state
+
+
+
+
+
 echo "$(date) - first run done" >> $BOOT_DIR/candle_log.txt
 
 # Mark first run as complete and reboot
