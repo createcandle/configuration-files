@@ -1,6 +1,6 @@
 [Unit]
 Description=Candle first run    
-After=home-pi-.webthings.mount
+After=home-pi-.webthings.mount var-lib-NetworkManager.mount
 #ConditionFirstBoot=yes 
 ConditionPathExists=/boot/firmware/candle_first_run.sh
 ConditionPathExists=!/boot/firmware/candle_first_run_complete.txt
