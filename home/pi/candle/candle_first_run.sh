@@ -282,16 +282,20 @@ chown -R pi:pi "$CANDLE_BASE/.webthings/backups"
 systemctl stop NetworkManager.service
 sleep 1
 
-#rm -rf /etc/NetworkManager/system-connections/*
-rm -rf /var/lib/NetworkManager/*
+if [ -d /etc/NetworkManager/system-connections ]; then
+	rm -rf /etc/NetworkManager/system-connections/*
+fi
+if [ -d /var/lib/NetworkManager ]; then
+	rm -rf /var/lib/NetworkManager/*
+fi
 
 echo "[main]" > /var/lib/NetworkManager/NetworkManager.state
 echo "NetworkingEnabled=true" >> /var/lib/NetworkManager/NetworkManager.state
 echo "WirelessEnabled=true" >> /var/lib/NetworkManager/NetworkManager.state
 echo "WWANEnabled=false" >> /var/lib/NetworkManager/NetworkManager.state
 
-systemctl start NetworkManager.service
-sleep 4
+#systemctl start NetworkManager.service
+#sleep 4
 
 
 
