@@ -234,9 +234,9 @@ fi
 
 "$CANDLE_BASE/candle/hotspot.sh" & 
 
-sleep 2
+sleep 5
 
-systemctl restart NetworkManager.service
+
 
 
 #
@@ -269,18 +269,20 @@ chown -R pi:pi "$CANDLE_BASE/.webthings/backups"
 
 
 
-#An attempt to fix the hotspot not working on first boot
-#systemctl stop NetworkManager.service
-#sleep 1
+An attempt to fix the hotspot not working on first boot
+systemctl stop NetworkManager.service
+sleep 1
 
 #rm -rf /etc/NetworkManager/system-connections/*
-#rm -rf /var/lib/NetworkManager/*
+rm -rf /var/lib/NetworkManager/*
 
-#echo "[main]" > /var/lib/NetworkManager/NetworkManager.state
-#echo "NetworkingEnabled=true" >> /var/lib/NetworkManager/NetworkManager.state
-#echo "WirelessEnabled=true" >> /var/lib/NetworkManager/NetworkManager.state
-#echo "WWANEnabled=false" >> /var/lib/NetworkManager/NetworkManager.state
+echo "[main]" > /var/lib/NetworkManager/NetworkManager.state
+echo "NetworkingEnabled=true" >> /var/lib/NetworkManager/NetworkManager.state
+echo "WirelessEnabled=true" >> /var/lib/NetworkManager/NetworkManager.state
+echo "WWANEnabled=false" >> /var/lib/NetworkManager/NetworkManager.state
 
+systemctl start NetworkManager.service
+sleep 1
 
 
 
