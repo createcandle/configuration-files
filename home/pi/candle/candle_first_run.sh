@@ -223,6 +223,15 @@ else
 fi
 
 
+if [ -e "/bin/ply-image" ] && [ -e /dev/fb0 ] && [ -f "$BOOT_DIR/splash_preparing.png" ] && [ -f "$BOOT_DIR/splash_preparing180.png" ]; then
+  if [ -e "$BOOT_DIR/rotate180.txt" ]; then
+    /bin/ply-image $BOOT_DIR/splash_preparing180.png
+  else
+    /bin/ply-image $BOOT_DIR/splash_preparing.png
+  fi
+  sleep 2
+fi
+
 "$CANDLE_BASE/candle/hotspot.sh" & 
 
 sleep 2
