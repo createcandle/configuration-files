@@ -232,6 +232,15 @@ if [ -e "/bin/ply-image" ] && [ -e /dev/fb0 ] && [ -f "$BOOT_DIR/splash_preparin
   sleep 2
 fi
 
+
+if [ -e "/bin/ply-image" ] && [ -e /dev/fb0 ] && [ -f "$BOOT_DIR/splash_preparing.png" ] && [ -f "$BOOT_DIR/splash_preparing180.png" ]; then
+  if [ -e "$BOOT_DIR/rotate180.txt" ]; then
+    /bin/ply-image $BOOT_DIR/splash_preparing180.png
+  else
+    /bin/ply-image $BOOT_DIR/splash_preparing.png
+  fi
+fi
+
 "$CANDLE_BASE/candle/hotspot.sh" & 
 
 sleep 5
@@ -269,7 +278,7 @@ chown -R pi:pi "$CANDLE_BASE/.webthings/backups"
 
 
 
-An attempt to fix the hotspot not working on first boot
+#An attempt to fix the hotspot not working on first boot
 systemctl stop NetworkManager.service
 sleep 1
 
@@ -282,7 +291,7 @@ echo "WirelessEnabled=true" >> /var/lib/NetworkManager/NetworkManager.state
 echo "WWANEnabled=false" >> /var/lib/NetworkManager/NetworkManager.state
 
 systemctl start NetworkManager.service
-sleep 1
+sleep 4
 
 
 
