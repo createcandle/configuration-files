@@ -241,9 +241,8 @@ if [ -e "/bin/ply-image" ] && [ -e /dev/fb0 ] && [ -f "$BOOT_DIR/splash_preparin
   fi
 fi
 
-"$CANDLE_BASE/candle/hotspot.sh" & 
-
-sleep 5
+#"$CANDLE_BASE/candle/hotspot.sh" & 
+#sleep 5
 
 
 
@@ -284,15 +283,20 @@ sleep 1
 
 if [ -d /etc/NetworkManager/system-connections ]; then
 	rm -rf /etc/NetworkManager/system-connections/*
-fi
-if [ -d /var/lib/NetworkManager ]; then
-	rm -rf /var/lib/NetworkManager/*
+else
+	echo "first run: /etc/NetworkManager/system-connections is missing" >> $BOOT_DIR/candle_log.txt
 fi
 
-echo "[main]" > /var/lib/NetworkManager/NetworkManager.state
-echo "NetworkingEnabled=true" >> /var/lib/NetworkManager/NetworkManager.state
-echo "WirelessEnabled=true" >> /var/lib/NetworkManager/NetworkManager.state
-echo "WWANEnabled=false" >> /var/lib/NetworkManager/NetworkManager.state
+if [ -d /var/lib/NetworkManager ]; then
+	rm -rf /var/lib/NetworkManager/*
+	echo "[main]" > /var/lib/NetworkManager/NetworkManager.state
+	echo "NetworkingEnabled=true" >> /var/lib/NetworkManager/NetworkManager.state
+	echo "WirelessEnabled=true" >> /var/lib/NetworkManager/NetworkManager.state
+	echo "WWANEnabled=false" >> /var/lib/NetworkManager/NetworkManager.state
+else
+	echo "first run: /var/lib/NetworkManager is missing" >> $BOOT_DIR/candle_log.txt
+fi
+
 
 #systemctl start NetworkManager.service
 #sleep 4
