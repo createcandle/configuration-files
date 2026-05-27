@@ -4,6 +4,7 @@ After=network.target candle_early.service dbus.service
 #Requires=dbus-setenv.service
 Requires=dbus.service
 #OnFailure=webthings-gateway.update-rollback.service
+ConditionPathExists=/boot/firmware/candle_first_run_complete.txt
 ConditionPathExists=!/boot/firmware/candle_disabled.txt
 StartLimitInterval=0
 StartLimitIntervalSec=0
