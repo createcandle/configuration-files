@@ -225,6 +225,11 @@ fi
 
 "$CANDLE_BASE/candle/hotspot.sh" & 
 
+sleep 2
+
+systemctl restart NetworkManager.service
+
+
 #
 # Create minimal initial backups
 #
