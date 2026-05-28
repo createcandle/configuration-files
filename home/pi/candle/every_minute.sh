@@ -22,19 +22,21 @@ if [ -f /var/log/syslog ]; then
     fi
 fi
 
+
+# No longer relevant as Candle now uses NetworkManager.
 # Try to upgrade security of the wifi password
-if cat /home/pi/.webthings/etc/wpa_supplicant/wpa_supplicant.conf | grep -q psk=; then
-    current_ssid="$(cat /home/pi/.webthings/etc/wpa_supplicant/wpa_supplicant.conf | grep 'ssid=' | cut -d'"' -f 2 )"
-    current_pass="$(cat /home/pi/.webthings/etc/wpa_supplicant/wpa_supplicant.conf | grep 'psk=' | cut -d'"' -f 2 )"
-    if [ "$(echo -n $current_pass | wc -c)" -lt 64 ]; then
-        echo "Candle: every_minute.sh: upgrading wpa_supplicant wifi password security" >> /dev/kmsg
-        echo "$current_pass" | wpa_passphrase "$current_ssid" > ./temporary
-        phrase=$(cat ./temporary | grep -v '#psk=' | grep 'psk=' | cut -d'=' -f 2)
-        rm ./temporary
-        #phrase="$(wpa_passphrase '$current_ssid' '$current_pass' | grep -v '#psk=' | grep 'psk=' | cut -d'=' -f 2  )"
-        sed -i "s'\\\"${current_pass}\\\"'${phrase}'" /home/pi/.webthings/etc/wpa_supplicant/wpa_supplicant.conf
-    fi
-fi
+#if cat /home/pi/.webthings/etc/wpa_supplicant/wpa_supplicant.conf | grep -q psk=; then
+#    current_ssid="$(cat /home/pi/.webthings/etc/wpa_supplicant/wpa_supplicant.conf | grep 'ssid=' | cut -d'"' -f 2 )"
+#    current_pass="$(cat /home/pi/.webthings/etc/wpa_supplicant/wpa_supplicant.conf | grep 'psk=' | cut -d'"' -f 2 )"
+#    if [ "$(echo -n $current_pass | wc -c)" -lt 64 ]; then
+#        echo "Candle: every_minute.sh: upgrading wpa_supplicant wifi password security" >> /dev/kmsg
+#        echo "$current_pass" | wpa_passphrase "$current_ssid" > ./temporary
+#        phrase=$(cat ./temporary | grep -v '#psk=' | grep 'psk=' | cut -d'=' -f 2)
+#        rm ./temporary
+#        #phrase="$(wpa_passphrase '$current_ssid' '$current_pass' | grep -v '#psk=' | grep 'psk=' | cut -d'=' -f 2  )"
+#        sed -i "s'\\\"${current_pass}\\\"'${phrase}'" /home/pi/.webthings/etc/wpa_supplicant/wpa_supplicant.conf
+#    fi
+#fi
 
 # Kill Chromium if it uses too much memory
 if [ -f /boot/firmware/candle_kiosk.txt ]; then
