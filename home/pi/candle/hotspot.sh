@@ -13,6 +13,8 @@ if [ -f $BOOT_DIR/candle_emergency_hotspot.txt ]; then
 	exit 0
 fi
 
+systemctl restart NetworkManager.service
+
 journalctl -b | grep REGDOM >> /dev/kmsg
 
 # Generate a random ip4/16 octet. The aim is that each hotspot has a separate range.
@@ -191,11 +193,6 @@ start_dnsmasq () {
 			iptables -I INPUT -s "172.16.$NETID.0/24" -m state --state NEW -m tcp -p tcp -d "172.16.$NETID.1" --dport 4443 -m mark --mark 2 -j ACCEPT
 
 		fi
-		
-		
-		
-		
-		
 		
 		
 		
