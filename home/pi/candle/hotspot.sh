@@ -101,6 +101,7 @@ fi
 #systemctl status iwd.service | cat
 
 if [ -f /usr/sbin/wpa_cli ] ; then
+	echo "getting wpa_cli interface_list"
 	if wpa_cli interface_list | grep -q "Selected interface '$IFNAME'" ; then
 		echo "wpa_supplicant was using uap0 as the main selected interface" >> /dev/kmsg
 		wpa_cli interface wlan0
