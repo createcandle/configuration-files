@@ -537,18 +537,19 @@ if ip link show | grep -q "$IFNAME:"; then
 	if nmcli connection show | grep -q 'Candle_hotspot'; then
 		echo "Candle_hotspot connection already exists"
 		
-		echo "What is the interface name of the not-active Candle_hotspot connection? (0)"
+		echo "What is the interface name of the not-active Candle_hotspot connection?"
 		THEORETICAL_INTERFACE=$(nmcli connection show Candle_hotspot | grep connection.interface-name | awk '{print $NF}')
 		
 		if [ "$THEORETICAL_INTERFACE" == "$IFNAME" ]; then
-			echo "OK, interface defined in Candle_hotspot connection is the correct one"
+			echo "OK, interface defined in Candle_hotspot connection is the correct one: $IFNAME"
 		else
+			echo "candle hotspot.sh: WARNING, updating WiFi interface in Candle_hotspot connection from $THEORETICAL_INTERFACE to $IFNAME" 
 			echo "candle hotspot.sh: WARNING, updating WiFi interface in Candle_hotspot connection from $THEORETICAL_INTERFACE to $IFNAME" >> /dev/kmsg
 			nmcli connection modify Candle_hotspot ifname "$IFNAME"
 		fi
 
 		if [[ $PASSWORD =~ ^........+ ]]; then
-			echo "Setting hotspot password"
+			echo "Setting hotspot password on already existing connection"
 		
 			nmcli con modify Candle_hotspot \
 				802-11-wireless-security.key-mgmt wpa-psk \
