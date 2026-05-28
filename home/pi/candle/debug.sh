@@ -351,12 +351,24 @@ udevadm info -q all -n /dev/input/event4 | grep ''
 
 
 
+echo
+echo
+echo "--------------------------------------------- Graphics"
+echo
+
+
+echo "GPU version"
+vcgencmd version
+
+
+
 
 
 echo
 echo
 echo "--------------------------------------------- camera"
 echo
+
 
 
 
@@ -402,7 +414,11 @@ echo "Speeds:"
 vcgencmd get_config int
 
 echo
-# Temperature
+echo "HDMI frequency:"
+vcgencmd measure_clock hdmi
+
+echo
+echo "System temperature:"
 vcgencmd measure_temp
 
 echo "CPU:"
@@ -413,14 +429,13 @@ echo "Watchdog:"
 wdctl
 grep . /sys/class/watchdog/*/*
 
-
 echo
 echo "Voltages:"
 vcgencmd pmic_read_adc
 
 echo
 echo
-echo "--------------------------------------------- network"
+echo "--------------------------------------------- general network"
 
 echo
 echo "ifconfig:"
@@ -435,6 +450,12 @@ echo
 echo
 echo "nmcli overview:"
 nmcli -o | cat
+
+echo
+echo
+echo "--------------------------------------------- WiFi"
+
+echo
 
 echo
 echo "Wi-Fi: wlan0:"
