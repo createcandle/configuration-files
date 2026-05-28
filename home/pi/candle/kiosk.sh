@@ -74,37 +74,10 @@ if [ -e /dev/fb0 ] || [ -e /dev/fb1 ]; then
 				if [ -f "$HOME/.webthings/data/photo-frame/persistence.json" ] && cat "$HOME/.webthings/data/photo-frame/persistence.json" | grep -q '"night_mode": true,'; then
 
 					if [ -e /dev/fb0 ] && [ -e /sys/class/graphics/fb0/virtual_size ]; then
-						DISPLAY_SIZE=$(cat /sys/class/graphics/fb0/virtual_size)
-						
-						if [ -n "$DISPLAY_SIZE" ] && [[ "$DISPLAY_SIZE" == *","* ]]; then
-								
-							DISPLAY_WIDTH=$(echo "$DISPLAY_SIZE" | awk -F ',' '{print $1}')
-							DISPLAY_HEIGHT=$(echo "$DISPLAY_SIZE" | awk -F ',' '{print $2}')
-										
-							echo "<svg height=\"$DISPLAY_HEIGHT\" viewBox=\"0 0 $DISPLAY_WIDTH $DISPLAY_HEIGHT\" width=\"$DISPLAY_WIDTH\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"m0 $DISPLAY_HEIGHTh$DISPLAY_WIDTHv-$DISPLAY_HEIGHTh-$DISPLAY_WIDTHz\" fill-rule=\"evenodd\"/></svg>" > /tmp/clock_bg.svg
-							
-							#FONT="/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
-							FONT=$(find /usr/share/fonts -name DejaVuSans-Bold.ttf)
-							FONT=$(echo $FONT | tr -d '\n')
-							# shadowcolor=black:shadowx=2:shadowy=1:text='%Y-%m-%d\ %H\\\\:%M\\\\:%S'"
-							if [ -f /tmp/clock_bg.svg ] && [ -n "$FONT" ]; then
-								timeout 60 ffmpeg -re -stream_loop -1 \
-									-i /tmp/clock_bg.svg \
-									-vf "drawtext=expansion=strftime:\
-										text='%H\:%M':\
-										fontfile='${FONT}':\
-										fontcolor=red@0.3:\
-										fontsize=150:\
-										x=(w-text_w)/2:\
-										y=(h-text_h)/2\
-										,rotate=PI/1"\
-									-pix_fmt rgb565le \
-									-f fbdev /dev/fb0
-									
-							fi
-						else
-							sleep 1
+						if [ -f fbclock_arm64 ]; then
+							./fbclock_arm64
 						fi
+						sleep 5
 					fi
 						
 				elif [ -d "$HOME/.webthings/data/photo-frame/photos" ]; then
@@ -114,7 +87,7 @@ if [ -e /dev/fb0 ] || [ -e /dev/fb1 ]; then
 						if [ -f color_clock ]; then
 							timeout 1m ./color_clock
 						else
-							sleep 10
+							sleep 5
 						fi
 						
 					else
@@ -208,7 +181,7 @@ if [ -e /dev/fb0 ] || [ -e /dev/fb1 ]; then
 									done
 								fi
 							else
-								sleep 10
+								sleep 5
 							fi
 						fi
 						
