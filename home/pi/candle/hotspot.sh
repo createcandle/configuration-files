@@ -13,6 +13,8 @@ if [ -f $BOOT_DIR/candle_emergency_hotspot.txt ]; then
 	exit 0
 fi
 
+echo "candle: hotspot.sh: Hello" >> /dev/kmsg
+
 systemctl restart NetworkManager.service
 
 journalctl -b | grep REGDOM >> /dev/kmsg
@@ -792,8 +794,14 @@ if ip link show | grep -q "$IFNAME:"; then
 						echo "ERROR, Candle_hotspot seemed to be succesfully actvated, but is not in active connections list"
 					fi
 				else
-					echo "ERROR, bringing Candle_hotspot connection up failed"
-					echo "candle: hotspot.sh: unexpected output from nmcli con up Candle_hotspot: $HOTSPOT_UP_OUTPUT" >> /dev/kmsg
+					sleep 1
+					if nmcli connection show --active | grep -q Candle_hotspot; then
+						start_dnsmasq
+					else
+						echo "ERROR, bringing Candle_hotspot connection up failed"
+						echo "candle: hotspot.sh: unexpected output from nmcli con up Candle_hotspot: $HOTSPOT_UP_OUTPUT" >> /dev/kmsg
+						sleep 5
+					fi
 				fi
 			else
 				echo "candle: hotspot.sh: ERROR, $IFNAME has disappeared" >> /dev/kmsg
@@ -821,4 +829,5 @@ fi
 echo "Sleeping 15 seconds..."
 sleep 15
 echo "Sleeping 15 seconds done"
+echo "candle: hotspot.sh: Bye" >> /dev/kmsg
 exit 0
