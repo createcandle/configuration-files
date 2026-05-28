@@ -15,7 +15,7 @@ fi
 
 echo "candle: hotspot.sh: Hello" >> /dev/kmsg
 
-systemctl restart NetworkManager.service
+#systemctl restart NetworkManager.service
 
 journalctl -b | grep REGDOM >> /dev/kmsg
 
@@ -102,6 +102,7 @@ fi
 
 if [ -f /usr/sbin/wpa_cli ] ; then
 	if wpa_cli interface_list | grep -q "Selected interface '$IFNAME'" ; then
+		echo "wpa_supplicant was using uap0 as the main selected interface" >> /dev/kmsg
 		wpa_cli interface wlan0
 	fi
 	if [ -f "/var/run/wpa_supplicant/$IFNAME" ] ; then
