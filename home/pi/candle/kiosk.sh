@@ -14,9 +14,9 @@ if [ -f $BOOT_DIR/emergency.txt ]; then
 	exit 0
 fi
 
-if [[ -z "$HOME" ]]; then 
+#if [[ -z "$HOME" ]]; then 
 HOME="/home/pi"
-fi
+#fi
 echo "kiosk.sh:  HOME: $HOME"
 
 
