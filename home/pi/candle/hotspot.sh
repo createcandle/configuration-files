@@ -22,6 +22,8 @@ echo "candle: hotspot.sh: iw reg get: $(iw reg get)" >> /dev/kmsg
 echo ""
 echo "candle: hotspot.sh: regdom: $(journalctl -b | grep REGDOM)" >> /dev/kmsg
 echo ""
+echo "candle: hotspot.sh: rfkill: $(rfkill)" >> /dev/kmsg
+echo ""
 echo "candle: hotspot.sh: nmcli radio: $(nmcli radio)" >> /dev/kmsg
 echo ""
 echo "candle: hotspot.sh: nmcli dev: $(nmcli dev)" >> /dev/kmsg
