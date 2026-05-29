@@ -93,12 +93,14 @@ if [ -e /dev/fb0 ] || [ -e /dev/fb1 ]; then
 					fi
 						
 				elif [ -d "$HOME/.webthings/data/photo-frame/photos" ]; then
-				
+					echo "not in night mode. The data/photos directory exists"
 					if [ -z "$(ls -A $HOME/.webthings/data/photo-frame/photos)" ]; then
-						echo "There are no photos, and not in night mode -> starting color clock"
+						echo "not in night mode, but there are no photos to show -> starting color clock"
 						if [ -f "$HOME/candle/color_clock" ]; then
+							echo "starting color clock for one minute"
 							timeout 1m "$HOME/candle/color_clock"
 						else
+							echo "ERROR, color_clock not found"
 							sleep 5
 						fi
 						
@@ -193,16 +195,26 @@ if [ -e /dev/fb0 ] || [ -e /dev/fb1 ]; then
 									done
 								fi
 							else
+								echo "kiosk.sh: error, display exists, but dimensions are unclear"
 								sleep 5
 							fi
 						fi
-						
 					fi
 					sleep 1
-					
+
+				elif [ -f "$BOOT_DIR/rotate180.txt" ] && [ -f "$HOME/candle/fbclock_arm64" ]; then
+						echo "framebuffer, but no kiosk, and no photos and no night-mode, .. but rotated display -> showing night clock instead of color_clock"
+						echo "starting fbclock_arm64 rotated"
+						"$HOME/candle/fbclock_arm64" -r 1
+						sleep 4
+						
 				elif [ -f color_clock ]; then
-					echo "framebuffer, but no kiosk, and no photos and no night-mode -> starting analog color clock"
+					echo "framebuffer, but no kiosk, and no photos and no night-mode -> starting analog color clock for one minute"
+					echo "ERROR, $HOME/candle/fbclock_arm64 not found"
 					timeout 1m ./color_clock
+				else
+					echo "no kiosk, and everything fell through"
+					sleep 5
 				fi
 				sleep 1
 			done
