@@ -561,7 +561,7 @@ if ip link show | grep -q "$IFNAME:"; then
 			nmcli connection modify Candle_hotspot ifname "$IFNAME"
 		fi
 
-		if [ -z "$ZEROMAC" ]; then
+		if [ -n "$ZEROMAC" ]; then
 			nmcli con modify Candle_hotspot wifi.cloned-mac-address "$ZEROMAC"
 		fi
 		
@@ -625,7 +625,7 @@ if ip link show | grep -q "$IFNAME:"; then
 		fi
 		
 		nmcli con modify Candle_hotspot 802-11-wireless.mode ap
-		if [ -z "$ZEROMAC" ]; then
+		if [ -n "$ZEROMAC" ]; then
 			nmcli con modify Candle_hotspot wifi.cloned-mac-address "$ZEROMAC"
 		fi
 		
