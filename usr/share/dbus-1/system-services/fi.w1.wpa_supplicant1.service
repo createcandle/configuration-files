@@ -1,5 +1,5 @@
 [D-BUS Service]
 Name=fi.w1.wpa_supplicant1
-Exec=/usr/sbin/wpa_supplicant -c /home/pi/etc/wpa_supplicant/wpa_supplicant.conf -i wlan0 -u -onl80211 -O /run/wpa_supplicant p2p_set disabled 1
+Exec=/usr/sbin/wpa_supplicant -c /home/pi/etc/wpa_supplicant/wpa_supplicant.conf -i wlan0 -u -o nl80211 -O /run/wpa_supplicant p2p_set disabled 1
 User=root
 SystemdService=wpa_supplicant.service
