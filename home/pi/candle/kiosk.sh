@@ -75,7 +75,11 @@ if [ -e /dev/fb0 ] || [ -e /dev/fb1 ]; then
 
 					if [ -e /dev/fb0 ] && [ -e /sys/class/graphics/fb0/virtual_size ]; then
 						if [ -f fbclock_arm64 ]; then
-							./fbclock_arm64
+							if [ -f "$BOOT_DIR/rotate180.txt" ]; then
+								./fbclock_arm64 -r 1
+							else
+								./fbclock_arm64
+							fi
 						fi
 						sleep 5
 					fi
