@@ -74,12 +74,16 @@ if [ -e /dev/fb0 ] || [ -e /dev/fb1 ]; then
 				if [ -f "$HOME/.webthings/data/photo-frame/persistence.json" ] && cat "$HOME/.webthings/data/photo-frame/persistence.json" | grep -q '"night_mode": true,'; then
 
 					if [ -e /dev/fb0 ] && [ -e /sys/class/graphics/fb0/virtual_size ]; then
-						if [ -f fbclock_arm64 ]; then
+						if [ -f "$HOME/candle/fbclock_arm64" ]; then
 							if [ -f "$BOOT_DIR/rotate180.txt" ]; then
-								./fbclock_arm64 -r 1
+								echo "starting fbclock_arm64 rotated"
+								"$HOME/candle/fbclock_arm64" -r 1
 							else
-								./fbclock_arm64
+								echo "starting fbclock_arm64"
+								"$HOME/candle/fbclock_arm64"
 							fi
+						else
+							echo "ERROR, $HOME/candle/fbclock_arm64 not found"
 						fi
 						sleep 5
 					fi
