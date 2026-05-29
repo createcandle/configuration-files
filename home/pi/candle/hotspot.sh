@@ -16,6 +16,7 @@ fi
 echo "candle: hotspot.sh: Hello" >> /dev/kmsg
 
 #systemctl restart NetworkManager.service
+rm -rf /var/run/wpa_supplicant/p2p-dev-*
 
 journalctl -b | grep REGDOM >> /dev/kmsg
 
