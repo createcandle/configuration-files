@@ -17,6 +17,7 @@ fi
 if [[ -z "$HOME" ]]; then 
 HOME="/home/pi"
 fi
+echo "kiosk.sh:  HOME: $HOME"
 
 
 
