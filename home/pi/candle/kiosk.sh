@@ -82,12 +82,13 @@ if [ -e /dev/fb0 ] || [ -e /dev/fb1 ]; then
 					echo "framebuffer, but no kiosk, and night mode detected -> showing red clock"
 					if [ -e /dev/fb0 ] && [ -e /sys/class/graphics/fb0/virtual_size ]; then
 						if [ -f "$HOME/candle/fbclock_arm64" ]; then
+							cd "$HOME/candle"
 							if [ -f "$BOOT_DIR/rotate180.txt" ]; then
 								echo "starting fbclock_arm64 rotated"
-								"$HOME/candle/fbclock_arm64" -r 1
+								./fbclock_arm64 -r 1
 							else
 								echo "starting fbclock_arm64"
-								"$HOME/candle/fbclock_arm64"
+								./fbclock_arm64
 							fi
 						else
 							echo "ERROR, $HOME/candle/fbclock_arm64 not found"
@@ -210,7 +211,8 @@ if [ -e /dev/fb0 ] || [ -e /dev/fb1 ]; then
 				elif [ -f "$BOOT_DIR/rotate180.txt" ] && [ -f "$HOME/candle/fbclock_arm64" ]; then
 						echo "framebuffer, but no kiosk, and no photos and no night-mode, .. but rotated display -> showing night clock instead of color_clock"
 						echo "starting fbclock_arm64 rotated"
-						"$HOME/candle/fbclock_arm64" -r 1
+						cd "$HOME/candle"
+						./fbclock_arm64 -r 1
 						sleep 4
 						
 				elif [ -f color_clock ]; then
