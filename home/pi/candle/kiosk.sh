@@ -73,7 +73,7 @@ if [ -e /dev/fb0 ] || [ -e /dev/fb1 ]; then
 			while [ -e "$BOOT_DIR/candle_kiosk_disabled.txt" ]; do 
 
 				if [ -f "$HOME/.webthings/data/photo-frame/persistence.json" ] && cat "$HOME/.webthings/data/photo-frame/persistence.json" | grep -q '"night_mode": true,'; then
-
+					echo "framebuffer, but no kiosk, and night mode detected -> showing red clock"
 					if [ -e /dev/fb0 ] && [ -e /sys/class/graphics/fb0/virtual_size ]; then
 						if [ -f "$HOME/candle/fbclock_arm64" ]; then
 							if [ -f "$BOOT_DIR/rotate180.txt" ]; then
@@ -87,14 +87,16 @@ if [ -e /dev/fb0 ] || [ -e /dev/fb1 ]; then
 							echo "ERROR, $HOME/candle/fbclock_arm64 not found"
 						fi
 						sleep 5
+					else
+						echo "ERROR, framebuffer 0 not found"
 					fi
 						
 				elif [ -d "$HOME/.webthings/data/photo-frame/photos" ]; then
 				
 					if [ -z "$(ls -A $HOME/.webthings/data/photo-frame/photos)" ]; then
-						#echo "There are no photos"
-						if [ -f color_clock ]; then
-							timeout 1m ./color_clock
+						echo "There are no photos, and not in night mode -> starting color clock"
+						if [ -f "$HOME/candle/color_clock" ]; then
+							timeout 1m "$HOME/candle/color_clock"
 						else
 							sleep 5
 						fi
@@ -198,7 +200,8 @@ if [ -e /dev/fb0 ] || [ -e /dev/fb1 ]; then
 					sleep 1
 					
 				elif [ -f color_clock ]; then
-					timeout 10m ./color_clock
+					echo "framebuffer, but no kiosk, and no photos and no night-mode -> starting analog color clock"
+					timeout 1m ./color_clock
 				fi
 				sleep 1
 			done
