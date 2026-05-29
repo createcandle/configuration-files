@@ -18,8 +18,18 @@ echo "candle: hotspot.sh: Hello" >> /dev/kmsg
 #systemctl restart NetworkManager.service
 rm -rf /var/run/wpa_supplicant/p2p-dev-*
 
+echo "candle: hotspot.sh: iw reg get: $(iw reg get)" >> /dev/kmsg
+echo ""
 echo "candle: hotspot.sh: regdom: $(journalctl -b | grep REGDOM)" >> /dev/kmsg
+echo ""
 echo "candle: hotspot.sh: nmcli radio: $(nmcli radio)" >> /dev/kmsg
+echo ""
+echo "candle: hotspot.sh: nmcli dev: $(nmcli dev)" >> /dev/kmsg
+echo ""
+echo "candle: hotspot.sh: nmcli connection show: $(nmcli connection show)" >> /dev/kmsg
+
+
+
 # Generate a random ip4/16 octet. The aim is that each hotspot has a separate range.
 # In the future they could more easily be meshed together in a virtual private network between the Cnadle COntrollers
 # As a way to create a larger wifi network with multiple access points that is still walled off from the rest of the network
@@ -803,7 +813,7 @@ if ip link show | grep -q "$IFNAME:"; then
 						start_dnsmasq
 					else
 						echo "ERROR, bringing Candle_hotspot connection up failed"
-						echo "candle: hotspot.sh: unexpected output from nmcli con up Candle_hotspot: $HOTSPOT_UP_OUTPUT" >> /dev/kmsg
+						echo "candle: hotspot.sh: unexpected output from nmcli con up Candle_hotspot and Candle_hotspot not in active nmcli connections: $HOTSPOT_UP_OUTPUT" >> /dev/kmsg
 						sleep 5
 					fi
 				fi
