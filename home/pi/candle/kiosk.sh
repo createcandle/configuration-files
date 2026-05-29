@@ -58,7 +58,8 @@ CANDLE_URL=$(cat "$kiosk_txt_file")
 if [ -e /dev/fb0 ] || [ -e /dev/fb1 ]; then
 
 	if [ -f "$BOOT_DIR/candle_kiosk_disabled.txt" ]; then
-
+		echo "Framebuffer exists, but Candle Kiosk is disabled -> Showing clock or photos"
+		
 		# show Candle logo image
 		if [ -e "/bin/ply-image" ] && [ -e /dev/fb0 ]; then
 			if [ -f "$BOOT_DIR/splash.png" ] && [ -f "$BOOT_DIR/splash180.png" ]; then
