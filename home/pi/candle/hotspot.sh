@@ -420,7 +420,7 @@ if ip link show | grep -q "$IFNAME:"; then
 	#echo "ifconfig $IFNAME:"
 	#ifconfig $IFNAME
 	echo
-	ZEROMAC=""
+	MAC=""
 	
 	# TODO: support for MLAN0 is not fully implemented at the moment.
 	
@@ -561,6 +561,11 @@ if ip link show | grep -q "$IFNAME:"; then
 			nmcli connection modify Candle_hotspot ifname "$IFNAME"
 		fi
 
+		if [ -z "$ZEROMAC" ]; then
+			nmcli con modify Candle_hotspot wifi.cloned-mac-address "$ZEROMAC"
+		fi
+		
+
 		if [[ $PASSWORD =~ ^........+ ]]; then
 			echo "Setting hotspot password on already existing connection"
 		
@@ -623,6 +628,7 @@ if ip link show | grep -q "$IFNAME:"; then
 		if [ -z "$ZEROMAC" ]; then
 			nmcli con modify Candle_hotspot wifi.cloned-mac-address "$ZEROMAC"
 		fi
+		
 		nmcli con modify Candle_hotspot connection.autoconnect-priority 10
 		nmcli con modify Candle_hotspot connection.autoconnect-retries 0
 		#nmcli con modify Candle_hotspot wifi-sec.pmf disable
