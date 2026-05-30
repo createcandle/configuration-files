@@ -145,7 +145,7 @@ fi
 
 if ip link show | grep -q "mlan0:" ; then
 	echo "early.sh: spotted mlan0"
-	nmcli device wifi rescan ifname mlan0
+	#nmcli device wifi rescan ifname mlan0
 	if ip link show | grep -q "uap0:" ; then
 		echo "mlan0 and uap0 exist"
 	else
@@ -155,8 +155,7 @@ if ip link show | grep -q "mlan0:" ; then
 			echo "uap0 does not exist yet, and neither does mlan0. Creating uap0."
 			echo "candle: early.sh: creating uap0" >> /dev/kmsg
 			/sbin/iw dev mlan0 interface add uap0 type __ap
-			nmcli device set uap0 managed false
-			sleep 1
+			nmcli device set uap0 managed true
 			#ip address add 192.168.12.1/24 dev uap0
 			#ifconfig uap0 192.168.12.1 netmask 255.255.255.0
 			#iw dev uap0 set power_save off
@@ -167,7 +166,7 @@ if ip link show | grep -q "mlan0:" ; then
         
 elif ip link show | grep -q "wlan0:" ; then
     echo "wlan0 exists"
-	nmcli device wifi rescan ifname wlan0
+	#nmcli device wifi rescan ifname wlan0
 	if ip link show | grep -q "uap0:"; then
 		echo "wlan0 and uap0 exist"
 	else
@@ -177,8 +176,7 @@ elif ip link show | grep -q "wlan0:" ; then
 			echo "uap0 does not exist yet"
 			echo "candle: early.sh: creating uap0" >> /dev/kmsg
 			/sbin/iw dev wlan0 interface add uap0 type __ap
-			nmcli device set uap0 managed false
-			sleep 1
+			nmcli device set uap0 managed true
 			#ip address add 192.168.12.1/24 dev uap0
 			#ifconfig uap0 192.168.12.1 netmask 255.255.255.0
 			#iw dev uap0 set power_save off
@@ -188,29 +186,29 @@ elif ip link show | grep -q "wlan0:" ; then
 fi
 
 
-if [ -f /usr/sbin/wpa_cli ]; then
-	wpa_cli -i uap0 terminate | cat
-fi
+#if [ -f /usr/sbin/wpa_cli ]; then
+#	wpa_cli -i uap0 terminate | cat
+#fi
 
 
-if [ ! -f /boot/firmware/candle_hotspot.txt ] && nmcli c show --active | grep 'uap0' | grep -q 'Hotspot' ; then
+if [ ! -f "$BOOTDIR/candle_hotspot.txt" ] && nmcli c show --active | grep 'uap0' | grep -q 'Candle_hotspot' ; then
 	#nmcli connection delete candle_hotspot
-	nmcli connection down Hotspot
 	nmcli connection modify Hotspot connection.autoconnect no
+	nmcli connection down Candle_hotspot
 	echo "$(date) - Candle early. Disabled candle_hotspot because candle_hotspot.txt was missing from boot partition" >> /dev/kmsg
 fi
 
-if [ ! -f /boot/firmware/candle_hotspot.txt ] && nmcli c show --active | grep 'mlan1' | grep -q 'Hotspot' ; then
+if [ ! -f "$BOOTDIR/candle_hotspot.txt" ] && nmcli c show --active | grep 'mlan1' | grep -q 'Candle_hotspot' ; then
 	#nmcli connection delete candle_hotspot
-	nmcli connection down Hotspot
-	nmcli connection modify Hotspot connection.autoconnect no
+	nmcli connection modify Candle_hotspot connection.autoconnect no
+	nmcli connection down Candle_hotspot
 	echo "$(date) - Candle early. Disabled candle_hotspot because candle_hotspot.txt was missing from boot partition" >> /dev/kmsg
 fi
 
-if [ ! -f /boot/firmware/candle_hotspot.txt ] && nmcli c show --active | grep 'wlan1' | grep -q 'Hotspot' ; then
+if [ ! -f "$BOOTDIR/candle_hotspot.txt" ] && nmcli c show --active | grep 'wlan1' | grep -q 'Candle_hotspot' ; then
 	#nmcli connection delete candle_hotspot
-	nmcli connection down Hotspot
 	nmcli connection modify Hotspot connection.autoconnect no
+	nmcli connection down Candle_hotspot
 	echo "$(date) - Candle early. Disabled candle_hotspot because candle_hotspot.txt was missing from boot partition" >> /dev/kmsg
 fi
 
@@ -219,12 +217,6 @@ fi
 #if [ -f /home/pi/dnsmasq_log.txt ]; then
 #	rm /home/pi/dnsmasq_log.txt
 #fi
-
-
-
-if iw reg get | grep -q 'country 00'; then
-	iw reg set NL
-fi
 
 
 
@@ -254,10 +246,10 @@ if [ -n "$WLAN0_CONNECTION"]; then
 fi
 
 # Ensure that any wireless connection will always attempt to reconnect
-WLAN1_CONNECTION=$(nmcli -g DEVICE,NAME con | grep 'wlan1:' | sed  's/wlan1://' | tr -d '\n')
-if [ -n "$WLAN1_CONNECTION"]; then
-	nmcli connection modify "$WLAN1_CONNECTION" connection.autoconnect.retries 0
-fi
+#WLAN1_CONNECTION=$(nmcli -g DEVICE,NAME con | grep 'wlan1:' | sed  's/wlan1://' | tr -d '\n')
+#if [ -n "$WLAN1_CONNECTION"]; then
+#	nmcli connection modify "$WLAN1_CONNECTION" connection.autoconnect.retries 0
+#fi
 
 
 
@@ -269,7 +261,7 @@ then
     NEW_HOSTNAME=$(head -1 $BOOT_DIR/hostname.txt)
     
     if [ "$OLD_HOSTNAME" == "$NEW_HOSTNAME" ]; then
-        echo "candle: early.sh: OK, hostname.txt is the same as the current hostname file" >> /dev/kmsg
+        echo "candle: early.sh: OK, hostname.txt is the same as in the current hostname file ($OLD_HOSTNAME)" >> /dev/kmsg
     else
         echo "candle: early.sh: spotted different hostname from hostname.txt: $OLD_HOSTNAME to $NEW_HOSTNAME" >> /dev/kmsg
         if [ -f $BOOT_DIR/candle_first_run_complete.txt ]; then
@@ -428,7 +420,7 @@ fi
 
 
 # Enable WiFi power save
-if [ -f $BOOT_DIR/candle_wifi_power_save.txt ] && [ ! -d /home/pi/.webthings/addons/hotspot ] ;
+if [ -f $BOOT_DIR/candle_wifi_power_save.txt ] && [ ! -f $BOOT_DIR/candle_hotspot.txt ];
 then
   if [ -f /sbin/iw ]; then
 
@@ -450,7 +442,6 @@ then
 else
   if [ -f /sbin/iw ]; then
     
-
     if ip link show | grep -q "mlan0:" ; then
 		if /sbin/iw dev mlan0 get power_save | grep -q "Power save: on"; then
 			echo "Candle: early: disabling wifi power saving for mlan0" >> /dev/kmsg
@@ -476,7 +467,7 @@ then
     if [ -d /home/pi/.webthings/data ] && [ -d /home/pi/.webthings/config ]; then
         echo "$(date) - creating candle_emergency_backup.tar"
         cd /home/pi/.webthings
-        find ./config ./data ./hasdata -maxdepth 2 -name "*.json" -o -name "*.xtt" -o -name "*.yaml" -o -name "*.xml" -o -name "*.sqlite3" -o -name "*.blacklisted_devices" -o -name "*.trusted_devices" -o -name "*.ignored_devices" -o -name "*.db" -o -name "*.txt" -o -name "*.ini" -o -name "*.backup" -o -name "*.data" -o -name "chip*" -o -name "thread" -o -name "hasdata" | grep -v "/._" | tar -cf $BOOT_DIR/candle_emergency_backup.tar -T -
+        find ./config ./data ./hasdata -maxdepth 2 -name "*.json" -o -name "*.xtt" -o -name "*.yaml" -o -name "*.xml" -o -name "*.sqlite3" -o -name "*.blacklisted_devices" -o -name "*.trusted_devices" -o -name "*.ignored_devices" -o -name "*.db" -o -name "*.txt" -o -name "*.ini" -o -name "*.backup" -o -name "*.data" -o -name "chip*" -o -name "thread" -o -name "hasdata" -o -name "data" | grep -v "/._" | tar -cf $BOOT_DIR/candle_emergency_backup.tar -T -
     	
 	else
         echo "$(date) - ERROR, could not create emergency backup, config and data directories did not exist?"
@@ -586,9 +577,14 @@ then
   echo "Candle: low memory, so enabling swap: $totalk" >> /dev/kmsg
   
   if [ -f /usr/sbin/dphys-swapfile ]; then
-    touch $BOOT_DIR/candle_swap_enabled.txt
-    /usr/sbin/dphys-swapfile setup
-    /usr/sbin/dphys-swapfile swapon
+  	if [ -f /usr/sbin/dphys-swapfile ]; then
+    	touch $BOOT_DIR/candle_swap_enabled.txt
+    	/usr/sbin/dphys-swapfile setup
+    	/usr/sbin/dphys-swapfile swapon
+	fi
+
+	# TODO: add trixie swap
+	
   fi
 else
   echo "Candle: early: enough memory, no need to enable swap: $totalk" >> /dev/kmsg
