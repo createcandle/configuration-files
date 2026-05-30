@@ -1,5 +1,11 @@
 #!/bin/bash
 
+
+# WPA Supplicant configuration options:
+# https://github.com/sensepost/wpa_sycophant/blob/master/wpa_supplicant/wpa_supplicant.conf
+
+
+
 BOOT_DIR="/boot"
 if lsblk | grep -q /boot/firmware; then
     BOOT_DIR="$BOOT_DIR/firmware"
