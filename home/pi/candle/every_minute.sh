@@ -18,7 +18,7 @@ fi
 if [ -f /var/log/syslog ]; then
     SYSLOG_FILESIZE=$(stat --printf="%s" /var/log/syslog)
     if [ "$SYSLOG_FILESIZE" -gt 2000000 ]; then
-        echo "$(tail -200 /var/log/syslog)" > /var/log/syslog
+        tail -200 /var/log/syslog) > /var/log/syslog
     fi
 fi
 
@@ -42,7 +42,7 @@ fi
 if [ -f /boot/firmware/candle_kiosk.txt ]; then
 	CHROMIUM_MEMORY_USE=$(ps -eo size,pid,user,command --sort -size | awk '{ hr=$1/1024 ; printf("%13.2f Mb ",hr) } { for ( x=4 ; x<=NF ; x++ ) { printf("%s ",$x) } print "" }' |    cut -d "" -f2 | cut -d "-" -f1 | grep bin/chrom | cut -d. -f1 | xargs)
 	echo "CHROMIUM_MEMORY_USE: $CHROMIUM_MEMORY_USE"
-	if [ $CHROMIUM_MEMORY_USE -gt 2000 ]; then
+	if [ "$CHROMIUM_MEMORY_USE" -gt 2000 ]; then
 		echo "Candle: every_minute.sh: restarting kiosk because Chromium is using too much memory: $CHROMIUM_MEMORY_USE MB" >> /dev/kmsg
 		#printf "Chromium SIZE has exceeded.\nKilling the process......"
 		#kill -9 "$procId"
