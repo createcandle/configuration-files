@@ -598,7 +598,9 @@ if ip link show | grep -q "$IFNAME:"; then
 	#echo
 	
 	if nmcli connection show | grep -q 'Candle_hotspot'; then
-		echo "Candle_hotspot connection already exists"
+		echo "candle: hotspot.sh: connection already exists"
+		echo "candle: hotspot.sh: connection already exists" >> /dev/kmsg
+
 		
 
 	else
@@ -695,12 +697,8 @@ if ip link show | grep -q "$IFNAME:"; then
 	if nmcli connection show | grep -q Candle_hotspot; then
 
 
-
-		echo "What is the interface name of the Candle_hotspot connection?"
-		nmcli connection show Candle_hotspot | grep connection.interface-name
-
-
-
+		connection_interface_name=$(nmcli connection show Candle_hotspot | grep connection.interface-name)
+		echo "candle: hotspot.sh: $connection_interface_name"
 		
 		# ENSURE
 	
@@ -717,6 +715,8 @@ if ip link show | grep -q "$IFNAME:"; then
 		# Mac OS will apparently only connect if Fast PSK is enabled
 		# https://www.networkmanager.dev/docs/api/latest/settings-802-11-wireless-security.html
 		nmcli con modify Candle_hotspot 802-11-wireless-security.fils 2
+
+		echo "candle hotspot.sh:  own IP address: 172.16.$NETID.1" >> /dev/kmsg
 		
 		nmcli connection modify Candle_hotspot ipv4.gateway "172.16.$NETID.1" 
 		nmcli connection modify Candle_hotspot ipv4.dns "172.16.$NETID.1" ipv4.dns-priority 1000
@@ -744,9 +744,12 @@ if ip link show | grep -q "$IFNAME:"; then
 			    echo "OK, Candle_hotspot connection's MAC is already the correct zeromac:"
 				echo "ZEROMAC: $ZEROMAC"
 				echo "$current_nmcli_mac"
+				echo "candle: hotspot.sh: mac is already the correct zeromac: $ZEROMAC" >> /dev/kmsg
+				
 			else
 				nmcli con modify Candle_hotspot wifi.mac-address "$ZEROMAC"
 				nmcli con modify Candle_hotspot wifi.cloned-mac-address "$ZEROMAC"
+				echo "candle: hotspot.sh: had to set Candle_hotspot mac to the correct zeromac: $ZEROMAC" >> /dev/kmsg
 			fi
 			
 
@@ -766,8 +769,10 @@ if ip link show | grep -q "$IFNAME:"; then
 		# TODO: maybe also explain that to the user, or automatically switch to a 5G/2.4G version of the SSID if available? That may be a security risk though..
 		
 		if [ -f "$BOOT_DIR/candle_hotspot_5G.txt" ]; then
+			echo "candle: hotspot.sh: setting wifi channel to 44 (5Ghz)" >> /dev/kmsg
 			nmcli con modify Candle_hotspot 802-11-wireless.band a 802-11-wireless.channel 44
 		else
+		echo "candle: hotspot.sh: setting wifi channel to 1 (2.4Ghz)" >> /dev/kmsg
 			nmcli con modify Candle_hotspot 802-11-wireless.band bg 802-11-wireless.channel 1
 		fi
 
@@ -875,8 +880,8 @@ if ip link show | grep -q "$IFNAME:"; then
 			fi
 			
 			if ip link show "$IFNAME" | grep -q 'state DOWN'; then
-				echo "candle: hotspot.sh: interface $IFNAME was in down, forcing to UP using ip" >> /dev/kmsg
-				ip link set "$IFNAME" mode default
+				echo "candle: hotspot.sh: interface $IFNAME was down, forcing to UP using ip" >> /dev/kmsg
+				ip link set "$IFNAME" up
 				sleep 1
 			fi
 			
