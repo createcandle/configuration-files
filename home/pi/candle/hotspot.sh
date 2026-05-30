@@ -675,7 +675,7 @@ if ip link show | grep -q "$IFNAME:"; then
 		nmcli connection modify Candle_hotspot ipv4.never-default true
 
 		# Infinite retries
-		nmcli connection modify Candle_hotspot connection.autoconnect.retries 0
+		nmcli connection modify Candle_hotspot connection.autoconnect-retries 0
 		
 	
 		#nmcli connection modify Candle_hotspot ipv6.addresses 'fd00::/8' ipv6.method manual 
