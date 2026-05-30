@@ -20,9 +20,9 @@ echo
 
 if [ -f $BOOT_DIR/candle_set_wifi.txt ]; then
 	ssid="$(head -n 1 $BOOT_DIR/candle_set_wifi.txt)"
-	ssid=$(echo $ssid|tr -d '\n')
+	ssid=$(echo "$ssid" | tr -d '\n')
 	password="$( head -n 1 $BOOT_DIR/candle_set_wifi.txt)"
-	password=$(echo $password|tr -d '\n')
+	password=$(echo "$password" | tr -d '\n')
 	interface="wlan0"
 	if ip link show | grep -q "wlan1:" ; then
 		interface="wlan1"
@@ -194,30 +194,40 @@ sleep 60
 
 # Prune connections with duplicate names, sorting them by the last time they connected
 SEEN_NAMES=()
-nmcli -t -f TIMESTAMP,TYPE,UUID,NAME,STATE connection show | grep ':802-11-wireless:' | grep -v ':Candle_hotspot:' | sort -r -t ":" | while read line ; do
+nmcli -t -f TIMESTAMP,TYPE,UUID,NAME,STATE connection show | grep ':802-11-wireless:' | grep -v ':Candle_hotspot:' | sort -r -t ":" | while read -r line ; do
     echo "line: $line"
 	connection_uuid=$(echo "$line" | cut -d ':' -f 3)
 	connection_name=$(echo "$line" | cut -d ':' -f 4)
     echo "connection_name and uuid: $connection_name  -  $connection_uuid"
-    if [[ "${SEEN_NAMES[@]}" =~ "$connection_name" ]]; then
-		if echo "$line" | grep -q ':activated'; then
+    #if [[ "${SEEN_NAMES[@]}" =~ "$connection_name" ]]; then
+    never_seen_before=true
+    for value in "${SEEN_NAMES[@]}"
+    do
+        if [[ "$connection_name" = "$value" ]]; then
+                never_seen_before=false
+        fi
+    done
+    if [ "$never_seen_before" = true ] ; then
+                echo 'Be careful not to fall off!'
+        	echo ""
+		echo "fresh connection_name, adding to SEEN_NAMES: $connection_name"
+		SEEN_NAMES+=("$connection_name")
+		
+    else
+    if echo "$line" | grep -q ':activated'; then
 			echo "ERROR, almnost deleted an activated connection (that is not the newest one?). Skipping it."
 		else
 			echo "already seen this connection name before, and it's not active, so deleting this older version: $connection_name"
 			nmcli connection delete "$connection_uuid"
 			echo "candle: late.sh: pruned an nmcli connection duplicate: $connection_name" >> /dev/kmsg
 		fi
-    else
-		echo ""
-		echo "fresh connection_name, adding to SEEN_NAMES: $connection_name"
-		SEEN_NAMES+=("$connection_name")
-		echo "SEEN_NAMES is now: $SEEN_NAMES"
+	
     fi
 done
 
 
 # Force wireless connections to keep retrying to connect.
-nmcli -t -f NAME,TYPE connection show --active | grep '802-11-wireless' | cut -d ':' -f 1 | while read connection_name ; do
+nmcli -t -f NAME,TYPE connection show --active | grep '802-11-wireless' | cut -d ':' -f 1 | while read -r connection_name ; do
 	nmcli con modify "$connection_name" connection.autoconnect-retries 0
 done
 
