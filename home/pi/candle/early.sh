@@ -191,21 +191,21 @@ fi
 #fi
 
 
-if [ ! -f "$BOOTDIR/candle_hotspot.txt" ] && nmcli c show --active | grep 'uap0' | grep -q 'Candle_hotspot' ; then
+if [ ! -f "$BOOT_DIR/candle_hotspot.txt" ] && nmcli c show --active | grep 'uap0' | grep -q 'Candle_hotspot' ; then
 	#nmcli connection delete candle_hotspot
 	nmcli connection modify Hotspot connection.autoconnect no
 	nmcli connection down Candle_hotspot
 	echo "$(date) - Candle early. Disabled candle_hotspot because candle_hotspot.txt was missing from boot partition" >> /dev/kmsg
 fi
 
-if [ ! -f "$BOOTDIR/candle_hotspot.txt" ] && nmcli c show --active | grep 'mlan1' | grep -q 'Candle_hotspot' ; then
+if [ ! -f "$BOOT_DIR/candle_hotspot.txt" ] && nmcli c show --active | grep 'mlan1' | grep -q 'Candle_hotspot' ; then
 	#nmcli connection delete candle_hotspot
 	nmcli connection modify Candle_hotspot connection.autoconnect no
 	nmcli connection down Candle_hotspot
 	echo "$(date) - Candle early. Disabled candle_hotspot because candle_hotspot.txt was missing from boot partition" >> /dev/kmsg
 fi
 
-if [ ! -f "$BOOTDIR/candle_hotspot.txt" ] && nmcli c show --active | grep 'wlan1' | grep -q 'Candle_hotspot' ; then
+if [ ! -f "$BOOT_DIR/candle_hotspot.txt" ] && nmcli c show --active | grep 'wlan1' | grep -q 'Candle_hotspot' ; then
 	#nmcli connection delete candle_hotspot
 	nmcli connection modify Hotspot connection.autoconnect no
 	nmcli connection down Candle_hotspot
@@ -241,7 +241,7 @@ fi
 
 # Ensure that any wireless connection will always attempt to reconnect
 WLAN0_CONNECTION=$(nmcli -g DEVICE,NAME con | grep 'wlan0:' | sed  's/wlan0://' | tr -d '\n')
-if [ -n "$WLAN0_CONNECTION"]; then
+if [ -n "$WLAN0_CONNECTION" ]; then
 	nmcli connection modify "$WLAN0_CONNECTION" connection.autoconnect.retries 0
 fi
 
@@ -343,7 +343,7 @@ fi
 # Delete addons
 if [ -f $BOOT_DIR/candle_delete_these_addons.txt ]; then
     echo "candle early: spotted candle_delete_these_addons.txt" >> /dev/kmsg
-    while read addon; do
+    while read -r addon; do
       if [ -d "/home/pi/.webthings/addons/$addon" ]; then
           rm -rf "/home/pi/.webthings/addons/$addon"
           echo "deleting addon: $addon" >> /dev/kmsg
@@ -373,7 +373,7 @@ if [ -f $BOOT_DIR/candle_install_these_addons.txt ]; then
 	
 	if [ -d /home/pi/.webthings/addons ]; then
         
-        while read addon_git; do
+        while read -r addon_git; do
             cd /home/pi/.webthings/addons
             if [ -n "$addon_git" ]; then
                 if ! [[ ${addon_git} = http* ]]; then
@@ -556,7 +556,7 @@ fi
 if [ -f $BOOT_DIR/candle_forget_wifi.txt ]; then
   rm $BOOT_DIR/candle_forget_wifi.txt
   echo -e 'ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev\nupdate_config=1\ncountry=NL\n' > /home/pi/.webthings/etc/wpa_supplicant/wpa_supplicant.conf
-  nmcli --terse connection show | grep 802-11-wireless | cut -d : -f 1 | while read name; do nmcli connection delete "$name"; done
+  nmcli --terse connection show | grep 802-11-wireless | cut -d : -f 1 | while read -r name; do nmcli connection delete "$name"; done
 fi
 
 # Forget all users
@@ -673,8 +673,8 @@ then
 fi
 
 
-if [ -d $HOME/.local/share/xorg ]; then
-	rm $HOME/.local/share/xorg/*.log
+if [ -d "$HOME/.local/share/xorg" ]; then
+	rm "$HOME/.local/share/xorg/*.log"
 fi
 
 # make tty accessible for startx
