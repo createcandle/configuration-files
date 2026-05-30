@@ -928,6 +928,7 @@ if ip link show | grep -q "$IFNAME:"; then
 					else
 						echo "candle: hotspot.sh: ERROR, Candle_hotspot seemed to be succesfully actvated, but is not in active connections list"
 						echo "candle: hotspot.sh: ERROR, Candle_hotspot seemed to be succesfully actvated, but is not in active connections list" >> /dev/kmsg
+						sleep 10
 					fi
 				else
 					sleep 1
@@ -939,15 +940,13 @@ if ip link show | grep -q "$IFNAME:"; then
 						echo "candle: hotspot.sh: ERROR: bringing Candle_hotspot connection up really failed"
 						echo "candle: hotspot.sh: ERROR: bringing Candle_hotspot connection up really failed" >> /dev/kmsg
 						nmcli connection show
-						sleep 5
-						exit 1
+						sleep 10
 					fi
 				fi
 			else
 				echo "candle: hotspot.sh: ERROR, interface $IFNAME has vanished"
 				echo "candle: hotspot.sh: ERROR, interface $IFNAME has vanished" >> /dev/kmsg
 				sleep 10
-				exit 1
 				
 			fi
 			
@@ -957,8 +956,7 @@ if ip link show | grep -q "$IFNAME:"; then
 		echo "candle: hotspot.sh: ERROR, failed to create Candle_hotspot connection"
 		echo "candle: hotspot.sh: ERROR, failed to create Candle_hotspot connection" >> /dev/kmsg
 
-		sleep 5
-		exit 1
+		sleep 10
 	fi
 	
 
@@ -966,7 +964,6 @@ else
 	echo "ERROR, no $IFNAME after it was just created"
 	echo "candle: hotspot.sh: ERROR, missing interface $IFNAME after it was just created" >> /dev/kmsg
 	sleep 10
-	exit 1
 fi
 
 echo "Sleeping 15 seconds..."
