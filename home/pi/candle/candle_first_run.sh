@@ -14,6 +14,8 @@ then
   exit
 fi
 
+
+
 CANDLE_BASE="/home/pi"
 
 BOOT_DIR="/boot"
@@ -22,19 +24,39 @@ if lsblk | grep -q /boot/firmware; then
     BOOT_DIR="/boot/firmware"
 fi
 
+if [ -f $BOOT_DIR/candle_inspect_first_run.txt ]; then
+	systemctl start ssh.service
+fi
+
+echo "in candle_first_run.sh"
+echo "$(date) - Candle: in candle_first_run.sh" >> /dev/kmsg
+echo "$(date) - FIRST_RUN: doing first run" >> $BOOT_DIR/candle_log.txt
+
+
 if [ -d /ro ]
 then 
   echo "FIRST_RUN: Error, read only mode seems to be active" >> $BOOT_DIR/candle_log.txt
   exit 1
 fi
 
+
+if [ -f /usr/bin/raspi-config ]; then
+	raspi-config nonint do_wifi_country NL
+else
+	iw reg set NL
+fi
+#iw reg set NL
+
 # if wifi country is not set, use NL
 # https://forums.raspberrypi.com/viewtopic.php?t=393931
 if iw reg get | grep -q 'country 00'; then
-	if grep -q "country=NL" /home/pi/.webthings/etc/wpa_supplicant/wpa_supplicant.conf; then
-		echo "wpa-supplicant country code is already NL"
-	else
-		sed -i 's/country=.*/country=NL/g' /home/pi/.webthings/etc/wpa_supplicant/wpa_supplicant.conf
+
+	if grep -q "country=" /home/pi/.webthings/etc/wpa_supplicant/wpa_supplicant.conf; then
+		if grep -q "country=NL" /home/pi/.webthings/etc/wpa_supplicant/wpa_supplicant.conf; then
+			echo "wpa-supplicant country code is already NL"
+		else
+			sed -i 's/country=.*/country=NL/g' /home/pi/.webthings/etc/wpa_supplicant/wpa_supplicant.conf
+		fi
 	fi
 	raspi-config nonint do_wifi_country NL
 	iw reg set NL
@@ -51,14 +73,11 @@ if iw reg get | grep -q 'country 98'; then
 fi
 
 # Just to be sure..
-echo "Deleting NetworkManager Wifi connections"
-nmcli --terse connection show | grep 802-11-wireless | cut -d : -f 1 | while read -r name; do nmcli connection delete "$name"; done
+#echo "Deleting NetworkManager Wifi connections"
+#nmcli --terse connection show | grep 802-11-wireless | cut -d : -f 1 | while read -r name; do nmcli connection delete "$name"; done
 
 
 
-echo "in candle_first_run.sh"
-echo "$(date) - Candle: in candle_first_run.sh" >> /dev/kmsg
-echo "$(date) - FIRST_RUN: doing first run" >> $BOOT_DIR/candle_log.txt
 
 if [ -e "/bin/ply-image" ] && [ -e /dev/fb0 ] && [ -f "$BOOT_DIR/splash_preparing.png" ] && [ -f "$BOOT_DIR/splash_preparing180.png" ]; then
   if [ -e "$BOOT_DIR/rotate180.txt" ]; then
@@ -184,7 +203,7 @@ then
     then
         echo "Creating initial backup of webthings folder"
         echo "Candle: creating initial backup of controller" >> /dev/kmsg
-        echo "FIRST_RUN: creating initial backup of controller" >> $BOOT_DIR/candle_log.txt
+        echo "candle: FIRST_RUN: creating initial backup of controller" >> $BOOT_DIR/candle_log.txt
         tar -czf ./controller_backup.tar ./webthings
 
     else
@@ -278,38 +297,49 @@ chown -R pi:pi "$CANDLE_BASE/.webthings/backups"
 
 
 #An attempt to fix the hotspot not working on first boot
-systemctl stop NetworkManager.service
-sleep 1
+#systemctl stop NetworkManager.service
+#sleep 1
+#
+#if [ -d /etc/NetworkManager/system-connections ]; then
+#	rm -rf /etc/NetworkManager/system-connections/*
+#else
+#	echo "first run: /etc/NetworkManager/system-connections is missing" >> $BOOT_DIR/candle_log.txt
+#fi
 
-if [ -d /etc/NetworkManager/system-connections ]; then
-	rm -rf /etc/NetworkManager/system-connections/*
-else
-	echo "first run: /etc/NetworkManager/system-connections is missing" >> $BOOT_DIR/candle_log.txt
-fi
-
-if [ -d /var/lib/NetworkManager ]; then
-	rm -rf /var/lib/NetworkManager/*
-	echo "[main]" > /var/lib/NetworkManager/NetworkManager.state
-	echo "NetworkingEnabled=true" >> /var/lib/NetworkManager/NetworkManager.state
-	echo "WirelessEnabled=true" >> /var/lib/NetworkManager/NetworkManager.state
-	echo "WWANEnabled=false" >> /var/lib/NetworkManager/NetworkManager.state
-else
-	echo "first run: /var/lib/NetworkManager is missing" >> $BOOT_DIR/candle_log.txt
-fi
+#if [ -d /var/lib/NetworkManager ]; then
+#	rm -rf /var/lib/NetworkManager/*
+#	echo "[main]" > /var/lib/NetworkManager/NetworkManager.state
+#	echo "NetworkingEnabled=true" >> /var/lib/NetworkManager/NetworkManager.state
+#	echo "WirelessEnabled=true" >> /var/lib/NetworkManager/NetworkManager.state
+#	echo "WWANEnabled=false" >> /var/lib/NetworkManager/NetworkManager.state
+#else
+#	echo "first run: /var/lib/NetworkManager is missing" >> $BOOT_DIR/candle_log.txt
+#fi
 
 
 #systemctl start NetworkManager.service
 #sleep 4
 
-
-
-
-echo "$(date) - first run done" >> $BOOT_DIR/candle_log.txt
-
-# Mark first run as complete and reboot
-if [ ! -f $BOOT_DIR/candle_first_run_complete.txt ]; then
-    touch $BOOT_DIR/candle_first_run_complete.txt
-    #rm $BOOT_DIR/candle_first_run.sh
-    reboot
+if [ -f "$CANDLE_BASE/candle/hotspot.sh" ]; then
+	timeout 15 "$CANDLE_BASE/candle/hotspot.sh"
+	systemctl restart NetworkManager.service
+	"$CANDLE_BASE/candle/hotspot.sh" &
+	sleep 10
 fi
+
+
+if [ -f $BOOT_DIR/candle_inspect_first_run.txt ]; then
+	systemctl restart ssh.service
+	echo "candle: FIRST_RUN: not rebooting, ready for inspection" >> $BOOT_DIR/candle_log.txt
+	sleep 600
+else
+	# Mark first run as complete and reboot
+	if [ ! -f $BOOT_DIR/candle_first_run_complete.txt ]; then
+		echo "$(date) - first run done" >> $BOOT_DIR/candle_log.txt
+	    touch $BOOT_DIR/candle_first_run_complete.txt
+	    #rm $BOOT_DIR/candle_first_run.sh
+	    reboot
+	fi
+fi
+
 
