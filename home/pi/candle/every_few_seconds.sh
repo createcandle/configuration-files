@@ -26,8 +26,8 @@ while true; do
 	if [ -d /home/pi/.dbus/session-bus ]; then
 		cd /home/pi/.dbus/session-bus
 		for filename in *; do 
-			if grep "'" -q $filename ; then
-				sed -i "s/'//g" $filename
+			if grep "'" -q "$filename" ; then
+				sed -i "s/'//g" "$filename"
 				echo "candle: every_few_seconds.sh: removed single quotes from dbus file"
 				echo "candle: every_few_seconds.sh: removed single quotes from dbus file" >> /dev/kmsg
 			fi
@@ -46,7 +46,7 @@ while true; do
 				chown pi:pi /run/dnsmasq_now.txt
 				chmod 755 /run/dnsmasq_now.txt
 				rm /run/dnsmasq_log.txt
-				kill -USR2 $DNSMASQ_PID &> /dev/null
+				kill -USR2 "$DNSMASQ_PID" &> /dev/null
 			elif [ -d /home/pi/.webthings/addons/hotspot ]; then
 				# allow the log file to keep growing until the hotspot addon starts
 				maximumsize=100
@@ -56,7 +56,7 @@ while true; do
 				fi
 			else
 				rm /run/dnsmasq_log.txt
-				kill -USR2 $DNSMASQ_PID &> /dev/null
+				kill -USR2 "$DNSMASQ_PID" &> /dev/null
 			fi
 		else
 			rm /run/dnsmasq_log.txt
