@@ -244,7 +244,12 @@ start_dnsmasq () {
 		
 		
 		
-		
+		if rfkill | grep -q ' blocked '; then
+			echo "Had to rfkll unblock all (1)"
+			echo "candle: hotspot.sh: Had to rfkll unblock all (1)" >> /dev/kmsg
+			rfkill unblock all
+			sleep 1
+		fi
 		
 		echo "Candle: hotspot.sh: bringing up hotspot and starting dnsmasq" >> /dev/kmsg
 		if nmcli radio wifi | grep -q 'disabled'; then
@@ -349,12 +354,7 @@ start_dnsmasq () {
 }
 
 
-if rfkill | grep -q ' blocked '; then
-	echo "Had to rfkll unblock all (1)"
-	echo "candle: hotspot.sh: Had to rfkll unblock all (1)" >> /dev/kmsg
-	rfkill unblock all
-	sleep 1
-fi
+
 
 
 # TODO: supporting mlan0 is dubious, since that implies this script is not running on a Raspberry Pi
@@ -391,10 +391,9 @@ elif ip link show | grep -q "wlan0:" ; then
 fi
 
 
-
-# Purge any connections, other than Candle_hotspot, that are set to use $IFNAME
-
-
+#
+# PRUNE connections, other than Candle_hotspot, that are set to use $IFNAME
+#
 nmcli -t -f NAME connection | while read name; do
 	if [[ "$name" != "Candle_hotspot" ]] ; then
 		if nmcli -t connection show "$name" | grep -q "connection.interface-name:$IFNAME" ; then
@@ -440,7 +439,8 @@ done
 
 
 
-#if ip link show | grep "$IFNAME:" | grep -q "state UP"; then
+
+
 if ip link show | grep -q "$IFNAME:"; then
 	
 	echo
@@ -544,14 +544,19 @@ if ip link show | grep -q "$IFNAME:"; then
 	
 
 	if nmcli connection show --active | grep -q Candle_hotspot; then
-		echo "hotspot.sh: WARNING, the Candle_hotspot connection is already up. Either auto-connect did it's job, or DNSmasq crashed"
-		echo "candle: hotspot.sh: the hotspot connection is already up" >> /dev/kmsg
+		echo "candle: hotspot.sh: WARNING, the Candle_hotspot connection is already up. Bringing it down first"
+		echo "candle: hotspot.sh: WARNING, the Candle_hotspot connection is already up. Bringing it down first" >> /dev/kmsg
 		mcli connection down Candle_hotspot
 		sleep 1
 
 	fi
 
-
+	if ip link show | grep "$IFNAME:" | grep -q "state UP"; then
+		echo "candle: hotspot.sh: WARNING, the "$IFNAME" interface is still up. Forcing it down first using ip"
+		echo "candle: hotspot.sh: WARNING, the "$IFNAME" interface is still up. Forcing it down first using ip" >> /dev/kmsg
+		ip link set "$IFNAME" down
+	fi
+	
 	#echo
 	#echo "ifconfig $IFNAME:"
 	#ifconfig "$IFNAME"
@@ -630,46 +635,17 @@ if ip link show | grep -q "$IFNAME:"; then
 			
 		fi
 
-
-		nmcli con modify Candle_hotspot 802-11-wireless.mode ap
-		
-		
-
-		nmcli connection modify Candle_hotspot connection.autoconnect yes
-		# -999 to 999
-		nmcli con modify Candle_hotspot connection.autoconnect-priority 10
-		# Infinite retries
-		nmcli con modify Candle_hotspot connection.autoconnect-retries 0
-		#nmcli con modify Candle_hotspot wifi-sec.pmf disable
-		nmcli con modify Candle_hotspot 802-11-wireless-security.pmf optional
-
-		# Mac OS will apparently only connect if Fast PSK is enabled
-		# https://www.networkmanager.dev/docs/api/latest/settings-802-11-wireless-security.html
-		nmcli con modify Candle_hotspot 802-11-wireless-security.fils 2
-		
-		nmcli connection modify Candle_hotspot ipv4.gateway "172.16.$NETID.1" 
-		nmcli connection modify Candle_hotspot ipv4.dns "172.16.$NETID.1" ipv4.dns-priority 1000
-		
-		# The hotspot is not the default route out of the network
-		nmcli connection modify Candle_hotspot ipv4.never-default true
-
-		
-		
-	
-		#nmcli connection modify Candle_hotspot ipv6.addresses 'fd00::/8' ipv6.method manual 
-		nmcli connection modify Candle_hotspot ipv6.gateway "fd00:$NETID::1"
-		nmcli connection modify Candle_hotspot ipv6.dns "fd00:$NETID::1" ipv6.dns-priority 1000
-		nmcli connection modify Candle_hotspot ipv6.never-default true
-		#nmcli connection modify Candle_hotspot ipv6.method "ignore"
-	
-		nmcli connection modify Candle_hotspot wifi.powersave 2
-	
-		
-		
 	fi
 
+
+
+	
+	
+		
+	
+
 	if [ -f $BOOT_DIR/developer.txt ]; then
-		echo "hotspot: DEVERLOPER: Will try to start Candle_hotspot with: "
+		echo "candle: hotspot.sh: DEVELOPER: using:"
 		echo " - SSID: $SSID"
 		echo " - PASS: $PASSWORD"
 	fi
@@ -695,9 +671,51 @@ if ip link show | grep -q "$IFNAME:"; then
 	
 	# The Candle_hotspot connection should now exist
 	if nmcli connection show | grep -q Candle_hotspot; then
-		
+
+
+
 		echo "What is the interface name of the Candle_hotspot connection?"
 		nmcli connection show Candle_hotspot | grep connection.interface-name
+
+
+
+		
+		# ENSURE
+	
+		nmcli con modify Candle_hotspot 802-11-wireless.mode ap
+	
+		nmcli connection modify Candle_hotspot connection.autoconnect yes
+		# -999 to 999
+		nmcli con modify Candle_hotspot connection.autoconnect-priority 10
+		# Infinite retries
+		nmcli con modify Candle_hotspot connection.autoconnect-retries 0
+		#nmcli con modify Candle_hotspot wifi-sec.pmf disable
+		nmcli con modify Candle_hotspot 802-11-wireless-security.pmf optional
+	
+		# Mac OS will apparently only connect if Fast PSK is enabled
+		# https://www.networkmanager.dev/docs/api/latest/settings-802-11-wireless-security.html
+		nmcli con modify Candle_hotspot 802-11-wireless-security.fils 2
+		
+		nmcli connection modify Candle_hotspot ipv4.gateway "172.16.$NETID.1" 
+		nmcli connection modify Candle_hotspot ipv4.dns "172.16.$NETID.1" ipv4.dns-priority 1000
+		
+		# The hotspot is not the default route out of the network
+		nmcli connection modify Candle_hotspot ipv4.never-default true
+	
+		
+		
+	
+		#nmcli connection modify Candle_hotspot ipv6.addresses 'fd00::/8' ipv6.method manual 
+		nmcli connection modify Candle_hotspot ipv6.gateway "fd00:$NETID::1"
+		nmcli connection modify Candle_hotspot ipv6.dns "fd00:$NETID::1" ipv6.dns-priority 1000
+		nmcli connection modify Candle_hotspot ipv6.never-default true
+		#nmcli connection modify Candle_hotspot ipv6.method "ignore"
+	
+		nmcli connection modify Candle_hotspot wifi.powersave 2
+
+
+
+
 
 		if [ -n "$ZEROMAC" ]; then
 			current_nmcli_mac=$(nmcli c s Candle_hotspot | grep '802-11-wireless.mac-address:')
@@ -801,6 +819,8 @@ if ip link show | grep -q "$IFNAME:"; then
 			echo "candle: hotspot.sh: spotted candle_wifi_power_save.txt -> forcing wifi powersave to on"
 			#nmcli connection modify candle_hotspot wifi.powersave 1
 			nmcli radio wifi powersave on
+		else
+			nmcli radio wifi powersave off
 		fi
 
 
