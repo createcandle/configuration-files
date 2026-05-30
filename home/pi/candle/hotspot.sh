@@ -752,7 +752,7 @@ if ip link show | grep -q "$IFNAME:"; then
 				
 			else
 				nmcli con modify Candle_hotspot wifi.mac-address "$ZEROMAC"
-				nmcli con modify Candle_hotspot wifi.cloned-mac-address "$ZEROMAC"
+				#nmcli con modify Candle_hotspot wifi.cloned-mac-address "$ZEROMAC"
 				echo "candle: hotspot.sh: had to set Candle_hotspot mac to the correct zeromac: $ZEROMAC" >> /dev/kmsg
 			fi
 			
