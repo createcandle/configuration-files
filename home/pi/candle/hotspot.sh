@@ -731,7 +731,7 @@ if ip link show | grep -q "$IFNAME:"; then
 		nmcli connection modify Candle_hotspot ipv6.never-default true
 		#nmcli connection modify Candle_hotspot ipv6.method "ignore"
 	
-		nmcli connection modify Candle_hotspot 802-11-wireless.powersave disabled
+		nmcli connection modify Candle_hotspot 802-11-wireless.powersave disable
 
 
 
