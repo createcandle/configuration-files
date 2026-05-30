@@ -730,8 +730,12 @@ if ip link show | grep -q "$IFNAME:"; then
 		nmcli connection modify Candle_hotspot ipv6.dns "fd00:$NETID::1" ipv6.dns-priority 1000
 		nmcli connection modify Candle_hotspot ipv6.never-default true
 		#nmcli connection modify Candle_hotspot ipv6.method "ignore"
-	
-		nmcli connection modify Candle_hotspot 802-11-wireless.powersave disable
+
+		if [ -f $BOOT_DIR/candle_wifi_power_save.txt ]; then
+			nmcli connection modify Candle_hotspot 802-11-wireless.powersave enable
+		else
+			nmcli connection modify Candle_hotspot 802-11-wireless.powersave disable
+		fi
 
 
 
