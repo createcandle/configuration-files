@@ -4,6 +4,8 @@
 # WPA Supplicant configuration options:
 # https://github.com/sensepost/wpa_sycophant/blob/master/wpa_supplicant/wpa_supplicant.conf
 
+# 
+# https://waltsworkbench.com/securing-a-wifi-hotspot-with-wpa2-using-networkmanager-on-a-raspberry-pi-running-bookworm-aka-debian-12/
 
 
 BOOT_DIR="/boot"
@@ -570,7 +572,6 @@ if ip link show | grep -q "$IFNAME:"; then
 		if [ -n "$ZEROMAC" ]; then
 			nmcli con modify Candle_hotspot wifi.cloned-mac-address "$ZEROMAC"
 		fi
-		
 
 		if [[ $PASSWORD =~ ^........+ ]]; then
 			echo "Setting hotspot password on already existing connection"
@@ -578,6 +579,7 @@ if ip link show | grep -q "$IFNAME:"; then
 			nmcli con modify Candle_hotspot \
 				802-11-wireless-security.key-mgmt wpa-psk \
 				802-11-wireless-security.proto rsn \
+				802-11-wireless-security.group ccmp \
 				802-11-wireless-security.pairwise ccmp \
 				802-11-wireless-security.psk "$PASSWORD"
 		fi
@@ -608,12 +610,13 @@ if ip link show | grep -q "$IFNAME:"; then
 				802-11-wireless.ssid "$SSID" \
 				802-11-wireless-security.key-mgmt wpa-psk \
 				802-11-wireless-security.proto rsn \
+				802-11-wireless-security.group ccmp \
 				802-11-wireless-security.pairwise ccmp \
 				802-11-wireless-security.psk "$PASSWORD" \
 				ipv6.method manual ipv6.addresses "fd00:$NETID::1/8"
 
 				#wifi-sec.pairwise ccmp \
-		
+				# ip link set dev <interface_name> down
 		
 		else
 			nmcli connection add \
@@ -632,13 +635,38 @@ if ip link show | grep -q "$IFNAME:"; then
 		
 		nmcli con modify Candle_hotspot 802-11-wireless.mode ap
 		if [ -n "$ZEROMAC" ]; then
-			nmcli con modify Candle_hotspot wifi.cloned-mac-address "$ZEROMAC"
+			current_nmcli_mac=$(nmcli c s Candle_hotspot | grep '802-11-wireless.mac-address:')
+			if [[ current_nmcli_mac = "*$ZEROMAC*" ]]
+			then
+			    echo "OK, Candle_hotspot connection's MAC is already the correct zeromac:"
+				echo "ZEROMAC: $ZEROMAC"
+				echo "$current_nmcli_mac"
+			else
+				nmcli con modify Candle_hotspot wifi.mac-address "$ZEROMAC"
+				nmcli con modify Candle_hotspot wifi.cloned-mac-address "$ZEROMAC"
+			fi
+			
+
+			if iw dev uap0 info | grep "addr " | grep -q "$ZEROMAC"; then
+				echo "OK, UAP0's MAC is already the correct zeromac:"
+				iw dev uap0 info
+			else
+				ip link set dev uap0 address "$ZEROMAC"
+				echo "UAP0's MAC should now be the current zeromac:"
+				echo "ZEROMAC: $ZEROMAC"
+				iw dev uap0 info
+			fi
+			
 		fi
 		
 		nmcli con modify Candle_hotspot connection.autoconnect-priority 10
 		nmcli con modify Candle_hotspot connection.autoconnect-retries 0
 		#nmcli con modify Candle_hotspot wifi-sec.pmf disable
 		nmcli con modify Candle_hotspot 802-11-wireless-security.pmf optional
+
+		# Mac OS will apparently only connect if Fast PSK is enabled
+		# https://www.networkmanager.dev/docs/api/latest/settings-802-11-wireless-security.html
+		nmcli con modify Candle_hotspot 802-11-wireless-security.fils 2
 		
 		nmcli connection modify Candle_hotspot ipv4.gateway "172.16.$NETID.1" 
 		nmcli connection modify Candle_hotspot ipv4.dns "172.16.$NETID.1" ipv4.dns-priority 1000
@@ -709,8 +737,10 @@ if ip link show | grep -q "$IFNAME:"; then
 			nmcli con modify Candle_hotspot \
 				802-11-wireless-security.key-mgmt wpa-psk \
 				802-11-wireless-security.proto rsn \
+				802-11-wireless-security.group ccmp \
 				802-11-wireless-security.pairwise ccmp \
 				802-11-wireless-security.psk "$PASSWORD"
+				
 
 				# wifi-sec.pairwise ccmp \
 		
@@ -740,6 +770,7 @@ if ip link show | grep -q "$IFNAME:"; then
 			nmcli con modify Candle_hotspot \
 				802-11-wireless-security.key-mgmt "" \
 				802-11-wireless-security.proto "" \
+				802-11-wireless-security.group "" \
 				802-11-wireless-security.pairwise "" \
 				802-11-wireless-security.psk ""
 			echo "Warning, creating open hotspot without any security"
@@ -796,7 +827,6 @@ if ip link show | grep -q "$IFNAME:"; then
 			
 		else
 			if ip link show | grep -q "$IFNAME:"; then
-				
 				
 				if ip link show $IFNAME | grep -q DORMANT; then
 					echo "hotspot.sh: $IFNAME was in DORMANT mode, setting to DEFAULT instead" >> /dev/kmsg
