@@ -453,7 +453,8 @@ if ip link show | grep -q "$IFNAME:"; then
 	
 	
 	MAC=$(nmcli device show "$IFNAME" | grep HWADDR | awk '{print $2}')
-	
+
+	echo "candle: hotspot.sh:  using interface: $IFNAME"
 	
 	if [ "$IFNAME" == "uap0" ]; then
 		# Generate a slightly different MAC address for $IFNAME. Ending it with zero might even help creating a hotspot.
@@ -463,15 +464,10 @@ if ip link show | grep -q "$IFNAME:"; then
 		else
 			ZEROMAC=${MAC%?}0
 		fi
-		ip link set dev $IFNAME address "$ZEROMAC"
+		#ip link set dev $IFNAME address "$ZEROMAC"
 	fi
 	
-	if ip link show $IFNAME | grep -q DORMANT; then
-		echo "hotspot.sh: $IFNAME was in DORMANT mode, setting to DEFAULT instead" >> /dev/kmsg
-		ip link set $IFNAME mode default
-	fi
 	
-	sleep 1
 	
 	#echo
 	#echo "ifconfig $IFNAME:"
@@ -824,6 +820,16 @@ if ip link show | grep -q "$IFNAME:"; then
 			nmcli radio wifi on
 			sleep 1
 		fi
+
+		if ip link show | grep -q "$IFNAME:"; then
+			if ip link show $IFNAME | grep -q DORMANT; then
+				echo "candle: hotspot.sh: $IFNAME was in DORMANT mode, setting to DEFAULT instead" >> /dev/kmsg
+				ip link set $IFNAME mode default
+				sleep 1
+			fi
+		fi
+		
+		
 		
 		
 
@@ -836,18 +842,12 @@ if ip link show | grep -q "$IFNAME:"; then
 			
 		else
 			if ip link show | grep -q "$IFNAME:"; then
-				
-				if ip link show $IFNAME | grep -q DORMANT; then
-					echo "hotspot.sh: $IFNAME was in DORMANT mode, setting to DEFAULT instead" >> /dev/kmsg
-					ip link set $IFNAME mode default
-				fi
-				
 				if ip link show $IFNAME | grep -q 'state DOWN'; then
-					if nmcli device status | grep $IFNAME | grep -q unmanaged ; then
+					if nmcli device status | grep $IFNAME | grep -q 'unmanaged' ; then
+						echo "candle: hotspot.sh: setting interface $IFNAME to managed" >> /dev/kmsg
 						nmcli device set $IFNAME managed true
 					fi
 				fi
-				
 				
 				HOTSPOT_UP_OUTPUT=$(nmcli con up Candle_hotspot)
 				echo "HOTSPOT_UP_OUTPUT: $HOTSPOT_UP_OUTPUT"
