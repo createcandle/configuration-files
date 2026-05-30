@@ -916,8 +916,8 @@ if ip link show | grep -q "$IFNAME:"; then
 				
 				
 				HOTSPOT_UP_OUTPUT=$(nmcli con up Candle_hotspot)
-				echo "HOTSPOT_UP_OUTPUT: $HOTSPOT_UP_OUTPUT"
-				#echo "candle: HOTSPOT_UP_OUTPUT: $HOTSPOT_UP_OUTPUT" >> /dev/kmsg
+				echo " nmcli con up Candle_hotspot OUTPUT: $HOTSPOT_UP_OUTPUT"
+				echo "candle: hotspot.sh: nmcli con up Candle_hotspot OUTPUT: $HOTSPOT_UP_OUTPUT" >> /dev/kmsg
 		
 				if echo "$HOTSPOT_UP_OUTPUT" | grep -q "successfully activated" ; then
 					sleep 1
