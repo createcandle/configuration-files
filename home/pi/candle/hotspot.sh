@@ -30,7 +30,9 @@ fi
 
 echo "candle: hotspot.sh: Hello" >> /dev/kmsg
 
-
+MAC=""
+ZEROMAC=""
+REAL_MAC=""
 
 
 #systemctl restart NetworkManager.service
@@ -466,17 +468,31 @@ done
 if ip link show | grep -q "$IFNAME:"; then
 	
 	echo
+	echo "candle: hotspot.sh:  using interface: $IFNAME"
 	#echo "ifconfig $IFNAME:"
 	#ifconfig $IFNAME
 	echo
 	MAC=""
 	
 	# TODO: support for MLAN0 is not fully implemented at the moment.
-	
-	
-	MAC=$(nmcli device show "$IFNAME" | grep HWADDR | awk '{print $2}')
 
-	echo "candle: hotspot.sh:  using interface: $IFNAME"
+	if ip link show | grep -q "wlan0"; then
+		MAC=$(nmcli device show wlan0 | grep HWADDR | awk '{print $2}')
+		echo "candle: hotspot.sh: wlan0 REAL MAC: $MAC"
+	elif ip link show | grep -q "mlan0"; then
+		MAC=$(nmcli device show mlan0 | grep HWADDR | awk '{print $2}')
+		echo "candle: hotspot.sh: mlan0 REAL MAC: $MAC"
+	fi
+
+
+	
+	ZEROMAC="$MAC"
+	
+	
+	#MAC=$(nmcli device show "$IFNAME" | grep HWADDR | awk '{print $2}')
+	#echo "candle: hotspot.sh:  interface MAC before: $MAC"
+	
+	
 	
 	if [ "$IFNAME" == "uap0" ]; then
 		# Generate a slightly different MAC address for $IFNAME. Ending it with zero might even help creating a hotspot.
@@ -520,7 +536,8 @@ if ip link show | grep -q "$IFNAME:"; then
 	
 	# PREPARE SSID
 
-	SHORTMAC=$(echo "$(echo $SHORTMAC)_nomap")
+	#SHORTMAC=$(echo "$(echo $SHORTMAC)_nomap")
+	SHORTMAC="$(echo $SHORTMAC)_nomap" # SIC
 	echo "hotspot.sh: short mac address with _nomap: $SHORTMAC"
 	
 	SSID="Candle"
@@ -539,7 +556,7 @@ if ip link show | grep -q "$IFNAME:"; then
 	
 	# Allow the user to override the SSID
 	if [ -f $BOOT_DIR/candle_hotspot_name.txt ]; then
-		SPOTTED_HOTSPOT_SSID=$(cat $BOOT_DIR/candle_hotspot_name.txt)
+		SPOTTED_HOTSPOT_SSID=$(cat $BOOT_DIR/candle_hotspot_name.txt | tr -d '\n')
 		if [ -n "$SPOTTED_HOTSPOT_SSID" ]; then 
 			echo "Spotted a prefered hotspot SSID in candle_hotspot_name.txt: $SPOTTED_HOTSPOT_SSID"
 			SSID="$SPOTTED_HOTSPOT_SSID"
@@ -743,6 +760,7 @@ if ip link show | grep -q "$IFNAME:"; then
 
 		if [ -n "$ZEROMAC" ]; then
 			current_nmcli_mac=$(nmcli c s Candle_hotspot | grep '802-11-wireless.mac-address:')
+			echo "current_nmcli_mac: $current_nmcli_mac"
 			if [[ $current_nmcli_mac = "*$ZEROMAC*" ]]
 			then
 			    echo "OK, Candle_hotspot connection's MAC is already the correct zeromac:"
