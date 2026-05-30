@@ -52,7 +52,7 @@ fi
 
 # Just to be sure..
 echo "Deleting NetworkManager Wifi connections"
-nmcli --terse connection show | grep 802-11-wireless | cut -d : -f 1 | while read name; do nmcli connection delete "$name"; done
+nmcli --terse connection show | grep 802-11-wireless | cut -d : -f 1 | while read -r name; do nmcli connection delete "$name"; done
 
 
 
