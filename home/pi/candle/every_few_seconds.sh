@@ -11,17 +11,16 @@ fi
 
 while true; do
 
-	
 	if [ ! -f $BOOT_DIR/candle_skip_out_of_memory_check.txt ] && [ ! -f $BOOT_DIR/candle_ran_out_of_memory.txt ]; then
-		if [[ $(dmesg | grep -i 'oom') ]]; then
+		AVAILABLE_MB=$(free -m | awk '/^Mem:/{print $7}')
+		THRESHOLD=30
+		
+		if [ "$AVAILABLE_MB" -lt "$THRESHOLD" ]; then
+			echo "candle: every_few_seconds.sh: $($date) WARNING: Only ${AVAILABLE_MB}MB available (threshold: ${THRESHOLD}MB)" >> /dev/kmsg
 			touch $BOOT_DIR/candle_safe_mode.txt
 			touch $BOOT_DIR/candle_ran_out_of_memory.txt
-			echo "candle: every_few_seconds.sh: detected out of memory event!"
-			echo "candle: every_few_seconds.sh: detected out of memory event!" >> /dev/kmsg
-			echo "$($date) every_few_seconds.sh: detected out of memory event!" >> $BOOT_DIR/candle_log.txt
 		fi
 	fi
-
 
 	if [ -d /home/pi/.dbus/session-bus ]; then
 		cd /home/pi/.dbus/session-bus
