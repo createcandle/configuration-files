@@ -146,7 +146,7 @@ if [ -z "$OLD_SSID" ]; then
 	# Create a semi-unique 4 character code for the hotspot's SSID, 
 	# based on the last two characters from the MAC address plus 2 random characters
 	
-	SHORTMAC=${MAC: -2}
+	SHORTMAC=${REALMAC: -2}
 	echo "candle: hotspot.sh: last two characters from MAC: $SHORTMAC"
 	
 	RANDOMCHARS=""
