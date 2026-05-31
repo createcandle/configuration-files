@@ -1,6 +1,6 @@
 [Unit]
 Description=Seeed Voicecard service
-After=alsa-restore.service
+After=etc-hostname.mount etc-ssh.mount alsa-restore.service
 ConditionPathExists=/boot/firmware/candle_respeaker.txt
 ConditionPathExists=/usr/bin/seeed-voicecard
  
