@@ -5,12 +5,12 @@ if [ -f /boot/firmware/emergency.txt ]; then
 fi
 
 BOOT_DIR="/boot"
-if lsblk | grep -q $BOOT_DIR/firmware; then
+if [ -d $BOOT_DIR/firmware ]; then
     BOOT_DIR="$BOOT_DIR/firmware"
 fi
 
 while true; do
-
+	sleep 1
 	if [ ! -f $BOOT_DIR/candle_skip_out_of_memory_check.txt ] && [ ! -f $BOOT_DIR/candle_ran_out_of_memory.txt ]; then
 		AVAILABLE_MB=$(free -m | awk '/^Mem:/{print $7}')
 		THRESHOLD=30
@@ -172,6 +172,6 @@ while true; do
 		fi
 	fi
 
-	sleep 2
+	sleep 1
 
 done
