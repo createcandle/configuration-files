@@ -66,9 +66,10 @@ while true; do
 			
 		fi
 	fi
+
+	sleep 1
 	
-	
-	# Make sure uaop0 always exists
+	# Make sure uap0 always exists
 	if ip link show | grep -q "mlan0:" ; then
 		if ip link show | grep -q "uap0:" ; then
 			:
