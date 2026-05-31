@@ -609,7 +609,7 @@ fi
 if ip link show | grep -q "$IFNAME:"; then
 	
 	echo
-	echo "candle: hotspot.sh: preparation done.  continueing with interface: $IFNAME"
+	echo "candle: hotspot.sh: preparation done.  continuing with interface: $IFNAME"
 	#echo "ifconfig $IFNAME:"
 	#ifconfig $IFNAME
 	echo
@@ -638,10 +638,12 @@ if ip link show | grep -q "$IFNAME:"; then
 		sleep 1
 	fi
 
+
+
 	# Ensure the interface has the correct IP addresses
 	current_ips=$(ip addr show "$IFNAME")
 	echo "candle: hotspot.sh: verify current_ips: $current_ips"
-	if [[ "$current_ips" == "*$OWN_IP4*" ]]; then
+	if [[ "$current_ips" == "*$OWN_IP4/24*" ]]; then
 		echo "candle: hotspot.sh: ip4 $OWN_IP4 seems already set for interface $IFNAME"
 		echo "candle: hotspot.sh: ip4 $OWN_IP4 seems already set for interface $IFNAME" >> /dev/kmsg
 	else
@@ -649,7 +651,7 @@ if ip link show | grep -q "$IFNAME:"; then
 		echo "candle: hotspot.sh: added ip4 $OWN_IP4 to interface $IFNAME" >> /dev/kmsg
 		ip addr add "$OWN_IP4"/24 dev "$IFNAME"
 	fi
-	if [[ "$current_ips" == "*$OWN_IP6*" ]]; then
+	if [[ "$current_ips" == "*$OWN_IP6/32*" ]]; then
 		echo "candle: hotspot.sh: ip6 $OWN_IP6 seems already set for interface $IFNAME"
 		echo "candle: hotspot.sh: ip6 $OWN_IP6 seems already set for interface $IFNAME" >> /dev/kmsg
 	else
@@ -845,6 +847,11 @@ if ip link show | grep -q "$IFNAME:"; then
 		fi
 		
 		
+		
+		
+		# TODO: update IPv4 and IPv6 addresses, including for dns servers etc
+		
+		
 		# Update power save
 		
 		if [ -f $BOOT_DIR/candle_wifi_power_save.txt ]; then
@@ -999,6 +1006,9 @@ if ip link show | grep -q "$IFNAME:"; then
 				echo "candle: hotspot.sh: seting wifi protected management frames back to optional"
 				echo "candle: hotspot.sh: seting wifi protected management frames back to optional" >> /dev/kmsg
 				nmcli con modify Candle_hotspot 802-11-wireless-security.pmf optional
+			else
+				echo "candle: hotspot.sh: wifi protected management frames already set to optional"
+				echo "candle: hotspot.sh: wifi protected management frames already set to optional" >> /dev/kmsg
 			fi
 		fi
 		
@@ -1017,12 +1027,7 @@ if ip link show | grep -q "$IFNAME:"; then
 		echo
 
 
-		#if nmcli radio wifi | grep -q 'disabled'; then
-		#	echo "hotspot.sh: WARNING, had to bring up wifi radio (1)"
-		#	echo "candle: hotspot.sh: WARNING, had to bring up wifi radio (1)" >> /dev/kmsg
-		#	nmcli radio wifi on
-		#	sleep 1
-		#fi
+		
 
 		rfkill unblock
 		
@@ -1033,33 +1038,46 @@ if ip link show | grep -q "$IFNAME:"; then
 				echo "candle: hotspot.sh: interface $IFNAME was down, forcing to UP using ip"
 				echo "candle: hotspot.sh: interface $IFNAME was down, forcing to UP using ip" >> /dev/kmsg
 				ip link set "$IFNAME" up
-				sleep 1
+				#sleep 1
 			else
 				echo "candle: hotspot.sh: OK, interface $IFNAME was already brought up by NetworkManager"
 				echo "candle: hotspot.sh: OK, interface $IFNAME was already brought up by NetworkManager" >> /dev/kmsg
 			fi
 			
+			rm -rf /var/run/wpa_supplicant/p2p-dev-*
 			
 			if nmcli device status | grep "$IFNAME" | grep -q 'unmanaged' ; then
 				echo "candle: hotspot.sh: setting interface $IFNAME to managed"
 				echo "candle: hotspot.sh: setting interface $IFNAME to managed" >> /dev/kmsg
 				nmcli device set "$IFNAME" managed true
-				sleep 1
+				#sleep 1
 			else
 				echo "candle: hotspot.sh: unexpectedly, interface $IFNAME was already managed by NetworkManager"
 				echo "candle: hotspot.sh: unexpectedly, interface $IFNAME was already managed by NetworkManager" >> /dev/kmsg
 			fi
 			
+			nmcli c u Candle_hotspot
+			
+			rm -rf /var/run/wpa_supplicant/p2p-dev-*
 			
 			if ip link show "$IFNAME" | grep -q DORMANT; then
 				echo "candle: hotspot.sh: $IFNAME was in DORMANT mode, setting to DEFAULT instead"
 				echo "candle: hotspot.sh: $IFNAME was in DORMANT mode, setting to DEFAULT instead" >> /dev/kmsg
 				ip link set $IFNAME mode default
-				sleep 1
+				#sleep 1
 			else
 				echo "candle: hotspot.sh: OK, interface $IFNAME was not dormant"
 				echo "candle: hotspot.sh: OK, interface $IFNAME was not dormant" >> /dev/kmsg
 			fi
+			
+			rm -rf /var/run/wpa_supplicant/p2p-dev-*
+			
+			#if nmcli radio wifi | grep -q 'disabled'; then
+			#	echo "hotspot.sh: WARNING, had to bring up wifi radio (1)"
+			#	echo "candle: hotspot.sh: WARNING, had to bring up wifi radio (1)" >> /dev/kmsg
+			#	nmcli radio wifi on
+			#	sleep 1
+			#fi
 			
 		else
 			echo "candle: hotspot.sh: ERROR, interface $IFNAME was somehow missing from ip link show:"
@@ -1081,6 +1099,23 @@ if ip link show | grep -q "$IFNAME:"; then
 			start_dnsmasq
 			
 		else
+			
+			echo ""
+			echo "candle: hotspot.sh: ERROR, Candle_hotspot connection was not active"
+			echo "candle: hotspot.sh: ERROR, Candle_hotspot connection was not active" >> /dev/kmsg
+			echo ""
+			
+			ip link show
+			echo ""
+			rm -rf /var/run/wpa_supplicant/p2p-dev-*
+			echo ""
+			ip link show
+			echo ""
+			echo "candle: hotspot.sh: $(ip link show)" >> /dev/kmsg
+			
+			
+			
+			
 			if ip link show | grep -q "$IFNAME:"; then
 				
 				
