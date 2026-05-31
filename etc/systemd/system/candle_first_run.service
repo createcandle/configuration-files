@@ -1,10 +1,10 @@
 [Unit]
 Description=Candle first run    
-After=home-pi-.webthings.mount var-lib-NetworkManager.mount
+After=home-pi-.webthings.mount etc-hostname.mount etc-ssh.mount var-lib-NetworkManager.mount
 #ConditionFirstBoot=yes 
 ConditionPathExists=/boot/firmware/candle_first_run.sh
 ConditionPathExists=!/boot/firmware/candle_first_run_complete.txt
-Before=ssh.service candle_early.service webthings-gateway.service
+Before=candle_early.service webthings-gateway.service
 
 [Service]
 User=root
