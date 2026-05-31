@@ -321,7 +321,7 @@ chown -R pi:pi "$CANDLE_BASE/.webthings/backups"
 if [ -f "$CANDLE_BASE/candle/hotspot.sh" ]; then
 	timeout 15 "$CANDLE_BASE/candle/hotspot.sh"
 	systemctl restart NetworkManager.service
-	"$CANDLE_BASE/candle/hotspot.sh" &
+	#"$CANDLE_BASE/candle/hotspot.sh" &
 	sleep 10
 fi
 
