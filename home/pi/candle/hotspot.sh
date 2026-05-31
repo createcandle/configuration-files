@@ -1,11 +1,14 @@
 #!/bin/bash
 
-
 # WPA Supplicant configuration options:
 # https://github.com/sensepost/wpa_sycophant/blob/master/wpa_supplicant/wpa_supplicant.conf
 
 # 
 # https://waltsworkbench.com/securing-a-wifi-hotspot-with-wpa2-using-networkmanager-on-a-raspberry-pi-running-bookworm-aka-debian-12/
+
+
+# https://unix.stackexchange.com/questions/765116/remove-p2p-dev-wlp1s0-device-network-manager
+
 
 
 BOOT_DIR="/boot"
@@ -25,36 +28,180 @@ fi
 if [ ! -f $BOOT_DIR/candle_hotspot.txt ]; then
 	echo "candle: hotspot.sh: no candle_hotspot.txt, aborting!"
 	echo "candle: hotspot.sh: no candle_hotspot.txt, aborting!" >> /dev/kmsg
+	sleep 10
 	exit 0
 fi
 
-echo "candle: hotspot.sh: Hello" >> /dev/kmsg
+#echo "$(date) - Candle hotspot.sh: starting"
+#echo "$(date) - Candle hotspot.sh: starting" >> /dev/kmsg
 
-MAC=""
-ZEROMAC=""
-REAL_MAC=""
+echo "candle: hotspot.sh: $(date) - Start"
+echo "candle: hotspot.sh: $(date) - Start" >> /dev/kmsg
 
 
-#systemctl restart NetworkManager.service
-rm -rf /var/run/wpa_supplicant/p2p-dev-*
 
+
+#
+#  PREPARATION
+#
+
+
+
+IFNAME="uap0"
+if [ ! -f $BOOT_DIR/candle_hotspot_force_uap0.txt ]; then
+	if ip link show | grep -q "wlan1:"; then
+		IFNAME="wlan1"
+		echo "candle: hotspot.sh: detected a second radio, will use it for hotspot: $IFNAME"
+		echo "candle: hotspot.sh: detected a second radio, will use it for hotspot: $IFNAME" >> /dev/kmsg
+	elif ip link show | grep -q "mlan1:"; then
+		IFNAME="mlan1"
+		echo "candle: hotspot.sh: detected a second radio, will use it for hotspot: $IFNAME"
+		echo "candle: hotspot.sh: detected a second radio, will use it for hotspot: $IFNAME" >> /dev/kmsg
+	fi
+else
+	echo "candle: hotspot.sh: forcing use of uap0 interface for hotspot"
+	echo "candle: hotspot.sh: forcing use of uap0 interface for hotspot" >> /dev/kmsg
+fi
+
+echo "candle: hotspot.sh:  IFNAME: $IFNAME"
+echo "candle: hotspot.sh:  IFNAME: $IFNAME" >> /dev/kmsg
+
+
+
+REALMAC=""
+
+# TODO: support for MLAN0 is not fully implemented at the moment.
+
+if ip link show | grep -q "wlan0"; then
+	REALMAC=$(nmcli device show wlan0 | grep HWADDR | awk '{print $2}')
+	echo "candle: hotspot.sh: wlan0 REAL MAC: $REALMAC"
+elif ip link show | grep -q "mlan0"; then
+	REALMAC=$(nmcli device show mlan0 | grep HWADDR | awk '{print $2}')
+	echo "candle: hotspot.sh: mlan0 REAL MAC: $REALMAC"
+fi
+
+echo "candle: hotspot.sh:  REALMAC: $REALMAC"
+echo "candle: hotspot.sh:  REALMAC: $REALMAC" >> /dev/kmsg
+
+
+
+
+ZEROMAC="$REALMAC"
+
+if [ "$IFNAME" == "uap0" ]; then
+	# Generate a slightly different MAC address for $IFNAME. Ending it with zero might even help creating a hotspot.
+	
+	if [[ "$REALMAC" =~ 0$ ]]; then
+    	ZEROMAC=${REALMAC%?}1
+	else
+		ZEROMAC=${REALMAC%?}0
+	fi
+	#ip link set dev $IFNAME address "$ZEROMAC"
+fi
+
+echo "candle: hotspot.sh:  ZEROMAC: $ZEROMAC"
+echo "candle: hotspot.sh:  ZEROMAC: $ZEROMAC" >> /dev/kmsg
+
+
+
+
+#
+#  PREPARE SSID
+#
+
+
+
+
+# Allow the user to override the SSID
+if [ -f $BOOT_DIR/candle_hotspot_name.txt ]; then
+	SPOTTED_HOTSPOT_SSID=$(cat $BOOT_DIR/candle_hotspot_name.txt | tr -d '\n')
+	if [ -n "$SPOTTED_HOTSPOT_SSID" ]; then 
+		echo "candle: hotspot.sh: Spotted a prefered hotspot SSID in candle_hotspot_name.txt: $SPOTTED_HOTSPOT_SSID"
+		echo "candle: hotspot.sh: Spotted a prefered hotspot SSID in candle_hotspot_name.txt: $SPOTTED_HOTSPOT_SSID" >> /dev/kmsg
+		SSID="$SPOTTED_HOTSPOT_SSID"
+	fi
+fi
+
+# If a connection already exists, re-use it's SSID
+if [ -z "$OLD_SSID" ]; then	
+	if nmcli c s | grep -q 'Candle_hotspot'; then
+		# check if there is an existing SSID to re-use instead
+		#OLD_SSID=$(nmcli c s Candle_hotspot | grep '802-11-wireless.ssid' | awk '{print $2}')
+		OLD_SSID=$(nmcli c s Candle_hotspot | grep '802-11-wireless.ssid:' | sed 's/802-11-wireless.ssid://' | xargs)
+	
+		echo "candle: hotspot.sh: SSID from existing Candle_hotspot connection: -->$OLD_SSID<--"
+		echo "candle: hotspot.sh: SSID from existing Candle_hotspot connection: -->$OLD_SSID<--" >> /dev/kmsg
+	
+		#if [[ "$OLD_SSID" == *"_nomap"* ]]; then
+		if [ -n "$OLD_SSID" ]; then	
+		    echo "spotted existing Candle_hotspot connection, setting SSID to OLD_SSID: $SSID -> $OLD_SSID"
+			SSID="$OLD_SSID"
+		fi
+	fi
+fi
+
+# If no existing SSID is available, generate a new one
+if [ -z "$OLD_SSID" ]; then	
+	
+	# Create a semi-unique 4 character code for the hotspot's SSID, 
+	# based on the last two characters from the MAC address plus 2 random characters
+	
+	SHORTMAC=${MAC: -2}
+	echo "candle: hotspot.sh: last two characters from MAC: $SHORTMAC"
+	
+	RANDOMCHARS=""
+	chars=1234567890ABCDEF
+	for i in {1..2}; do
+		RANDOMCHARS=$(echo -n "$RANDOMCHARS${chars:RANDOM%${#chars}:1}")
+	done
+	echo "candle: hotspot.sh: two random characters: $RANDOMCHARS"
+
+	SHORTMAC="$SHORTMAC$RANDOMCHARS"
+
+	echo "candle: hotspot.sh: semi-unique 4 character code for SSID: $SHORTMAC"
+	echo "candle: hotspot.sh: semi-unique 4 character code for SSID: $SHORTMAC" >> /dev/kmsg
+
+	SSID="Candle $(echo $SHORTMAC)_nomap" # SIC
+	echo "candle: hotspot.sh: freshly generated SSID: $SSID"
+	echo "candle: hotspot.sh: freshly generated SSID: $SSID" >> /dev/kmsg
+fi
+
+
+echo "candle: hotspot.sh:  SSID: $SSID"
+echo "candle: hotspot.sh:  SSID: $SSID" >> /dev/kmsg
+
+
+
+echo ""
+echo "-------------------"
+echo ""
+echo "candle: hotspot.sh: iw reg get: $(iw reg get)"
 echo "candle: hotspot.sh: iw reg get: $(iw reg get)" >> /dev/kmsg
 echo ""
+echo "candle: hotspot.sh: regdom: $(journalctl -b | grep REGDOM)"
 echo "candle: hotspot.sh: regdom: $(journalctl -b | grep REGDOM)" >> /dev/kmsg
 echo ""
+echo "candle: hotspot.sh: rfkill: $(rfkill)"
 echo "candle: hotspot.sh: rfkill: $(rfkill)" >> /dev/kmsg
 echo ""
+echo "candle: hotspot.sh: nmcli radio: $(nmcli radio)"
 echo "candle: hotspot.sh: nmcli radio: $(nmcli radio)" >> /dev/kmsg
 echo ""
+echo "candle: hotspot.sh: nmcli dev: $(nmcli dev)"
 echo "candle: hotspot.sh: nmcli dev: $(nmcli dev)" >> /dev/kmsg
 echo ""
+echo "candle: hotspot.sh: nmcli connection show: $(nmcli connection show)"
 echo "candle: hotspot.sh: nmcli connection show: $(nmcli connection show)" >> /dev/kmsg
+echo ""
+echo "-------------------"
+echo ""
+
 
 
 
 # Generate a random ip4/16 octet. The aim is that each hotspot has a separate range.
-# In the future they could more easily be meshed together in a virtual private network between the Cnadle COntrollers
-# As a way to create a larger wifi network with multiple access points that is still walled off from the rest of the network
+# In the future they could more perhaps be meshed together in a virtual private network between the Candle Controllers
+# as a way to create a larger wifi network with multiple access points that is still walled off from the rest of the network
 NETID=$((20 + $RANDOM % 220))
 if [ -f $BOOT_DIR/candle_hotspot_net_number.txt ]; then
 	NETID=$(cat "$BOOT_DIR/candle_hotspot_net_number.txt" | tr -d '\n')
@@ -62,10 +209,21 @@ else
 	echo $NETID > $BOOT_DIR/candle_hotspot_net_number.txt
 fi
 
-echo "hotspot: hopefully unique random NETID: $NETID"
+echo "candle: hotspot.sh:  NETID: $NETID"
+echo "candle: hotspot.sh:  NETID: $NETID" >> /dev/kmsg
 
-# most basic command to create a hotspot:
-# nmcli dev wifi hotspot ifname $IFNAME ssid "Candle" password "smarthome"
+
+OWN_IP4="172.16.$NETID.1"
+OWN_IP6="fd00:$NETID::1"
+
+echo "candle: hotspot.sh:  OWN_IP4: $OWN_IP4"
+echo "candle: hotspot.sh:  OWN_IP4: $OWN_IP4" >> /dev/kmsg
+echo "candle: hotspot.sh:  OWN_IP6: $OWN_IP6"
+echo "candle: hotspot.sh:  OWN_IP6: $OWN_IP6" >> /dev/kmsg
+
+
+
+
 
 TOTAL_MEMORY=$(awk '/MemTotal/ {print $2}' /proc/meminfo)
 if [ "$TOTAL_MEMORY" -lt "800000" ] && [ -f $BOOT_DIR/candle_hotspot_5G.txt ]; then
@@ -74,10 +232,6 @@ if [ "$TOTAL_MEMORY" -lt "800000" ] && [ -f $BOOT_DIR/candle_hotspot_5G.txt ]; t
 	rm "$BOOT_DIR/candle_hotspot_5G.txt"
 fi
 
-IFNAME="uap0"
-if ip link show | grep -q "wlan1:" ; then
-	IFNAME="wlan1"
-fi
 
 
 # Setting it (again) seems to solve issues with starting the hotspot with iwd
@@ -85,13 +239,6 @@ fi
 #sleep 1
 
 
-if [ ! -f $BOOT_DIR/candle_hotspot.txt ]; then
-	echo "hotspot.sh: no candle_hotspot.txt, and not in safe mode, so aborting"
-	sleep 20
-	exit 0
-fi
-echo "$(date) - Candle hotspot.sh: starting"
-echo "$(date) - Candle hotspot.sh: starting" >> /dev/kmsg
 
 #if [ ! -f $BOOT_DIR/candle_hotspot.txt ]; then
 #	echo "candle: hotspot.sh: not starting hotspot"
@@ -122,27 +269,78 @@ if [ -f $BOOT_DIR/candle_hotspot_password.txt ]; then
 fi
 
 if [ -f "$BOOT_DIR/developer.txt" ]; then
-	echo "candle: hotspot.sh: DEVELOPER: using password: -->$PASSWORD<--"
-	echo "candle: hotspot.sh: DEVELOPER: using password: -->$PASSWORD<--" >> /dev/kmsg
+	echo "candle: hotspot.sh: DEVELOPER:  PASSWORD: -->$PASSWORD<--"
+	echo "candle: hotspot.sh: DEVELOPER:  PASSWORD: -->$PASSWORD<--" >> /dev/kmsg
 fi
 
 
 
-if ip link show | grep -q "wlan0:" && [ -f /sbin/iw ]; then
-    echo "wlan0 exists"
-	#nmcli device wifi rescan ifname wlan0
-	if ip link show | grep -q "uap0:"; then
-		echo "wlan0 and uap0 already exist"
-	else
-		if ip link show | grep -q "wlan1:" && [ ! -f $BOOT_DIR/candle_hotspot_force_uap0.txt ]; then
-			echo "candle: hotspot.sh: No need to create uap0, as a second WiFi interface (wlan1, a USB dongle?) exists" >> /dev/kmsg
-		else
-			echo "candle: hotspot.sh: creating uap0 interface" >> /dev/kmsg
-			/sbin/iw dev wlan0 interface add uap0 type __ap
-			nmcli device set uap0 managed true
+
+
+
+
+#
+#  PRUNE 
+#
+
+#removes connections, other than Candle_hotspot, that are set to use $IFNAME
+start_prune () {
+	echo "candle: hotspot.sh: in start_prune"
+	echo "candle: hotspot.sh: in start_prune" >> /dev/kmsg
+	
+	nmcli -t -f NAME connection | while read -r name; do
+		if [[ "$name" != "Candle_hotspot" ]] ; then
+			if nmcli -t connection show "$name" | grep -q "connection.interface-name:$IFNAME" ; then
+				WASUP="false"
+				if nmcli -f GENERAL.STATE con show "$name" | grep -q activated ; then
+					echo "candle: hotspot.sh: bringing down a connection that was using $IFNAME, but was not Candle_hotspot: $name"
+					echo "candle: hotspot.sh: bringing down a connection that was using $IFNAME, but was not Candle_hotspot: $name" >> /dev/kmsg
+					nmcli connection down "$name"
+					WASUP="true"
+				fi
+				if ip link show | grep -q "wlan0:" ; then
+					nmcli connection modify "$name" ifname wlan0
+					if nmcli -t connection show "$name" | grep -q "connection.interface-name:wlan0" ; then
+						# Connection was succesfully modified to use wlan0 instead
+						if [ "$WASUP" == "true" ] ; then
+							if nmcli -t -f DEVICE c s --active | grep -q "wlan0" ; then
+								echo "candle: hotspot.sh: connection pruning: want to bring up the modified connection, but another connection is already using wlan0"
+							else
+								nmcli connection up "$name"
+								echo "candle: hotspot.sh: connection pruning: succesfully moved active connection from $IFNAME to wlan0 interface"
+								echo "candle: hotspot.sh: connection pruning: succesfully moved active connection from $IFNAME to wlan0 interface" >> /dev/kmsg
+							fi
+						fi
+					else
+						echo "candle: hotspot.sh: connection pruning: removing a duplicate connection with name: $name"
+						echo "candle: hotspot.sh: connection pruning: removing a duplicate connection with name: $name" >> /dev/kmsg
+						nmcli connection delete "$name"
+					fi
+				else
+					echo "candle: hotspot.sh: connection pruning: removing a duplicate connection with name: $name"
+					echo "candle: hotspot.sh: connection pruning: removing a duplicate connection with name: $name" >> /dev/kmsg
+					nmcli connection delete "$name"
+					#REMAINING_ACTIVE_CONNECTIONS=$(nmcli -t -f DEVICE c s --active | grep -v lo)
+					#echo "hotspot.sh: connection pruning:  REMAINING_ACTIVE_CONNECTIONS: $REMAINING_ACTIVE_CONNECTIONS"
+					#if [ -n "$REMAINING_ACTIVE_CONNECTIONS" ] ; then
+					#	nmcli connection delete "$name"
+					#	echo "hotspot.sh: had to delete a connection that was set to use $IFNAME: $name" >> /dev/kmsg
+					#else:
+					#	echo "hotspot.sh: a connection is already using $IFNAME, and it can't be moved to wlan0, and there is no other connection either. So it will have to remain this way." >> /dev/kmsg
+					#fi
+				fi
+			fi
 		fi
-	fi
-fi
+	done
+
+}
+
+
+
+
+
+
+
 
 
 
@@ -180,17 +378,21 @@ fi
 
 
 
+#
+#  START DNSMASQ FUNCTION
+#
+
 start_dnsmasq () {
-	echo "in start_dnsmasq"
+	echo "candle: hotspot.sh: in start_dnsmasq"
 	echo "candle: hotspot.sh: in start_dnsmasq" >> /dev/kmsg
 	
 	if [ -f $BOOT_DIR/candle_hotspot.txt ]; then
-		echo "hotspot.sh: bringing up hotspot and starting dnsmasq"
+		echo "candle: hotspot.sh: OK, still bringing up hotspot and starting dnsmasq"
 		
 		
 		#IP4S=$(hostname -I | sed -r 's/172.16.$NETID.1//' | xargs)
 		IPS=$(hostname -I | sed -r 's/172.16.[0-9]\+.1//' | xargs)
-		echo "hotspot.sh: IP address(es): $IPS"
+		echo "candle: hotspot.sh: IP address(es): $IPS"
 	
 		if iptables -t nat -L -v | grep -q "$IFNAME"; then
 			echo "$IFNAME already exists in iptables"
@@ -247,9 +449,7 @@ start_dnsmasq () {
 				iptables -I FORWARD -i $IFNAME -d 10.0.0.0/8 -m iprange --src-range "172.16.$NETID.2-172.16.$NETID.255" -j DROP
 
 				ip6tables -I FORWARD -i $IFNAME -d "fe80:$NETID::/10" -s "fd00:$NETID::/8" -j DROP
-			
 			fi
-
 		
 			# Redirect Candle UI ports
 			echo "candle: hotspot.sh: step 2 of adding port redirect rules on hotspot side"
@@ -259,26 +459,25 @@ start_dnsmasq () {
 			iptables -t nat    -I PREROUTING -s "172.16.$NETID.0/24" -p tcp -d "172.16.$NETID.1" --dport 443 -j REDIRECT --to-port 4443
 			iptables -I INPUT -s "172.16.$NETID.0/24" -m state --state NEW -m tcp -p tcp -d "172.16.$NETID.1" --dport 8080 -m mark --mark 2 -j ACCEPT
 			iptables -I INPUT -s "172.16.$NETID.0/24" -m state --state NEW -m tcp -p tcp -d "172.16.$NETID.1" --dport 4443 -m mark --mark 2 -j ACCEPT
-
 		fi
-		
-		
-		
-		
-		
-		
 		
 		if rfkill | grep -q ' blocked '; then
 			echo "Had to rfkll unblock all (1)"
-			echo "candle: hotspot.sh: Had to rfkll unblock all (1)" >> /dev/kmsg
+			echo "candle: hotspot.sh: start_dnsmasq: had to rfkll unblock all" >> /dev/kmsg
 			rfkill unblock all
 			sleep 1
 		fi
 		
-		echo "Candle: hotspot.sh: bringing up hotspot and starting dnsmasq" >> /dev/kmsg
+		
+		echo "any p2p-dev sockets in /var/run/wpa_supplicant?:"
+		ls /var/run/wpa_supplicant/p2p-dev-*
+		echo "deleting any p2p-dev sockets in /var/run/wpa_supplicant"
+		rm -rf /var/run/wpa_supplicant/p2p-dev-*
+		
+		echo "Candle: hotspot.sh: bringing up hotspot before starting dnsmasq" >> /dev/kmsg
 		if nmcli radio wifi | grep -q 'disabled'; then
-			echo "hotspot.sh: WARNING, had to bring up wifi radio (2)"
-			echo "candle: hotspot.sh: WARNING, had to bring up wifi radio (2)" >> /dev/kmsg
+			echo "candle: hotspot.sh: doing nmcli radio wifi on"
+			echo "candle: hotspot.sh: doing nmcli radio wifi on" >> /dev/kmsg
 			nmcli radio wifi on
 		fi
 		if nmcli connection show --active | grep -q Candle_hotspot; then
@@ -318,7 +517,6 @@ start_dnsmasq () {
 				else
 					echo "ERROR, $IFNAME interface does not have 172.16.$NETID.1 ip address (yet). Cannot start NTP server. ifconfig:"
 				fi
-				
 				
 				echo "active connections right before starting dnsmasq:"
 				nmcli connection show --active
@@ -363,13 +561,12 @@ start_dnsmasq () {
 
 		
 	else
-		echo "hotspot.sh: not bringing up hotspot"
-		echo "candle: hotspot.sh: no candle_hotspot.txt spotted, not bringing up hotspot" >> /dev/kmsg
+		echo "candle: hotspot.sh: WARNING: candle_hotspot.txt vanished, not bringing up interface and dnsmasq" >> /dev/kmsg
+		echo "candle: hotspot.sh: WARNING: candle_hotspot.txt vanished, not bringing up interface and dnsmasq" >> /dev/kmsg
 		#nmcli connection down candle_hotspot
 		sleep 30
 		exit 0
 	fi
-
 	
 	sleep 15
 	
@@ -381,83 +578,27 @@ start_dnsmasq () {
 
 
 
-# TODO: supporting mlan0 is dubious, since that implies this script is not running on a Raspberry Pi
-# Create virtual $IFNAME interface for hotspot
-if ip link show | grep -q "mlan0:" ; then
-	echo "hotspot.sh: spotted mlan0"
+if [ "$IFNAME" == "uap0" ]; then
+	
 	if ip link show | grep -q "$IFNAME:" ; then
-		echo "mlan0 and $IFNAME exist"
+		echo "candle: hotspot.sh: OK, virtual uap0 interface already exists"
+		echo "candle: hotspot.sh: OK, virtual uap0 interface already exists" >> /dev/kmsg
 	else
-		echo "$IFNAME does not exist yet"
-		/sbin/iw dev mlan0 interface add "$IFNAME" type __ap
-		sleep 1
-		#ip address add 172.16.$NETID.1/24 dev $IFNAME
-		#ifconfig $IFNAME 172.16.$NETID.1 netmask 255.255.255.0
-		#ip -6 addr add fd00:$NETID::1 dev $IFNAME
-		#iw dev $IFNAME set power_save off
-		#sleep 1
+		echo "candle: hotspot.sh: creating virtual uap0 interface"
+		echo "candle: hotspot.sh: creating virtual uap0 interface" >> /dev/kmsg
+		/sbin/iw dev mlan0 interface add uap0 type __ap
+		nmcli device set "$IFNAME" managed false
+		
 	fi
-        
-elif ip link show | grep -q "wlan0:" ; then
-    echo "wlan0 exists"
-	if ip link show | grep -q "$IFNAME:"; then
-		echo "wlan0 and $IFNAME exist"
-	else
-		echo "$IFNAME does not exist yet"
-		/sbin/iw dev wlan0 interface add "$IFNAME" type __ap
-		sleep 1
-		#ip address add "172.16.$NETID.1/24" dev "$IFNAME"
-		#ifconfig "$IFNAME" "172.16.$NETID.1" netmask 255.255.255.0
-		#ip -6 addr add "fd00:$NETID::1" dev "$IFNAME"
-		#iw dev "$IFNAME" set power_save off
-		#sleep 1
-	fi
+
 fi
 
 
-#
-# PRUNE connections, other than Candle_hotspot, that are set to use $IFNAME
-#
-nmcli -t -f NAME connection | while read -r name; do
-	if [[ "$name" != "Candle_hotspot" ]] ; then
-		if nmcli -t connection show "$name" | grep -q "connection.interface-name:$IFNAME" ; then
-			WASUP="false"
-			if nmcli -f GENERAL.STATE con show "$name" | grep -q activated ; then
-				echo "hotspot.sh: bringing down a connection that was using $IFNAME, but was not Candle_hotspot: $name"
-				echo "hotspot.sh: bringing down a connection that was using $IFNAME, but was not Candle_hotspot: $name" >> /dev/kmsg
-				nmcli connection down "$name"
-				WASUP="true"
-			fi
-			if ip link show | grep -q "wlan0:" ; then
-				nmcli connection modify "$name" ifname wlan0
-				if nmcli -t connection show "$name" | grep -q "connection.interface-name:wlan0" ; then
-					# Connection was succesfully modified to use wlan0 instead
-					if [ "$WASUP" == "true" ] ; then
-						if nmcli -t -f DEVICE c s --active | grep -q "wlan0" ; then
-							echo "hotspot.sh: connection pruning: want to bring up the modified connection, but another connection is already using wlan0"
-						else
-							nmcli connection up "$name"
-							echo "hotspot.sh: connection pruning: succesfully moved active connection from $IFNAME to wlan0 interface"
-							echo "hotspot.sh: connection pruning: succesfully moved active connection from $IFNAME to wlan0 interface" >> /dev/kmsg
-						fi
-					fi
-				else
-					nmcli connection delete "$name"
-				fi
-			else
-				nmcli connection delete "$name"
-				#REMAINING_ACTIVE_CONNECTIONS=$(nmcli -t -f DEVICE c s --active | grep -v lo)
-				#echo "hotspot.sh: connection pruning:  REMAINING_ACTIVE_CONNECTIONS: $REMAINING_ACTIVE_CONNECTIONS"
-				#if [ -n "$REMAINING_ACTIVE_CONNECTIONS" ] ; then
-				#	nmcli connection delete "$name"
-				#	echo "hotspot.sh: had to delete a connection that was set to use $IFNAME: $name" >> /dev/kmsg
-				#else:
-				#	echo "hotspot.sh: a connection is already using $IFNAME, and it can't be moved to wlan0, and there is no other connection either. So it will have to remain this way." >> /dev/kmsg
-				#fi
-			fi
-		fi
-	fi
-done
+
+
+
+
+
 
 
 
@@ -468,104 +609,62 @@ done
 if ip link show | grep -q "$IFNAME:"; then
 	
 	echo
-	echo "candle: hotspot.sh:  using interface: $IFNAME"
+	echo "candle: hotspot.sh: preparation done.  continueing with interface: $IFNAME"
 	#echo "ifconfig $IFNAME:"
 	#ifconfig $IFNAME
 	echo
-	MAC=""
 	
-	# TODO: support for MLAN0 is not fully implemented at the moment.
-
-	if ip link show | grep -q "wlan0"; then
-		MAC=$(nmcli device show wlan0 | grep HWADDR | awk '{print $2}')
-		echo "candle: hotspot.sh: wlan0 REAL MAC: $MAC"
-	elif ip link show | grep -q "mlan0"; then
-		MAC=$(nmcli device show mlan0 | grep HWADDR | awk '{print $2}')
-		echo "candle: hotspot.sh: mlan0 REAL MAC: $MAC"
+	# Bring down existing connection
+	if nmcli connection show | grep -q 'Candle_hotspot'; then
+		echo "candle: hotspot.sh: connection already exists, setting autoconnect to no"
+		echo "candle: hotspot.sh: connection already exists, setting autoconnect to no" >> /dev/kmsg
+		nmcli connection modify Candle_hotspot connection.autoconnect no
 	fi
-
-
-	
-	ZEROMAC="$MAC"
-	
-	
-	#MAC=$(nmcli device show "$IFNAME" | grep HWADDR | awk '{print $2}')
-	#echo "candle: hotspot.sh:  interface MAC before: $MAC"
-	
-	
-	
-	if [ "$IFNAME" == "uap0" ]; then
-		# Generate a slightly different MAC address for $IFNAME. Ending it with zero might even help creating a hotspot.
-		
-		if [[ "$MAC" =~ 0$ ]]; then
-	    	ZEROMAC=${MAC%?}1
-		else
-			ZEROMAC=${MAC%?}0
-		fi
-		#ip link set dev $IFNAME address "$ZEROMAC"
+	if nmcli connection show --active | grep -q Candle_hotspot; then
+		echo "candle: hotspot.sh: WARNING, the Candle_hotspot connection is already up. Bringing it down first"
+		echo "candle: hotspot.sh: WARNING, the Candle_hotspot connection is already up. Bringing it down first" >> /dev/kmsg
+		mcli connection down Candle_hotspot
+		sleep 1
 	fi
 	
+	# Bring down the interface
+	nmcli device set "$IFNAME" managed false
+	ip link set "$IFNAME" down
 	
-	
-	#echo
-	#echo "ifconfig $IFNAME:"
-	#ifconfig $IFNAME
-	#echo
-	
-	
-	SHORTMAC=${MAC: -2}
-	#SHORTMAC="${SHORTMAC//:/}"
-	#RANDOMCHARS=$(tr -dc A-Z0-9 </dev/urandom | head -c 2; echo '')
-	#SHORTMAC=$(echo "$SHORTMAC$RANDOMCHARS")
-	#RANDOMCHARS=$(tr -dc 'A-Z0-9' < /dev/urandom | head -c 2)
-	#RANDOMCHARS=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 2 | head -n 1)
-	
-	RANDOMCHARS=""
-	chars=1234567890ABCDEF
-	for i in {1..2}; do
-		RANDOMCHARS=$(echo -n "$RANDOMCHARS${chars:RANDOM%${#chars}:1}")
-	done
-	echo "RANDOMCHARS: $RANDOMCHARS"
-	
-	SHORTMAC="$SHORTMAC$RANDOMCHARS"
-	
-	#ifconfig br0 hw ether $MAC
-	echo "hotspot.sh: short mac address: $SHORTMAC"
-	#echo "hotspot.sh: short mac address: $SHORTMAC" >> /dev/kmsg
-
-	
-	# PREPARE SSID
-
-	#SHORTMAC=$(echo "$(echo $SHORTMAC)_nomap")
-	SHORTMAC="$(echo $SHORTMAC)_nomap" # SIC
-	echo "hotspot.sh: short mac address with _nomap: $SHORTMAC"
-	
-	SSID="Candle"
-	if [ -n "$SHORTMAC" ]; then
-		SSID="Candle $SHORTMAC"
+	if ip link show | grep "$IFNAME:" | grep -q "state UP"; then
+		echo "candle: hotspot.sh: WARNING, the $IFNAME interface is still up. Forcing it down again using ip"
+		echo "candle: hotspot.sh: WARNING, the $IFNAME interface is still up. Forcing it down again using ip" >> /dev/kmsg
+		ip link set "$IFNAME" down
+		sleep 1
 	fi
-	
-	# check if there is an existing SSID to re-use instead
-	OLD_SSID=$(nmcli c s Candle_hotspot | grep 802-11-wireless.ssid | awk '{print $2}')
-	#if [[ "$OLD_SSID" == *"_nomap"* ]]; then
-	if [ -n "$OLD_SSID" ]; then	
-	    echo "spotted existing Candle_hotspot connection. Existing SSID: $OLD_SSID"
-		SSID="$OLD_SSID"
+
+	# Ensure the interface has the correct IP addresses
+	current_ips=$(ip addr show "$IFNAME")
+	echo "candle: hotspot.sh: verify current_ips: $current_ips"
+	if [[ "$current_ips" == "*$OWN_IP4*" ]]; then
+		echo "candle: hotspot.sh: ip4 $OWN_IP4 seems already set for interface $IFNAME"
+		echo "candle: hotspot.sh: ip4 $OWN_IP4 seems already set for interface $IFNAME" >> /dev/kmsg
+	else
+		echo "candle: hotspot.sh: added ip4 $OWN_IP4 to interface $IFNAME"
+		echo "candle: hotspot.sh: added ip4 $OWN_IP4 to interface $IFNAME" >> /dev/kmsg
+		ip addr add "$OWN_IP4"/24 dev "$IFNAME"
 	fi
-	
-	
-	# Allow the user to override the SSID
-	if [ -f $BOOT_DIR/candle_hotspot_name.txt ]; then
-		SPOTTED_HOTSPOT_SSID=$(cat $BOOT_DIR/candle_hotspot_name.txt | tr -d '\n')
-		if [ -n "$SPOTTED_HOTSPOT_SSID" ]; then 
-			echo "Spotted a prefered hotspot SSID in candle_hotspot_name.txt: $SPOTTED_HOTSPOT_SSID"
-			SSID="$SPOTTED_HOTSPOT_SSID"
-		fi
+	if [[ "$current_ips" == "*$OWN_IP6*" ]]; then
+		echo "candle: hotspot.sh: ip6 $OWN_IP6 seems already set for interface $IFNAME"
+		echo "candle: hotspot.sh: ip6 $OWN_IP6 seems already set for interface $IFNAME" >> /dev/kmsg
+	else
+		echo "candle: hotspot.sh: added ip6 $OWN_IP6 to interface $IFNAME"
+		echo "candle: hotspot.sh: added ip6 $OWN_IP6 to interface $IFNAME" >> /dev/kmsg
+		ip -6 addr add "$OWN_IP6"/32 dev "$IFNAME"
 	fi
 	
 	
 	
-	echo "hotspot.sh: final SSID: $SSID"
+	
+	
+	
+	
+
 	
 	
 
@@ -582,19 +681,9 @@ if ip link show | grep -q "$IFNAME:"; then
 	
 	
 
-	if nmcli connection show --active | grep -q Candle_hotspot; then
-		echo "candle: hotspot.sh: WARNING, the Candle_hotspot connection is already up. Bringing it down first"
-		echo "candle: hotspot.sh: WARNING, the Candle_hotspot connection is already up. Bringing it down first" >> /dev/kmsg
-		mcli connection down Candle_hotspot
-		sleep 1
+	
 
-	fi
 
-	if ip link show | grep "$IFNAME:" | grep -q "state UP"; then
-		echo "candle: hotspot.sh: WARNING, the $IFNAME interface is still up. Forcing it down first using ip"
-		echo "candle: hotspot.sh: WARNING, the $IFNAME interface is still up. Forcing it down first using ip" >> /dev/kmsg
-		ip link set "$IFNAME" down
-	fi
 	
 	#echo
 	#echo "ifconfig $IFNAME:"
@@ -617,14 +706,24 @@ if ip link show | grep -q "$IFNAME:"; then
 	if nmcli connection show | grep -q 'Candle_hotspot'; then
 		echo "candle: hotspot.sh: connection already exists"
 		echo "candle: hotspot.sh: connection already exists" >> /dev/kmsg
-
 		
+		
+		
+		
+		sleep 1
+		
+		if nmcli connection show --active | grep -q $IFNAME; then
+			echo "candle: hotspot.sh: ERROR: connection already exists, and was still active"
+			echo "candle: hotspot.sh: ERROR: connection already exists, and was still active" >> /dev/kmsg
+			nmcli connection modify Candle_hotspot connection.autoconnect no
+			mcli connection down Candle_hotspot
+			sleep 1
+		fi
+		
+		nmcli connection modify Candle_hotspot connection.autoconnect no
+			
 
 	else
-		echo "candle hotspot.sh: Creating initial Candle_hotspot connection"
-		echo "candle hotspot.sh: Creating initial Candle_hotspot connection" >> /dev/kmsg
-
-
 		
 		
 		#nmcli connection add con-name "Candle_hotspot" \
@@ -636,11 +735,18 @@ if ip link show | grep -q "$IFNAME:"; then
 		
 		if [[ $PASSWORD =~ ^........+ ]]; then
 			
+			echo "candle hotspot.sh: Creating initial Candle_hotspot connection with a password"
+			echo "candle hotspot.sh: Creating initial Candle_hotspot connection with a password" >> /dev/kmsg
+			if [ -f "$BOOT_DIR/developer.txt" ]; then
+				echo "candle: hotspot.sh: DEVELOPER: password on new Candle_hotspot connection is: -->$PASSWORD<--"
+				echo "candle: hotspot.sh: DEVELOPER: password on new Candle_hotspot connection is: -->$PASSWORD<--" >> /dev/kmsg
+			fi
+			
 			nmcli connection add \
 				con-name Candle_hotspot \
 				ifname "$IFNAME" \
 				type wifi \
-				autoconnect yes \
+				autoconnect no \
 				ipv4.method manual ipv4.addresses "172.16.$NETID.1/24" \
 				802-11-wireless.band bg \
 				802-11-wireless.channel 1 \
@@ -648,61 +754,71 @@ if ip link show | grep -q "$IFNAME:"; then
 				802-11-wireless.ssid "$SSID" \
 				802-11-wireless-security.key-mgmt wpa-psk \
 				802-11-wireless-security.proto rsn \
-				802-11-wireless-security.group ccmp \
 				802-11-wireless-security.pairwise ccmp \
 				802-11-wireless-security.psk "$PASSWORD" \
-				ipv6.method manual ipv6.addresses "fd00:$NETID::1/8"
+				ipv6.method manual ipv6.addresses "fd00:$NETID::1/32"
+			
+				# 802-11-wireless-security.group ccmp \
 
-
-				if [ -f "$BOOT_DIR/developer.txt" ]; then
-					echo "candle: hotspot.sh: DEVELOPER: set hotspot password on new Candle_hotspot connection to: -->$PASSWORD<--" >> /dev/kmsg
-				fi
+			
 			
 				#wifi-sec.pairwise ccmp \
 				# ip link set dev <interface_name> down
 		
 		else
+			
+			echo "candle hotspot.sh: Creating initial Candle_hotspot connection without a password"
+			echo "candle hotspot.sh: Creating initial Candle_hotspot connection without a password" >> /dev/kmsg
+			
 			nmcli connection add \
 				con-name Candle_hotspot \
 				ifname $IFNAME \
 				type wifi \
-				autoconnect yes \
+				autoconnect no \
 				ipv4.method manual ipv4.addresses "172.16.$NETID.1/24" \
 				802-11-wireless.band bg \
 				802-11-wireless.channel 1 \
 				802-11-wireless.mode ap \
 				802-11-wireless.ssid "$SSID" \
-				ipv6.method manual ipv6.addresses "fd00:$NETID::1/8"
+				ipv6.method manual ipv6.addresses "fd00:$NETID::1/32"
 			
+		fi
+		
+		
+		# -999 to 999
+		nmcli con modify Candle_hotspot connection.autoconnect-priority 10
+		
+		# Infinite retries
+		nmcli con modify Candle_hotspot connection.autoconnect-retries 0
+		
+		#nmcli con modify Candle_hotspot wifi-sec.pmf disable
+		nmcli con modify Candle_hotspot 802-11-wireless-security.pmf optional
+		
+		# Mac OS will apparently only connect if Fast PSK is enabled
+		# https://www.networkmanager.dev/docs/api/latest/settings-802-11-wireless-security.html
+		nmcli con modify Candle_hotspot 802-11-wireless-security.fils 2
+		
+		nmcli connection modify Candle_hotspot ipv4.gateway "172.16.$NETID.1" 
+		nmcli connection modify Candle_hotspot ipv4.dns "172.16.$NETID.1" ipv4.dns-priority 1000
+		
+		# The hotspot is not the default route out of the network
+		nmcli connection modify Candle_hotspot ipv4.never-default true
+	
+		#nmcli connection modify Candle_hotspot ipv6.addresses 'fd00::/8' ipv6.method manual 
+		nmcli connection modify Candle_hotspot ipv6.gateway "fd00:$NETID::1"
+		nmcli connection modify Candle_hotspot ipv6.dns "fd00:$NETID::1" ipv6.dns-priority 1000
+		nmcli connection modify Candle_hotspot ipv6.never-default true
+		
+		if [ -f $BOOT_DIR/developer.txt ]; then
+			echo ""
+			echo ""
+			echo "full initial Candle_hotspot: "
+			nmcli connection show Candle_hotspot | cat
+			echo ""
+			echo ""
 		fi
 
 	fi
-
-
-
-	
-	
-		
-	
-
-	if [ -f $BOOT_DIR/developer.txt ]; then
-		echo "candle: hotspot.sh: DEVELOPER: using:"
-		echo " - SSID: $SSID"
-		echo " - PASS: $PASSWORD"
-	fi
-	
-	#nmcli connection add type wifi ifname $IFNAME con-name Candle_hotspot
-
-	#nmcli con add con-name Candle_hotspot ifname $IFNAME type dummy
-	#nmcli con add con-name Candle_hotspot ifname $IFNAME type wifi connection.autoconnect yes 802-11-wireless.ssid "$SSID" ipv4.method manual ipv4.addresses "172.16.$NETID.1/24" ipv6.method manual ipv6.addresses 'fd00::/8' 802-11-wireless.band bg 802-11-wireless.channel 1
-	#nmcli con add type wifi ifname wlan0 con-name <your_hotspot_name> autoconnect yes ssid <your_ssid>
-	
-	#nmcli connection modify Candle_hotspot wifi.cloned-mac-address "$ZEROMAC"
-	#nmcli connection modify Candle_hotspot 802-11-wireless.band bg 802-11-wireless.channel 1
-	
-	#nmcli connection modify Candle_hotspot ipv4.addresses "172.16.$NETID.1/24" ipv4.method manual 
-	
-	#nmcli connection modify Candle_hotspot connection.interface-name $IFNAME
 
 
 
@@ -714,88 +830,102 @@ if ip link show | grep -q "$IFNAME:"; then
 	if nmcli connection show | grep -q Candle_hotspot; then
 
 
-		connection_interface_name=$(nmcli connection show Candle_hotspot | grep connection.interface-name)
-		echo "candle: hotspot.sh: $connection_interface_name"
+		connection_interface_name=$(nmcli connection show Candle_hotspot | grep 'connection.interface-name:' | sed 's/connection.interface-name://' | xargs)
+		echo "candle: hotspot.sh: verify interface: -->$IFNAME<-- -vs- -->$connection_interface_name<--"
 		
-		# ENSURE
-	
-		nmcli con modify Candle_hotspot 802-11-wireless.mode ap
-	
-		nmcli connection modify Candle_hotspot connection.autoconnect yes
-		# -999 to 999
-		nmcli con modify Candle_hotspot connection.autoconnect-priority 10
-		# Infinite retries
-		nmcli con modify Candle_hotspot connection.autoconnect-retries 0
-		#nmcli con modify Candle_hotspot wifi-sec.pmf disable
-		nmcli con modify Candle_hotspot 802-11-wireless-security.pmf optional
-	
-		# Mac OS will apparently only connect if Fast PSK is enabled
-		# https://www.networkmanager.dev/docs/api/latest/settings-802-11-wireless-security.html
-		nmcli con modify Candle_hotspot 802-11-wireless-security.fils 2
-
-		echo "candle hotspot.sh:  own IP address: 172.16.$NETID.1" >> /dev/kmsg
 		
-		nmcli connection modify Candle_hotspot ipv4.gateway "172.16.$NETID.1" 
-		nmcli connection modify Candle_hotspot ipv4.dns "172.16.$NETID.1" ipv4.dns-priority 1000
-		
-		# The hotspot is not the default route out of the network
-		nmcli connection modify Candle_hotspot ipv4.never-default true
-	
-	
-		#nmcli connection modify Candle_hotspot ipv6.addresses 'fd00::/8' ipv6.method manual 
-		nmcli connection modify Candle_hotspot ipv6.gateway "fd00:$NETID::1"
-		nmcli connection modify Candle_hotspot ipv6.dns "fd00:$NETID::1" ipv6.dns-priority 1000
-		nmcli connection modify Candle_hotspot ipv6.never-default true
-		#nmcli connection modify Candle_hotspot ipv6.method "ignore"
-
-		if [ -f $BOOT_DIR/candle_wifi_power_save.txt ]; then
-			nmcli connection modify Candle_hotspot 802-11-wireless.powersave enable
+		# Update interface name
+		if [ "$IFNAME" == "$connection_interface_name" ]; then
+			echo "candle: hotspot.sh: OK, the Candle_hotspot connection has the correct interface set: $IFNAME"
+			echo "candle: hotspot.sh: OK, the Candle_hotspot connection has the correct interface set: $IFNAME" >> /dev/kmsg
 		else
-			nmcli connection modify Candle_hotspot 802-11-wireless.powersave disable
+			echo "candle: hotspot.sh: WARNING, the Candle_hotspot connection does not have the correct interface set:  old: $connection_interface_name -> new: $IFNAME"
+			echo "candle: hotspot.sh: WARNING, the Candle_hotspot connection does not have the correct interface set:  old: $connection_interface_name -> new: $IFNAME" >> /dev/kmsg
+			nmcli con modify Candle_hotspot connection.interface-name "$IFNAME"
 		fi
+		
+		
+		# Update power save
+		
+		if [ -f $BOOT_DIR/candle_wifi_power_save.txt ]; then
+			if nmcli c s Candle_hotspot | grep '802-11-wireless.powersave' | grep -q 'disable'; then
+				echo "candle: hotspot.sh: changing Candle_hotspot 802-11-wireless.powersave setting to disabled"
+				echo "candle: hotspot.sh: changing Candle_hotspot 802-11-wireless.powersave setting to disabled" >> /dev/kmsg
+				nmcli connection modify Candle_hotspot 802-11-wireless.powersave enable
+				iw "$IFNAME" set power_save on
+			fi
+		else
+			if nmcli c s Candle_hotspot | grep '802-11-wireless.powersave' | grep -q 'enable'; then
+				echo "candle: hotspot.sh: changing Candle_hotspot 802-11-wireless.powersave setting to enabled"
+				echo "candle: hotspot.sh: changing Candle_hotspot 802-11-wireless.powersave setting to enabled" >> /dev/kmsg
+				nmcli connection modify Candle_hotspot 802-11-wireless.powersave disable
+				iw "$IFNAME" set power_save off
+			fi
+		fi
+		
+		
 
-
-
-
-
-		if [ -n "$ZEROMAC" ]; then
-			current_nmcli_mac=$(nmcli c s Candle_hotspot | grep '802-11-wireless.mac-address:')
-			echo "current_nmcli_mac: $current_nmcli_mac"
-			if [[ $current_nmcli_mac = "*$ZEROMAC*" ]]
-			then
-			    echo "OK, Candle_hotspot connection's MAC is already the correct zeromac:"
-				echo "ZEROMAC: $ZEROMAC"
-				echo "$current_nmcli_mac"
-				echo "candle: hotspot.sh: mac is already the correct zeromac: $ZEROMAC" >> /dev/kmsg
+		if [ "$IFNAME" == uap0 ]; then
+			if [ -n "$ZEROMAC" ]; then
 				
-			else
-				nmcli con modify Candle_hotspot wifi.mac-address "$ZEROMAC"
-				#nmcli con modify Candle_hotspot wifi.cloned-mac-address "$ZEROMAC"
-				echo "candle: hotspot.sh: had to set Candle_hotspot mac to the correct zeromac: $ZEROMAC" >> /dev/kmsg
-			fi
+				# Not setting the Candle_hotspot connection's mac at the moment
+				current_nmcli_mac=$(nmcli c s Candle_hotspot | grep '802-11-wireless.mac-address:' | sed 's/802-11-wireless.mac-address://' | xargs)
+				echo "candle: hotspot.sh: current_nmcli_mac: $current_nmcli_mac"
+				echo "candle: hotspot.sh: current_nmcli_mac: $current_nmcli_mac" >> /dev/kmsg
+				if [[ $current_nmcli_mac = "*$ZEROMAC*" ]]
+				then
+				    echo "OK, Candle_hotspot connection's MAC is already the correct zeromac:"
+					echo "ZEROMAC: $ZEROMAC"
+					echo "$current_nmcli_mac"
+					echo "candle: hotspot.sh: mac is already the correct zeromac: $ZEROMAC"
+					echo "candle: hotspot.sh: mac is already the correct zeromac: $ZEROMAC" >> /dev/kmsg
+				
+				else
+					#nmcli con modify Candle_hotspot wifi.mac-address "$ZEROMAC"
+					nmcli con modify Candle_hotspot wifi.cloned-mac-address "$ZEROMAC"
+					echo "candle: hotspot.sh: had to set Candle_hotspot mac to the correct zeromac: $ZEROMAC (blocked)"
+					echo "candle: hotspot.sh: had to set Candle_hotspot mac to the correct zeromac: $ZEROMAC (blocked)" >> /dev/kmsg
+				fi
 			
-
-			if iw dev uap0 info | grep "addr " | grep -q "$ZEROMAC"; then
-				echo "OK, UAP0's MAC is already the correct zeromac:"
-				iw dev uap0 info
-			else
-				ip link set dev uap0 address "$ZEROMAC"
-				echo "UAP0's MAC should now be the current zeromac:"
-				echo "ZEROMAC: $ZEROMAC"
-				iw dev uap0 info
+				if iw dev uap0 info | grep "addr " | grep -q "$ZEROMAC"; then
+					echo "candle: hotspot.sh: OK, uap0's MAC is already the correct zeromac: $ZEROMAC"
+					echo "candle: hotspot.sh: OK, uap0's MAC is already the correct zeromac: $ZEROMAC" >> /dev/kmsg
+					iw dev uap0 info
+				else
+					echo "candle: hotspot.sh: WARNING, setting uap0's MAC to the correct zeromac: $ZEROMAC"
+					echo "candle: hotspot.sh: WARNING, setting uap0's MAC to the correct zeromac: $ZEROMAC" >> /dev/kmsg
+					ip link set dev uap0 address "$ZEROMAC"
+					iw dev uap0 info
+				fi
 			fi
-			
 		fi
 
 		# TODO: check if there is a normal wireless connection too, and if so, follow that connection's band (5G / 2.4G) to keep the radio happy
 		# TODO: maybe also explain that to the user, or automatically switch to a 5G/2.4G version of the SSID if available? That may be a security risk though..
 		
+		current_nmcli_band=$(nmcli c s Candle_hotspot | grep '802-11-wireless.band:' | sed 's/802-11-wireless.band://' | xargs)
+		echo "candle: hotspot.sh: verify current_nmcli_band: -->$current_nmcli_band<--"
 		if [ -f "$BOOT_DIR/candle_hotspot_5G.txt" ]; then
-			echo "candle: hotspot.sh: setting wifi channel to 44 (5Ghz)" >> /dev/kmsg
-			nmcli con modify Candle_hotspot 802-11-wireless.band a 802-11-wireless.channel 44
+			if [ "$current_nmcli_band" == "a" ]; then
+				echo "candle: hotspot.sh: connection is already set to the correct band: $current_nmcli_band"
+				echo "candle: hotspot.sh: connection is already set to the correct band: $current_nmcli_band" >> /dev/kmsg
+				# TODO: also ensure correct channel?
+			else
+				echo "candle: hotspot.sh: changing wifi channel to 44 (5Ghz)"
+				echo "candle: hotspot.sh: changing wifi channel to 44 (5Ghz)" >> /dev/kmsg
+				nmcli con modify Candle_hotspot 802-11-wireless.band a 802-11-wireless.channel 44
+			fi
+			
 		else
-		echo "candle: hotspot.sh: setting wifi channel to 1 (2.4Ghz)" >> /dev/kmsg
-			nmcli con modify Candle_hotspot 802-11-wireless.band bg 802-11-wireless.channel 1
+			if [ "$current_nmcli_band" == "bg" ]; then
+				echo "candle: hotspot.sh: connection is already set to the correct band: $current_nmcli_band"
+				echo "candle: hotspot.sh: connection is already set to the correct band: $current_nmcli_band" >> /dev/kmsg
+				# TODO: also ensure correct channel?
+			else
+				echo "candle: hotspot.sh: changing wifi channel to 1 (2.4Ghz)"
+				echo "candle: hotspot.sh: changing wifi channel to 1 (2.4Ghz)" >> /dev/kmsg
+				nmcli con modify Candle_hotspot 802-11-wireless.band bg 802-11-wireless.channel 1
+			fi
 		fi
 
 		
@@ -852,26 +982,29 @@ if ip link show | grep -q "$IFNAME:"; then
 	
 
 		# Protected Management Frames can lead to connectivity issues with some WiFi devices
+		current_nmcli_pmf=$(nmcli c s Candle_hotspot | grep '802-11-wireless-security.pmf:' | sed 's/802-11-wireless-security.pmf://' | xargs)
+		echo "candle: hotspot.sh: verify current_nmcli_pmf: -->$current_nmcli_pmf<--"
+		
 		if [ -f $BOOT_DIR/candle_hotspot_disable_wifi_pmf.txt ]; then
-			echo "candle: hotspot.sh: spotted candle_disable_wifi_pmf.txt -> disabling wifi protected management frames"
-			#nmcli connection modify candle_hotspot wifi.powersave 1
-			nmcli con modify Candle_hotspot 802-11-wireless-security.pmf disable
-		fi
-		
-		
-		
-		# POWER SAVE
-
-		if [ -f $BOOT_DIR/candle_wifi_power_save.txt ]; then
-			echo "candle: hotspot.sh: spotted candle_wifi_power_save.txt -> forcing wifi powersave to on using iw"
-			#nmcli connection modify candle_hotspot wifi.powersave 1
-			#nmcli radio wifi powersave on
-			iw "$IFNAME" set power_save on
+			if [[ $current_nmcli_pmf = "*disable*" ]]; then
+				echo "candle: hotspot.sh: spotted candle_disable_wifi_pmf.txt -> protected management frames already set to disabled"
+				echo "candle: hotspot.sh: spotted candle_disable_wifi_pmf.txt -> protected management frames already set to disabled" >> /dev/kmsg
+			else
+				echo "candle: hotspot.sh: spotted candle_disable_wifi_pmf.txt -> disabling wifi protected management frames"
+				echo "candle: hotspot.sh: spotted candle_disable_wifi_pmf.txt -> disabling wifi protected management frames" >> /dev/kmsg
+				nmcli con modify Candle_hotspot 802-11-wireless-security.pmf disable
+			fi
 		else
-			echo "candle: hotspot.sh: did not spot candle_wifi_power_save.txt -> forcing wifi powersave to off using iw"
-			iw "$IFNAME" set power_save off
-			#nmcli radio wifi powersave off
+			if [[ $current_nmcli_pmf = "*disable*" ]]; then
+				echo "candle: hotspot.sh: seting wifi protected management frames back to optional"
+				echo "candle: hotspot.sh: seting wifi protected management frames back to optional" >> /dev/kmsg
+				nmcli con modify Candle_hotspot 802-11-wireless-security.pmf optional
+			fi
 		fi
+		
+		
+		
+		
 
 
 		
@@ -884,36 +1017,54 @@ if ip link show | grep -q "$IFNAME:"; then
 		echo
 
 
-		if nmcli radio wifi | grep -q 'disabled'; then
-			echo "hotspot.sh: WARNING, had to bring up wifi radio (1)"
-			echo "candle: hotspot.sh: WARNING, had to bring up wifi radio (1)" >> /dev/kmsg
-			nmcli radio wifi on
-			sleep 1
-		fi
+		#if nmcli radio wifi | grep -q 'disabled'; then
+		#	echo "hotspot.sh: WARNING, had to bring up wifi radio (1)"
+		#	echo "candle: hotspot.sh: WARNING, had to bring up wifi radio (1)" >> /dev/kmsg
+		#	nmcli radio wifi on
+		#	sleep 1
+		#fi
 
-
+		rfkill unblock
 		
 		if ip link show | grep -q "$IFNAME:"; then
 			
-			if nmcli device status | grep "$IFNAME" | grep -q 'unmanaged' ; then
-				echo "candle: hotspot.sh: setting interface $IFNAME to managed" >> /dev/kmsg
-				nmcli device set "$IFNAME" managed true
-				sleep 1
-			fi
 			
 			if ip link show "$IFNAME" | grep -q 'state DOWN'; then
+				echo "candle: hotspot.sh: interface $IFNAME was down, forcing to UP using ip"
 				echo "candle: hotspot.sh: interface $IFNAME was down, forcing to UP using ip" >> /dev/kmsg
 				ip link set "$IFNAME" up
 				sleep 1
+			else
+				echo "candle: hotspot.sh: OK, interface $IFNAME was already brought up by NetworkManager"
+				echo "candle: hotspot.sh: OK, interface $IFNAME was already brought up by NetworkManager" >> /dev/kmsg
 			fi
 			
+			
+			if nmcli device status | grep "$IFNAME" | grep -q 'unmanaged' ; then
+				echo "candle: hotspot.sh: setting interface $IFNAME to managed"
+				echo "candle: hotspot.sh: setting interface $IFNAME to managed" >> /dev/kmsg
+				nmcli device set "$IFNAME" managed true
+				sleep 1
+			else
+				echo "candle: hotspot.sh: unexpectedly, interface $IFNAME was already managed by NetworkManager"
+				echo "candle: hotspot.sh: unexpectedly, interface $IFNAME was already managed by NetworkManager" >> /dev/kmsg
+			fi
+			
+			
 			if ip link show "$IFNAME" | grep -q DORMANT; then
+				echo "candle: hotspot.sh: $IFNAME was in DORMANT mode, setting to DEFAULT instead"
 				echo "candle: hotspot.sh: $IFNAME was in DORMANT mode, setting to DEFAULT instead" >> /dev/kmsg
 				ip link set $IFNAME mode default
 				sleep 1
+			else
+				echo "candle: hotspot.sh: OK, interface $IFNAME was not dormant"
+				echo "candle: hotspot.sh: OK, interface $IFNAME was not dormant" >> /dev/kmsg
 			fi
+			
 		else
-			echo "candle: hotspot.sh: ERROR, interface $IFNAME was somwhow missing from ip link show:" >> /dev/kmsg
+			echo "candle: hotspot.sh: ERROR, interface $IFNAME was somehow missing from ip link show:"
+			ip link show
+			echo "candle: hotspot.sh: ERROR, interface $IFNAME was somehow missing from ip link show:" >> /dev/kmsg
 			echo "candle: hotspot.sh: $(ip link show)" >> /dev/kmsg
 		fi
 		
@@ -925,7 +1076,7 @@ if ip link show | grep -q "$IFNAME:"; then
 		# nmcli dev dis $IFNAME
 	
 		if nmcli connection show --active | grep -q $IFNAME; then
-			echo "Strange, the Candle_hotspot was already active?"
+			echo "candle: hotspot.sh: That was quick, the Candle_hotspot is already active"
 			echo "candle: hotspot.sh: That was quick, the Candle_hotspot is already active" >> /dev/kmsg
 			start_dnsmasq
 			
@@ -979,13 +1130,20 @@ if ip link show | grep -q "$IFNAME:"; then
 	
 
 else
-	echo "ERROR, no $IFNAME after it was just created"
+	echo "candle: hotspot.sh: ERROR, missing interface $IFNAME after it was just created"
 	echo "candle: hotspot.sh: ERROR, missing interface $IFNAME after it was just created" >> /dev/kmsg
 	sleep 10
 fi
 
 echo "Sleeping 15 seconds..."
-sleep 15
+sleep 5
+echo "zzz"
+sleep 5
+echo "zzz"
+sleep 5
 echo "Sleeping 15 seconds done"
-echo "candle: hotspot.sh: Bye" >> /dev/kmsg
+
+echo "candle: hotspot.sh: $(date) - Stop"
+echo "candle: hotspot.sh: $(date) - Stop" >> /dev/kmsg
+
 exit 0
