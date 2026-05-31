@@ -1,6 +1,7 @@
 #!/bin/bash
 
 if [ -f /boot/firmware/emergency.txt ]; then
+	sleep 11
 	exit 0
 fi
 
