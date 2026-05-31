@@ -1,6 +1,6 @@
 [Unit]
 Description=Candle early         
-After=home-pi-.webthings.mount
+After=home-pi-.webthings.mount etc-hostname.mount etc-ssh.mount
 #After=network.target
 #PartOf=webthings-gateway.service
 Before=webthings-gateway.service rc-local.service
