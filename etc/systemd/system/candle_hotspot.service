@@ -1,6 +1,6 @@
 [Unit]
 Description=Candle Hotspot
-After=network.target candle_early.service dbus.service home-pi-.webthings.mount
+After=network.target candle_early.service dbus.service home-pi-.webthings.mount etc-hostname.mount etc-ssh.mount
 #Requires=dbus-setenv.service
 Requires=dbus.service home-pi-.webthings.mount candle_early.service
 ConditionPathExists=/boot/firmware/candle_first_run_complete.txt
