@@ -24,9 +24,7 @@ if lsblk | grep -q /boot/firmware; then
     BOOT_DIR="/boot/firmware"
 fi
 
-if [ -f $BOOT_DIR/candle_inspect_first_run.txt ]; then
-	systemctl start ssh.service
-fi
+
 
 echo "in candle_first_run.sh"
 echo "$(date) - Candle: in candle_first_run.sh" >> /dev/kmsg
@@ -328,9 +326,11 @@ if [ -f "$CANDLE_BASE/candle/hotspot.sh" ]; then
 fi
 
 
+
 if [ -f $BOOT_DIR/candle_inspect_first_run.txt ]; then
-	systemctl restart ssh.service
-	echo "candle: FIRST_RUN: not rebooting, ready for inspection" >> $BOOT_DIR/candle_log.txt
+	touch $BOOT_DIR/candle_first_run_complete.txt
+	echo "candle: FIRST_RUN, but not rebooting, ready for inspection" >> $BOOT_DIR/candle_log.txt
+	systemctl start ssh.service
 	sleep 600
 else
 	# Mark first run as complete and reboot
