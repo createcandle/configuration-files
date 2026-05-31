@@ -1,6 +1,6 @@
 [Unit]
 Description=Candle SSH 
-After=home-pi-.webthings.mount network.target
+After=home-pi-.webthings.mount etc-ssh.mount network.target
 
 [Service]
 Type=oneshot
