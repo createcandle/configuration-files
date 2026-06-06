@@ -14,10 +14,11 @@ while true; do
 	sleep 1
 	if [ ! -f $BOOT_DIR/candle_skip_out_of_memory_check.txt ] && [ ! -f $BOOT_DIR/candle_ran_out_of_memory.txt ]; then
 		AVAILABLE_MB=$(free -m | awk '/^Mem:/{print $7}')
+		FREE_MB=$(free -m | awk 'NR==2{print $4}')
 		THRESHOLD=30
 		
-		if [ "$AVAILABLE_MB" -lt "$THRESHOLD" ]; then
-			echo "candle: every_few_seconds.sh: $($date) WARNING: Only ${AVAILABLE_MB}MB available (threshold: ${THRESHOLD}MB)" >> /dev/kmsg
+		if [ "$FREE_MB" -lt "$THRESHOLD" ] && [ "$AVAILABLE_MB" -lt "$THRESHOLD" ]; then
+			echo "candle: every_few_seconds.sh: $($date) WARNING: Only ${AVAILABLE_MB}MB available and ${FREE_MB}MB free (threshold: ${THRESHOLD}MB)" >> /dev/kmsg
 			touch $BOOT_DIR/candle_safe_mode.txt
 			touch $BOOT_DIR/candle_ran_out_of_memory.txt
 		fi
