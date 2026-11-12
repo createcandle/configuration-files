@@ -95,10 +95,10 @@ fi
 
 #sleep 15
 
-if [ ! -f $BOOT_DIR/candle_hide_mouse_pointer.txt ]
-then
-    unclutter -idle 0.2 -root -display :0 &
-fi
+#if [ ! -f $BOOT_DIR/candle_hide_mouse_pointer.txt ]
+#then
+#    unclutter -idle 0.2 -root -display :0 &
+#fi
 
 #if [ -f /home/pi/candle/resolution.txt ]
 #then
