@@ -295,6 +295,11 @@ if [ -e /dev/fb0 ] || [ -e /dev/fb1 ]; then
 	            startx -- -nocursor
 	
 	        # Auto-detect
+
+			# A mouse is plugged in
+	        elif [ -n "$(ls /dev/input/by-id/*-mouse | grep -v ILITEK  2>/dev/null)" ]; then
+	            echo "Candle: kiosk.sh:  detected mouse, starting X and allowing mouse pointer to be shown"
+	            startx
 	
 	        # Raspad touchscreen
 	        elif [ -n "$(ls /dev/input/by-id/usb-ILITEK_ILITEK-TP-mouse 2>/dev/null)" ]; then
@@ -305,11 +310,6 @@ if [ -e /dev/fb0 ] || [ -e /dev/fb1 ]; then
 	        elif udevadm info -q all -n /dev/input/event* | grep -q "ID_INPUT_TOUCHSCREEN=1"; then
 	            echo "Candle: kiosk.sh:  detected a touchscreen, starting X and hiding mouse pointer"
 	            startx -- -nocursor
-	
-			# A mouse is plugged in
-	        elif [ -n "$(ls /dev/input/by-id/*-mouse | grep -v ILITEK  2>/dev/null)" ]; then
-	            echo "Candle: kiosk.sh:  detected mouse, starting X and allowing mouse pointer to be shown"
-	            startx
 	
 	        else
 	            if [ -f /usr/bin/unclutter ]; then
